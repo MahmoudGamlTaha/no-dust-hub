@@ -1,0 +1,174 @@
+package com.jwt.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.CreateDirtyShipmentDAO;
+import com.jwt.model.Category_For_Dirty_Shipments;
+import com.jwt.model.Consumable;
+import com.jwt.model.DirtyOrderData;
+import com.jwt.model.DirtyProductData;
+import com.jwt.model.DirtyProductInPackage;
+import com.jwt.model.Facility;
+import com.jwt.model.ProductsType;
+import com.jwt.model.ProgramsData;
+import com.jwt.model.WashingPrograms;
+import com.jwt.model.drivers;
+
+
+@Service
+@Transactional
+public class CreateDirtyShipmentServiceImpl implements CreateDirtyShipmentService {
+
+	@Autowired
+	private CreateDirtyShipmentDAO creatDirtyDoa;
+	
+	@Override
+	public List<DirtyProductInPackage> getProductsList(int facility_id) {
+		return creatDirtyDoa.getProductsList(facility_id);
+	}
+
+	@Override
+	public List<WashingPrograms> getWashingPrograms(int type) {
+		return creatDirtyDoa.getWashingPrograms(type);
+	}
+
+	@Override
+	public List<drivers> getAllDrivers() {
+		return creatDirtyDoa.getAllDrivers();
+	}
+
+	@Override
+	public List<Facility> getAllLundryies() {
+		return creatDirtyDoa.getAllLundryies();
+	}
+
+	@Override
+	public String submitDirtyShipment(String driver, String user, String Lundry, String Products,int cat) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.submitDirtyShipment(driver, user, Lundry, Products,cat);
+	}
+
+	@Override
+	public List<Facility> getExternalLundries() {
+		return creatDirtyDoa.getExternalLundries();
+	}
+
+	@Override
+	public Facility getAbuRawashData() {
+		return creatDirtyDoa.getAbuRawashData();
+	}
+
+	@Override
+	public List<DirtyProductInPackage> getProductsListNotPack(int facility_id) {
+		return creatDirtyDoa.getProductsListNotPack(facility_id);
+	}
+
+	@Override
+	public String submitInternalLundry(String products, String user, String source, String destination,
+			int facility_id, int from_type, int to_type) {
+		return creatDirtyDoa.submitInternalLundry(products, user, source, destination, facility_id,from_type,to_type);
+	}
+
+	@Override
+	public String submitExternalShipment(String driver, String user, String Lundry, String Products,int cat) {
+		return creatDirtyDoa.submitExternalShipment(driver, user, Lundry, Products,cat);
+	}
+
+	@Override
+	public List<ProductsType> Get_Products_Type_By_Category(int Cat_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Products_Type_By_Category(Cat_id);
+	}
+
+	@Override
+	public List<ProductsType> Get_To_Types(BigDecimal from_type) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_To_Types(from_type);
+	}
+
+	@Override
+	public List<ProgramsData> Get_Programs(BigDecimal from, BigDecimal to) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Programs(from, to);
+	}
+
+	@Override
+	public String Submit_Dying_Programs(int from_type, int to_type, int facility_id, String logged_user,
+			String proudcts) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Submit_Dying_Programs(from_type, to_type, facility_id, logged_user, proudcts);
+	}
+
+	@Override
+	public String Submit_Treatment_Programs(int from_type, int to_type, int facility_id, String products,
+			String logged_user) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Submit_Treatment_Programs(from_type, to_type, facility_id, products, logged_user);
+	}
+
+	@Override
+	public List<ProgramsData> Get_Programs_by_Category(int category_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Programs_by_Category(category_id);
+	}
+
+	@Override
+	public List<Consumable> Get_Program_Consumables(String ids) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Program_Consumables(ids);
+	}
+
+	@Override
+	public List<Consumable> Get_Total_Consumables(String ids) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Total_Consumables(ids);
+	}
+
+	@Override
+	public List<Consumable> Get_Program_Consumables(int shipment_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Program_Consumables(shipment_id);
+	}
+
+	@Override
+	public List<Consumable> Get_Total_Consumables_Details(int shipment_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Total_Consumables_Details(shipment_id);
+	}
+
+	@Override
+	public List<DirtyProductData> Get_Data_For_Printing(int shipment_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Data_For_Printing(shipment_id);
+	}
+
+	@Override
+	public List<DirtyOrderData> Get_Order_DataFor_Printing(int order_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Order_DataFor_Printing(order_id);
+	}
+
+	@Override
+	public List<Category_For_Dirty_Shipments> Get_Category_For_dirty_shipment() {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Category_For_dirty_shipment();
+	}
+
+	@Override
+	public List<DirtyProductData> Get_Untreated_Product(int shipment_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.Get_Untreated_Product(shipment_id);
+	}
+
+	@Override
+	public List<Consumable> GetTreatmentConsumables(int order_id) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.GetTreatmentConsumables(order_id);
+	}
+
+}

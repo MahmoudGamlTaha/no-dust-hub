@@ -1,0 +1,13 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.PayrollPayment;
+
+public interface PayrollVendorService {
+	public FinancialAccount GetPayrollAccount(int fac_id);
+	public List<PayrollPayment> getPayrollPayment();
+	public String submitPayroll(int facility , String   user_name ,  double total , String  payments );
+
+}

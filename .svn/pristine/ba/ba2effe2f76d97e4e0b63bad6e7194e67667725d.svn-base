@@ -1,0 +1,289 @@
+
+
+<style>
+#Mytable thead tr th , #UnAssigntable thead tr th , #AllTable  thead tr th  {
+ font-size: 12px;
+ padding-left: 5px;
+ background: white;
+}
+ thead tr{ text-align: left;}
+ table.dataTable tbody td{ font-weight: 400;}
+table.dataTable.no-footer{
+border-bottom: none;
+}
+.dataTables_empty{color: red;}
+table.table-bordered.dataTable tbody td { font-size: 12px; font-weight: bold; }
+tfoot {
+    display: table-header-group;
+}
+
+.select2-results__option { font-size: 10px;}
+
+.pagination .page-item.active .page-link{
+background: #702283;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button{
+padding: 0px;
+}
+
+.pagination .page-item.active .page-link:hover{background: #962071; border: none;}
+
+table.dataTable > tbody > tr.child span.dtr-title {
+    display: inline-block;
+    min-width: 150px;
+    font-weight: bold;
+    }
+   
+    table.dataTable > tbody > tr.child span.dtr-title:after{
+    content: "   :  ";
+    padding-right: 5px;
+    color: #702283;
+    float: right;
+    
+    }
+    table.dataTable > tbody > tr.child ul.dtr-details{
+    width: 99%;
+    columns:2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    }
+    
+    div.dataTables_wrapper div.dataTables_filter{
+    display: none;}
+.dt-buttons{
+ margin-left:25px !important;
+ 
+}
+
+table.dataTable > tbody > tr.child ul.dtr-details > li:first-child{
+	padding:0.5em 0;
+}
+table.dataTable > tbody > tr.child ul.dtr-details > li{
+	border-bottom:none;
+}
+div.dt-button-background{
+background: rgba(0,0,0,0.3);
+}
+.form-inline{
+display:-ms-flexbox !important;
+}
+.dataTables_length{
+ margin-left:10px !important;
+
+}
+.has-search .form-control {
+    padding-left: 2.375rem;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+}
+
+.NORMAL{
+color:green;
+font-weight: bold !important;
+}
+.WARNING{
+color:#ff7804;
+font-weight: bold !important;
+}
+.ESCALATION{
+color:red;
+font-weight: bold !important;
+}
+
+#div_queue .subme :hover {
+	
+	padding: 0 10px;
+
+}
+
+#div_queue ul {
+
+padding: 10px 0;
+
+}
+
+
+#div_queue li {
+height: 50px;
+padding: 10px 0;
+border-bottom: 1px solid rgba(0,0,0,.125);;
+width: 100%;
+}
+
+#div_queue li  a{
+font-size: 16px;
+padding: 3px 5px;
+color: black; 
+text-decoration: none;
+}
+
+#div_queue .active{
+	background: #f5f5f5;
+	width: 100%;
+	
+
+
+	
+}
+
+.btn-secondary.dropdown-toggle {
+    background-color: #702283!important;
+}
+
+
+.btn-secondary.dropdown-toggle:focus,
+.btn-secondary.dropdown-toggle:hover{background-color:#962071 !important}
+
+ div.dt-button-collection a.dt-button.active:not(.disabled) { color: black;}
+
+.form-inline .form-group{
+	
+margin-bottom: 5px;
+margin-right: 10px;
+}
+.form-control{
+font-size: 16px;
+height: auto;
+
+}
+
+div.dataTables_wrapper div.dataTables_length select{ font-size: 12px; height: 27px; margin-top: -4px; text-transform: capitalize;}
+
+
+.multiselect {
+  width: 200px;
+}
+
+.selectBox {
+  position: relative;
+}
+.selectBox select {
+  
+  font-weight: bold;
+}
+
+.overSelect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#checkboxes {
+width: 180px;
+  display: none;
+  border: 1px #dadada solid;
+}
+
+#checkboxes label {
+  display: block;
+}
+
+#checkboxes label:hover {
+  background-color: #f5f5f5;
+}
+
+#multiselect{
+    display: block;
+   
+    height: calc(2.25rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;  
+    text-transform: capitalize;
+    }
+    
+    input[type=checkbox], input[type=radio]{
+    margin-right: 5px;}
+    
+     .elemsrc .form-group{width: 12%}
+    .elemsrc .form-control{  font-size: 14px; height: 30px; padding-top:4px; margin-right: 5px; width: 100%; }
+
+	 .elemsrc .form-group select .btn-group{ width: 100%;}
+    #multiselect{height: 30px; font-size: 14px; padding-top:2px; }
+    
+    table.dataTable tbody tr.selected {
+    background-color: #e6c2ef;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before{
+   top: 9px;
+    left: 4px;
+    height: 15px;
+    width: 15px;
+    display: block;
+    position: absolute;
+    color: white;
+    border: 2px solid white;
+    border-radius: 14px;
+    box-shadow: 0 0 3px #444;
+    box-sizing: content-box;
+    text-align: center;
+    text-indent: 0 !important;
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 14px;
+  font-family: FontAwesome;
+    content: "\f0da";
+    background-color: #702283;
+}
+
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
+    content: "\f0d7";
+    background-color: #702283;
+}
+
+
+table.dataTable.table-sm .sorting:before, table.dataTable.table-sm .sorting_asc:before, table.dataTable.table-sm .sorting_desc:before {
+    top: 5px;
+    right: 0.85em;
+    display: none;
+}
+
+table.dataTable.table-sm .sorting:after, table.dataTable.table-sm .sorting_asc:after, table.dataTable.table-sm .sorting_desc:after{
+	  display: none;
+}
+
+.dataTables_length , .dataTables_info{
+	text-transform: capitalize;
+}
+
+ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dataTables_empty {
+    text-transform: capitalize;
+}
+
+
+.elemsrc .btn-group { width: 100%;}
+ul li .multiselect-item .filter .active{margin-bottom: 5px;}
+ul li  .input-group{flex-wrap:nowrap;}
+
+ul .input-group-addon {display: none; }
+ul .input-group-btn .btn{ padding: 8px; margin-left:-6px;}
+
+.elemsrc  ul  { height: 200px; overflow-y: scroll;}
+
+.ng-animate.no-animate {
+    transition: 0s none;
+    -webkit-transition: 0s none;
+    animation: 0s none;
+    -webkit-animation: 0s none;
+}
+</style>

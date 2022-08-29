@@ -1,0 +1,28 @@
+package com.jwt.model;
+
+import java.math.BigDecimal;
+
+public class ExpectedCashOnShipment {
+private String driver_id;
+public String getDriver_id() {
+	return driver_id;
+}
+public void setDriver_id(String driver_id) {
+	this.driver_id = driver_id;
+}
+public BigDecimal getExpected_money() {
+	return expected_money;
+}
+public void setExpected_money(BigDecimal expected_money) {
+	this.expected_money = expected_money;
+}
+public BigDecimal getReconciliated_money() {
+	return reconciliated_money;
+}
+public void setReconciliated_money(BigDecimal reconciliated_money) {
+	this.reconciliated_money = reconciliated_money;
+}
+private BigDecimal expected_money;
+private BigDecimal reconciliated_money;
+
+}

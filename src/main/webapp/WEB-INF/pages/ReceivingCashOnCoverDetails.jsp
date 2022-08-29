@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+         <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+   
+   <title> <spring:message code="ReceivingCashOncaoverdetails"/></title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+    <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+   
+       <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+   
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+          <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+     
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+	 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+	   <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+	    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+	 
+	 <style type="text/css">
+	  #logoprint
+  {
+ display: none;
+  }
+  #print_div{display:none;}
+  #nodust_misr{visibility:hidden;}
+  #date_time_now{visibility:hidden;}
+	 </style>
+ <style type="text/css" media="print">
+
+
+  @page { size:A4 ; }
+  
+  @media print {
+   #nodust_misr{visibility:visible;}
+  #date_time_now{visibility:visible;}
+  #title_page
+  {
+  display:none;
+  }
+  #logoprint
+  {
+  display: block;
+  }
+  #printBtn {
+    display: none;
+  }
+  #submitBtn {
+    display: none;
+  }
+  #display_data
+  {
+  display:none;
+  }
+  #links{
+  display: none
+  }
+  #print_div{display:contents;}
+ #navBar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+}
+</style>
+</head>
+
+<body class="fixed-top">
+<div id="navBar">
+
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="HideButton"/>
+	 </jsp:include>
+   </div>
+    
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+	 <div id="sidemenu">
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    </div>
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul id="links"class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                       <li>
+                           <a href="ReceivingCashOnCover"><spring:message code="ReceivingCahsoncoverlbl"/> </a><span class="divider">&nbsp;</span>
+                       </li>
+                         <li>
+                           <a href="ReceivingCashOnCoverDetails?driver_id=${data.driver.USER_NAME}&shipment_id=${data.shipment_id}"><spring:message code="ReceivingCashoncoverdetails"/> </a><span class="divider-last">&nbsp; &nbsp;</span>
+                       </li>
+                     
+                  </ul>
+                
+				  
+				   
+               </div>
+            </div>
+       
+	   		                 <img src="resources/assetsnodust/img/logored.png" alt="logo NODUST" style=" width: 25%;  float: right; margin-right:35%;   margin-top: -10px ; " id="logoprint">
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                        <div class="widget-title" id="title_page">
+                           <h4><spring:message code="ReceivingCashOncaoverdetails"/></h4>
+                        </div>
+                        
+						<div class="widget-body" style="text-align: left;">
+			
+                            
+                       		<table width="100%" >
+<tr>
+<td>
+<div class="space10"></div>
+<div class="widget-title">
+                           <h4> <spring:message code="ShipemntsData_Page_Title"/></h4>
+                        </div>
+                        
+<div class="row-fluid invoice-list" style="border:outset;">
+                              
+                             <div class="row-fluid">
+                                
+                                    <div style="float:left;width:40%;"> <h5 style="margin-left:5px;"><strong><spring:message code="warehousename" /></strong>
+                                     ${data.wareHouseName} 	</h5></div>
+                                
+                                  <div style="float:left;width:30%;"> <h5 ><strong><spring:message code="Agentname" /> </strong>
+                                     ${data.agentName}  	</h5></div>
+                                    <div style="float:left;with:30%;"> <h5 ><strong><spring:message code="Date" /> </strong>
+                                      ${data.date_Recon} 	</h5></div>
+                               <div style="float:left;width:50%;"> <h5 style="margin-left:5px;"><strong><spring:message code="Drivername" /></strong>
+                                      ${data.driver.FULL_NAME_EN}	</h5></div>
+                                      <div style="float:left;width:50%;"> <h5 ><strong><spring:message code="RelatedShipmennts" /></strong>
+                                     ${data.related_shipments} 	</h5></div>
+                                      <div style="float:left;width:100%;"> <h5 style="margin-left:5px;"><strong><spring:message code="areaName" /> </strong>
+                                      ${data.area_name} 	</h5></div>
+                                      <div id="print_div">
+                                     <div style="float:left;width:50%;">
+                                     <strong style="margin-left:5px;"><spring:message code="CashOnCover.CashAccount"/></strong>
+                                     <h5 id="cash_account_val" style="display:inline-block;"></h5>
+                                     </div>
+                                     <div style="float:left; width:50%;">
+                                     <strong><spring:message code="CashOnCover.ExpectedCash"/></strong>
+                                     <h5 id="expected_cash_val" style="display:inline-block;"></h5>
+                                     </div>
+                                     
+                                     <div style="float:left;width:50%;">
+                                     <strong style="margin-left:5px;"><spring:message code="CashOnCover.ReconciledCash"/></strong>
+                                     <h5 id="reconciled_cash_val" style="display:inline-block;"></h5>
+                                     </div>
+                                      <div style="float:left;width:50%;">
+                                     <strong><spring:message code="CashOnCover.ActualCash"/></strong>
+                                     <h5 id="actual_cash_val" style="display:inline-block;"></h5>
+                                     </div>
+                                     </div>
+                             </div>  
+                             
+                                    
+</div>    
+                                
+                            
+                        </td></tr></table>      
+                        
+                          
+                      
+                     
+
+                               
+                                
+                    
+                       
+                         <form:form  name="submitForm" modelAttribute="data">
+                   
+                            <div class="row-fluid">
+                            <form:hidden path="assignDate"/>
+                            <form:hidden path="shipment_id"/>
+                            <form:hidden path="agentName"/>
+                            <form:hidden path="wareHouseName"/>
+                            <form:hidden path="driver.USER_NAME"/>
+                            <form:hidden path="driver.FULL_NAME_EN"/>
+                            <form:hidden path="driver.FULL_NAME_AR"/>
+                       <form:hidden path="shipment_id"/>
+                            </div>
+                       <div class="space20"></div> 
+                       <div class="clearfix"></div>
+                       
+                       
+                       <div class="row-fluid" id="display_data">
+                     
+                                <div class="span6 invoice-block pull-right">
+                                    <ul class="unstyled amounts">
+                                       <li>  <strong class="span4"><spring:message code="CashOnCover.CashAccount"></spring:message></strong> 
+                                       <form:select disabled="true" id="accountSelect" required="true"  path=""  class= " ">
+										 <c:forEach items="${data.dirty_accounts}" var="account" varStatus="vs">
+										  <option value="${account.product_sku}"<c:if test="${account.product_sku eq data.selected_product_id}">selected="selected"</c:if> >${account.product_name}</option>										   
+								     </c:forEach>
+									    </form:select >
+									    <c:forEach items="${data.accounts}" varStatus="vs">
+									     <form:hidden path="accounts[${vs.index}].facility_id"/>
+		                                    <form:hidden path="accounts[${vs.index}].product_id"/>
+		                                    <form:hidden path="accounts[${vs.index}].total_stock_quantity"/>
+		                                    <form:hidden path="accounts[${vs.index}].product_name"/>
+		                                    <form:hidden path="accounts[${vs.index}].product_sku"/>
+		                                    <form:hidden path="accounts[${vs.index}].dms_product_id"/>
+								        	</c:forEach>
+									    </li>
+                                      
+								     
+                                        <li><strong class="span4"><spring:message code="CashOnCover.ExpectedCash"/></strong> <form:input id="expected" path="expectedCash" readonly="true" type="number"  name="expected" /> </li>
+                               <!-- 
+                                  <table class="table table-striped table-bordered   table-advance table-hover table-responsive" style="margin-bottom: 5px !important;" >
+                                     <thead>
+                                 <tr>
+                                 <th><spring:message code="Item"/></th>
+                                 <th><spring:message code="Value"/></th>
+                                 </tr>
+                                 </thead>
+                                 <tbody>
+                                 <tr>
+                                 <td><spring:message code="RentTotal"/></td>
+                                 <td><strong>${total_rent}</strong></td>
+                                 </tr>
+                                 <tr>
+                                 <td><spring:message code="SalesPromo"/></td>
+                                 <td> <strong>${sales_promos}</strong></td>
+                                 </tr>
+                                 <tr>
+                                 <td><spring:message code="Corporateinvoices"/></td>
+                                   <td><strong>${corporate_invoice}</strong></td>
+                                 </tr>
+                                 <tr>
+                                 <td><spring:message code="Total"/></td>
+                                   <td><strong>${total_expected}</strong></td>
+                                 </tr>
+                                 </tbody>
+                                 </table>
+                                  -->
+                              
+                              
+                              
+                                         <li><strong class="span4"><spring:message code="CashOnCover.ReconciledCash"/></strong> <form:input path="reconciledCash" readonly="true" type="number"  name="reconciliated" /> </li>
+                                
+                                        <li><strong class="span4"><spring:message code="CashOnCover.ActualCash"/></strong> <form:input id="actualCash" path="actualCash"  type="number"   min="1.0" required="true"/></li>
+                                 
+                                    </ul>
+                            
+                                </div>
+                            </div>
+                            <br> <br> <br>   
+                        <div  class="row-fluid  " > 
+                            <strong id="nodust_misr" style="text-align:left; margin-left:25px;"><spring:message code="MisrNoDust"/></strong>
+                       
+                        <strong id="date_time_now" style="text-align: center; margin-left:200px;"> </strong>
+                        </div>
+                    <div class="space20"></div> 
+                         <div class="clearfix"></div>
+                         
+                            <div class="row-fluid  ">
+                                                         <button  id="submitBtn" type="button" onclick="Submit_Data()" class="btn btn-success pull-right green mright5 "><i class="icon-save icon-white"></i> <spring:message code="Submit"/></button>   
+                            
+                             <button type="button" id="printBtn" disabled class="btn btn-primary pull-right" onclick="print_data();" style="margin-right:5px;"><i class="icon-print  icon-white"></i> <spring:message code="Print"/></button>   
+                            
+                            </div>         
+                       </form:form>
+                    
+                   
+						 </div>
+						 
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            
+           
+            </div>
+          
+         </div>
+   
+	        </div>
+                            
+ 
+ 
+   <div id="footer">
+       &copy; <spring:message code="CopyRights"/>
+   
+   </div>
+ <script>
+ function Submit_Data()
+ {
+	 var acc=document.getElementById("accountSelect").options.length;
+	 console.log("length: "+acc);
+	 var validation=document.getElementById("actualCash").reportValidity();
+	 var cash_amount=document.getElementById("actualCash").value;
+	 console.log(validation);
+	 if(validation==true||acc!= '0'||validation!=false)
+		 {
+		 console.log(acc);
+		 if(acc=='0')
+		 {
+		 console.log(acc);
+		 swal("Error","Please Check Account Selected !","error");
+		 }
+		 else
+			 {
+			 if(validation==true&&validation!=false&&cash_amount>0)
+			 { Submit_form();}
+			 }
+		 }
+	 else
+		 {
+		 if(acc=='0')
+			 {
+			 console.log(acc);
+			 swal("Error","Please Check Account Selected !","error");
+			 }
+		 }
+ }
+ function print_data()
+ {
+	 var today = new Date();
+	  var date=today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+	  var hours=today.getHours();
+	  	 if(hours>12)
+	  		 {
+	  		 hours=hours-12;
+	  		 }
+   var time = hours + ":" + today.getMinutes() + ":" + today.getSeconds();
+   var dateTime = date+'   '+time;
+   document.getElementById("date_time_now").innerText=dateTime;
+	 var account_Select=document.getElementById("accountSelect");
+	 var account_val=account_Select.options[account_Select.selectedIndex].text;
+	 document.getElementById("cash_account_val").innerHTML=account_val;
+	 var expected_val=document.getElementById("expected").value;
+	 document.getElementById("expected_cash_val").innerHTML=expected_val;
+	 var reconciled_val=document.getElementById("reconciledCash").value;
+	 document.getElementById("reconciled_cash_val").innerHTML=reconciled_val;
+	 var actual_cash=document.getElementById("actualCash").value;
+	 document.getElementById("actual_cash_val").innerHTML=actual_cash;
+	 window.print();
+ }
+ function Submit_form()
+ {
+	 document.getElementById("submitBtn").disabled = true;
+	 var accounts=document.getElementById("accountSelect");
+	 var account_sku=accounts.value;
+	 var driver_id='${data.driver.USER_NAME}';
+	 var actual_amount=document.getElementById("actualCash").value;
+	 var planned_amount=document.getElementById("expected").value;
+	 var agent_name='${data.agentName}';
+	 var ship_id='${data.shipment_id}';
+	 var recon_amount='${data.reconciledCash}';
+	 var cashCoverForm={
+			 "sku_selected":account_sku,
+			 "selected_product_id":'${data.selected_product_id}',
+			 "driver_id":driver_id,
+			 "actualCash":actual_amount,
+			 "expectedCash":planned_amount,
+			 "agentName":agent_name,
+			 "shipment_id":ship_id,
+			 "reconciledCash":recon_amount
+	 }
+	 console.log(cashCoverForm);
+	 var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			
+
+			if (this.readyState == 4 && this.status == 200) {
+			var resp=this.responseText;
+			if(resp=="true")
+				{
+				'${req_state}'=="done";
+				document.getElementById("actualCash").disabled = true ;
+	 	    	//document.getElementById("accountSelect").disabled = true ;
+
+	 	    	
+
+	 	    	swal("<spring:message code="ShipmentList.Success.Title"/>","<spring:message code="ReceivingCashOnCoverSubmittedSuccessfully"/>","success");
+	 	    	
+	 	    	/*$.alert({
+	               title: "Success",
+	   		    content:"Receiving Cash On Cover Submitted Successfully !",
+	               }); */
+	 	    	document.getElementById("submitBtn").disabled = true;
+	 	    	document.getElementById("printBtn").disabled = false;
+				}
+			else if(resp=="ReconExist")
+				{
+				swal("<spring:message code="ShipmentList.Error.Title"/>","<spring:message code="DriveralreadyhasReconciliationCashShipment"/>","error");
+				 /* $.alert({
+                      title: "Cash On Cover Not Submited Successfully",
+          		    content:"Driver already has Reconciliation Cash Shipment",
+                      }); */
+				}
+			else if(resp=="cashnot_addedonrecon")
+				{
+				swal("Error","You have Opened Reconciliation without cash , Please add cash to this first ","error");
+				}
+			else if(resp=="AmountsAdded")
+				{
+				swal("Error","You have added Cash for this Driver Before !","error");
+				}
+			else
+				{
+				swal("<spring:message code="ShipmentList.Error.Title"/>","<spring:message code="CashOnCoverNotSubmitedSuccessfully"/>","error");
+
+
+				 /* $.alert({
+			                        title: "Cash On Cover Not Submited Successfully",
+			            		    content:"Please insert correct data",
+			                        }); */
+			 	      document.getElementById("submitBtn").disabled = false;
+				    	document.getElementById("printBtn").disabled = true ;
+			 	    	//document.getElementById("accountSelect").disabled = false ;
+
+				}
+			}
+		}
+		xhttp.open("POST","submitReceivingCashOnCover", true);
+		 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		 xhttp.send(JSON.stringify(cashCoverForm));
+ }
+ </script>
+   <script>
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      	
+      });
+      
+      
+     
+      
+      $(document).ready(function() {
+  	    $('.js-example-basic-multiple').select2();
+
+  	 var x='${req_state}';
+  	 if(x=="done")
+  		 {
+  		document.getElementById("submitBtn").disabled = true;
+	    	document.getElementById("printBtn").disabled = false;
+	    	document.getElementById("actualCash").disabled = true ;
+  		 }
+  	});
+   </script>
+   <script type="text/javascript">
+   
+   $(document).ready(function() {
+ 	    $('.js-example-basic-multiple').select2();
+ 	    $('#tableform').on('keyup keypress', function(e) {
+	    	  var keyCode = e.keyCode || e.which;
+	    	  if (keyCode === 13) { 
+	    		  
+	    	    e.preventDefault();
+	    	   /* if($("#submitBtn").is(":disabled"))
+	    	    	{}
+	    	    else{
+	    	    document.getElementById("submitBtn").click();
+	    	    }
+	    	    */
+	    	    return false;
+	    	  }
+	    	});
+   });
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

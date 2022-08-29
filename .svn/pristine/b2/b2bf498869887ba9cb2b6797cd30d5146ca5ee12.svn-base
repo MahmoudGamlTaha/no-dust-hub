@@ -1,0 +1,36 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.PayrollVendorDAO;
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.PayrollPayment;
+
+
+@Service
+@Transactional
+public class PayrollVendorServiceImpl implements PayrollVendorService {
+
+	@Autowired
+	private PayrollVendorDAO payrollVendordao;
+	
+	@Override
+	public FinancialAccount GetPayrollAccount(int fac_id) {
+		return payrollVendordao.GetPayrollAccount(fac_id);
+	}
+
+	@Override
+	public List<PayrollPayment> getPayrollPayment() {
+		return payrollVendordao.getPayrollPayment();
+	}
+
+	@Override
+	public String submitPayroll(int facility, String user_name, double total, String payments) {
+		return payrollVendordao.submitPayroll(facility, user_name, total, payments);
+	}
+
+}

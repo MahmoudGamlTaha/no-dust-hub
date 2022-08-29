@@ -1,0 +1,21 @@
+package com.jwt.service;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.Shipment;
+
+public interface CashInOutService {
+	
+	public String submitCashInOut(String financialAcc, String user , double amount , String driver_userName );
+	public List<FinancialAccount> Get_Financial_Accounts(int fac_id);
+    public String transferInternalCash(int facility_id , String logged_user ,String source_account, String destination_account, double amount , String comment);
+    public String Submit_External_Cash(int facility_id, String logged_user, String account_sku, java.util.Date req_date,Date transfer_date, double amount, String bank_name, String bank_account_no, String attachment) ;
+    public List<Shipment> Get_Cash_Transfer_Shipments(int facility_id);
+    public String Update_attachment(int shipment_id, String bank_attachment);
+    public String Get_Agent_Name(int shipment_id);
+    public String Get_Account(int shipment_id);
+    public String get_Account_bby_id(String cash_account_id);
+}

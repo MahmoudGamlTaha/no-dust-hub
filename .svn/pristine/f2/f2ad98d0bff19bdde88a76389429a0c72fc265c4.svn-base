@@ -1,0 +1,22 @@
+package com.jwt.dao;
+
+import java.util.List;
+
+import com.jwt.model.DirtyShipmentData;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.Products;
+import com.jwt.model.Treatment;
+
+public interface StockManagmentDAO {
+
+	public List<InventoryProduct> getAllProducts(int facility_id);
+	public String submitConvetProducts(int facility_id, String products , String username);
+	public List<DirtyShipmentData> getConvertRequests(int facility_id);
+	public List<InventoryProduct> getConvertReqProducts(int convert_id);
+	public DirtyShipmentData getConvertReqWith(int id);
+	public String approveRejectConvertRequest(long shipment_id , int facility_id, String logged_user, String approval_val );
+	public List<Products>get_product_list(int type,int fac_id);
+	public String Submit_Conversion(int fac_id,String logged_user,String from_type,String to_type,String prod_data);
+	public List<Treatment>Get_treatment_List();
+
+}

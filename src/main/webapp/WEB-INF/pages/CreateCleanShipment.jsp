@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+             <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+   
+   <title> <spring:message code="SendCleanShipment"/></title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+   
+   
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+       <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+       
+   
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+          <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+     
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+
+	 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+	   <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+	     <script type="text/javascript" src="resources/assetsnodust/js/jasontable.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+<style type="text/css">
+#astr
+{
+    color: red;
+    font-size: large;
+     
+    
+}
+#type_val{
+visibility:hidden;
+}
+#nodust_misr
+{
+visibility:hidden;
+}
+#data
+{
+visibility:hidden;
+}
+#cancel_btn
+{
+visibility:hidden;
+}
+#example
+{
+visibility:hidden;
+}
+#tableBtns
+{
+visibility:hidden;
+}
+#submitBtn
+{
+visibility:hidden;
+}
+#printBtn
+{
+visibility:hidden;
+}
+#date_time_now{visibility:hidden;}
+ #sig{visibility:hidden;}
+   .disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+#logoprint{visibility:hidden; display:none;}
+#dest_val
+{
+display:none;
+}
+#print_tbl
+{
+visibility:hidden;
+}
+#warehouse_name_div
+  {
+  margin-left:5px;
+  float:left;
+  width:35%;
+  }
+  
+  #agent_name_div
+  {
+  float:left;
+  width:30%;
+  }
+  #date_div
+  {
+  float:left;
+  width:30%;
+  }
+#driver_val
+{
+display:none;}
+@font-face {
+  font-family: Arial, Helvetica, sans-serif;;
+  src: url(ArbFONTS-Abdo-salem-Bold.ttf);
+}
+
+   </style>
+   	 
+ <style type="text/css" media="print">
+
+ @page { size:A4 ;  }
+  
+  @media print {
+  #driver_val
+{
+visibility:visible;
+display:inline-block;
+margin-top:8px;
+}
+  #date_time_now{visibility:visible;}
+  #sig{visibility:visible;}
+  #astr{display:none;}
+  table td.first { display: none; }
+  table th.first { display: none; }
+  #printBtn {
+    display: none;
+  }
+  #driver_div
+  {
+  float:left;
+  width:50%;
+  }
+  #dest
+  {
+  float:left;
+  width:50%;
+  }
+  #type_style
+  {
+  display:none;
+  }
+  #example
+  {
+  display:none;
+  }
+  #nodust_misr
+{
+visibility:visible;
+}
+#type_val{
+visibility:visible;
+display:inline-block;
+margin-top:8px;
+}
+  #verif_div
+  {
+  display:none;
+  }
+  #cancel_btn
+  {
+  display:none;
+  }
+  #submitBtn {
+    display: none;
+  }
+  #dest_style
+  {
+  display:none;
+  }
+  
+  #links{
+  display: none
+  }
+ #navBar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+ #print_tbl
+ {
+ visibility:visible;
+ }
+ #tableBtns{
+  display: none
+ }
+ 
+ #showDate{ color: black;}
+  #titlepage{ display: none;}
+}
+
+#logoprint{visibility: visible;display:block;}
+#driver_style
+{
+display:none;
+}
+#dest_val
+{
+visibility:visible;
+display:inline-block;
+margin-top:8px;
+}
+#contentpage{ margin-top: -50px;}
+
+ #Header, #Footer { display: none !important; color: white !important ; background: red; }
+#footer{ display: none;  }
+
+@page {	margin:0;}
+body{ margin: 1.6cm}
+
+
+
+}
+</style>
+
+<style>
+
+</style>
+</head>
+
+<body class="fixed-top">
+
+<div id="navBar">
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="HideButton"/>
+	 </jsp:include>
+   </div>
+    
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+   
+   <div id="sidemenu">
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    </div>
+    
+
+    
+	
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul id="links"class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                   
+                         <li>
+                           <a href="CreateCleanShipment"><spring:message code="SendCleanShipment" /> </a><span class="divider-last">&nbsp; &nbsp;</span>
+                       </li>
+                     
+                  </ul>
+                
+				  
+				   
+               </div>
+            </div>
+       
+		                 <img src="resources/assetsnodust/img/logored.png" alt="logo NODUST" style=" width: 25%;  float: right; margin-right:5%;   margin-top: -20px ; " id="logoprint">
+	   
+         
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                        <div class="widget-title" id="titlepage">
+                           <h4> <spring:message code="SendCleanShipment" /></h4>
+                        </div>
+                        
+						<div class="widget-body" style="text-align: left;">
+
+
+		<table width="100%" >
+<tr>
+<td>
+<div class="widget-title" >
+                           <h4> <spring:message code="ShipemntsData_Page_Title" /></h4>
+                        </div>
+<div class="row-fluid invoice-list" style="border:outset;">
+                              
+                             <div class="row-fluid">
+                              
+                                    <div id="warehouse_name_div"> <h5 ><strong><spring:message code="warehousename" /></strong>
+                                     ${clean_form.warehouse_name} 	</h5></div>
+                             
+                                
+                                   
+                               
+                               <div id="date_div"> <h5 ><strong><spring:message code="Agentname" /></strong>
+                                   ${clean_form.agent_name}  	</h5></div>
+                                    <div id="agent_name_div"> <h5 ><strong> <spring:message code="Date" /> </strong>	
+                                     ${clean_form.req_date} </h5></div>
+                             </div>
+                                
+                            <div class="row-fluid">
+                                <div class="span6">
+                                      <div style="float: left;" >
+                           <h5 style="display: inline-block;  margin-left: 5px; "><strong><spring:message code="ProductType_"/></strong></h5>                          
+                           <span id="astr" style="padding: 5px;"> * </span></div>
+                           <h5 id="type_val" style="display:inline-block;"></h5>
+<div id="type_style" style="float: left; margin-left:30px;" > 
+                                    	  <select  id="SelectType" name="type"  class= "span6 js-example-basic-multiple" style="width: auto;" >
+                                    	                        <option value="No_value"><spring:message code="PleaseSelect"/></option>
+                                    	                        <c:forEach items="${types}" var="type" varStatus="vs">
+                                    	                        <option value="${type.type_id}">${type.type_name}</option>
+                                    	                        </c:forEach>
+                                    	                         </select>
+                                    	                         
+                                </div>
+                                 
+                                	  <button type="button" id="next_btn" onclick="get_products()" class="btn btn-success pull-right green mright5"><i class="icon-save icon-white"></i> <spring:message code="Next"/></button>
+                          
+                                </div>
+                            <div class="clearfix"></div>
+                            	 <div id="data" >
+ 							<div>
+                            <div id="driver_div" class="span6">
+                                    <div style="float: left;  margin-left: 5px; " > <h5 style="display: inline-block;"> <strong><spring:message code="Drivername" />	</strong></h5> 
+                                    <span id="astr" style="padding: 5px;"> * </span></div>
+                               <h5 id="driver_val"></h5>
+                                      <div  id="driver_style" style="margin-left:130px; margin-top:5px;"> 
+                                    	  <select  id="SelectDriver" name="driver" onchange="check_driver(this)" class= "span6 js-example-basic-multiple" style="width: auto;" >
+                                    	  <option><spring:message code='PleaseSelect'/></option>
+								     <c:forEach var="driver" items="${clean_form.driver_lst}" varStatus="vs">
+                                        <option value="${driver.user_name}">${driver.full_name_en} , ${driver.user_name}</option>
+                                        </c:forEach>
+							  </select >
+                           </div>
+                               
+                                </div>
+                               <div id="dest" class="span6">
+                           <div style="float: left;" >
+                           <h5 style="display: inline-block;  margin-right: 5px;"><strong><spring:message code="To_"/></strong></h5>                          
+                           <span id="astr" style="padding: 5px;"> * </span></div>
+                           <h5 id="dest_val"></h5>
+                           <div  id="dest_style"> 
+                           <select id="destination" class= "span6 js-example-basic-multiple"  style="width: auto;"   >
+                           <option><spring:message code='PleaseSelect'/></option>
+                           <c:forEach var="fac" items="${clean_form.facilities }" varStatus="vs">
+                           <option value="${fac.id}">${fac.facility_name}</option>
+                           </c:forEach>
+                           </select>
+                           </div>
+                           </div>
+                             
+                                </div>
+                               
+                          
+                                 <div  id="verif_div" class="span6" style="float: left; margin-left: 0px; margin-top: 5px;">
+                                    <div style="float: left;  margin-left: 5px; margin-right:10px;"> 
+                                    <h5 style="display: inline-block;  margin-right: 5px;"> <strong><spring:message code="VerficationCode_" />	</strong></h5> 
+                                    <span id="astr" style="padding: 5px;"> * </span></div>
+                                    <div  >
+                                    
+                               <input id="verif_code" onchange="Check_code()" required="required" class="form-control form-control-sm" style="padding: 3px 5px;"/>
+                           
+                                    </div>
+                                </div>
+                                <div>
+                                  
+                           
+                           
+                           </div>
+                               </div>
+                               
+                                    </div>
+                                    
+
+                               
+                      </div>
+                      
+                                
+                       
+</td>
+</tr>
+</table>
+ 					
+
+
+                         
+                  							               
+                 
+                    <div class="space10"></div>
+                            <div id="tableBtns" class="row-fluid  ">
+    
+			          <button id="deleterows" class="btn btn-danger pull-right delete-row mright5 "  style="margin-bottom: 5px; margin-right: 5px;"><i class="icon-trash icon-white mright5"></i><spring:message code="DeleteRow" /></button>  
+				  
+                           <button id="addrows" class="btn btn-success pull-right add-row mright5 " style="margin-bottom: 5px; "><i class="icon-plus icon-white mright5"></i><spring:message code="AddRow" /></button>
+                                             
+                           <div class="space10"></div>                             
+                            </div>         
+                    
+                        
+                   
+			
+			               <form:form id="tableform" modelAttribute="clean_form" >
+			
+                            <div class="row-fluid">
+                   
+                                <table id="example" class="table table-striped table-bordered   table-advance table-hover table-responsive " style="width:80%; margin:auto;">
+                                    <thead>
+                                    <tr>
+                                        <th class="first"><input type="checkbox" id="selectall" onchange='select_all()'/></th>
+                                        <th><spring:message code="ProductName" /></th>
+                                        <th class="treatment"><spring:message code="ProductReconciliation.ProductTable.Treatment"/></th>
+                                   <th  Data-override="total_stock_quantity"><spring:message code="CurrentQuantity" /></th>
+                                        <th><spring:message code="Quantity" /></th>
+                                        <th style="display: none;">product_id</th>
+                                     	<th style="display: none;">quantity</th>
+                                     	<th style="display:none;">product_name</th>
+                                    </tr>
+                                    
+                                    </thead>
+                                    <tbody>
+                                    <tr class="odd gradeX ">
+                                      <td class="first" ><input type='checkbox' name='record' disabled="disabled"></td>
+                                        <td>
+                                        <form:select  id="" onchange="changingproduct(this)" path="" >
+                                    	  <option><spring:message code='PleaseSelect'/></option>
+                                        <c:forEach var="product" items="${clean_form.prod_lst}" varStatus="vs">
+                                        <option value='${product.product_sku},${product.total_stock_quantity},${product.treatment_name}'>${product.product_name},${product.treatment_name}</option>
+                                        </c:forEach>
+								     </form:select></td>
+								     <td></td>
+                                          <td ></td>
+                                        
+                                        <td><input required="required" min="1" onchange="changeQuantity(this)" type="number" class="span6" /></td>
+                                <td style="display:none;"></td>
+                                   
+                                       <td style="display:none;"></td>
+                                        <td style="display:none;"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="space20"></div>
+                                <table id="print_tbl" class="table table-striped table-bordered   table-advance table-hover table-responsive " style="width:80%; margin:auto;">
+                                <thead>
+                                <tr>
+                                <th><spring:message code="product_only"/></th>
+                                <th><spring:message code="ProductReconciliation.ProductTable.Quantity"/></th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                                </table>
+                            </div>
+                       <div class="space20"></div> 
+                       <div class="clearfix"></div>
+                                             
+                  
+                            <div class="row-fluid  ">
+        <input id="auth_driver" style="display:none;"/>
+    <input id="check_auth_done" style="display:none;"/>
+                               <button type="button" id="submitBtn" onclick="submitFunction()" class="btn btn-success pull-right  mright5" style="margin-bottom: 5px;"><i class="icon-save icon-white"></i> <spring:message code="Submit" /></button>
+    				                              	                             	 	      <button type="button" onclick="Back_Types()" class="btn btn-success pull-right  green mright5" id="cancel_btn" style="display='none'; margin-right: 4px; "><i class="icon-save icon-white"></i> <spring:message code="Back"/></button>
+    
+				          <button type="button" id="printBtn" style="margin-right:5px;" disabled="disabled" class="btn btn-primary pull-right" onclick="print_data();"><i class="icon-print  icon-white"></i> <spring:message code="Print" /></button>   
+				  
+                                             
+                                                     <br><br><br>
+                                                          <div id="sig" class="row-fluid  ">
+                 
+                 <div id="W_A"  style="width: 25% ; float: left; text-align: center;">
+                     <strong ><spring:message code="warehouseAgent"/></strong>
+                 
+                  </div>
+                  
+                   <div id="W_M" style="width: 25% ; float: left; text-align: center;">
+                           <strong ><spring:message code="warehouseManager"/></strong>
+                 
+                  </div>
+                  
+                      <div  id="D" style="width: 25% ; float: left; text-align: center;">
+                            <strong ><spring:message code="Driver"/></strong>
+                 
+                  </div>
+                  
+                   <div id="S"  style="width: 25% ; float: left; text-align: center;">
+                              <strong ><spring:message code="Security"/></strong>
+                 
+                  </div>
+                  
+                </div>   
+                            </div>             
+                    </form:form>
+                   			
+						 </div>
+						 <br> <br> <br>   
+                        <br> <br> <br>   
+                        <div  class="row-fluid  " > 
+                            <strong id="nodust_misr" style="text-align:left; margin-left:25px;"><spring:message code="MisrNoDust"/></strong>
+                       
+                        <strong id="date_time_now" style="text-align: center; margin-left:200px;"> </strong>
+                        </div>
+                        
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            
+           
+            </div>
+            
+          
+         </div>
+  
+	
+    </div>
+
+
+   <div id="footer">
+       &copy; <spring:message code="CopyRights" />
+   
+   </div>
+ 
+   <script>
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      	
+      });
+      
+      function Back_Types()
+      {
+    	  document.getElementById('example').style.visibility='hidden';
+    	  document.getElementById('cancel_btn').style.visibility='hidden';
+    	  document.getElementById('submitBtn').style.visibility='hidden';
+    	  document.getElementById('printBtn').style.visibility='hidden';
+    	  document.getElementById('data').style.visibility='hidden';
+    	  document.getElementById('tableBtns').style.visibility='hidden';
+    	  document.getElementById('next_btn').style.visibility='visible';
+    	  document.getElementById('SelectType').disabled=false;
+
+
+
+      }
+      
+    function check_driver(val)
+    {
+    	var d_id=val.value;
+    	var ver_code=document.getElementById("verif_code").value;
+    	if(ver_code=='')
+    		{
+    		
+    		}
+    	else
+    		{
+    		validate_Code();
+    		}
+    }
+      
+      
+      function changingproduct(e) {
+    	  var par=e.value;
+    		var values=par.split(',');
+    		var check_val_text=e.options[e.selectedIndex].text;
+          var idx = e.selectedIndex ; 
+          var rowIndex = e.parentNode.parentNode.rowIndex;
+     
+      var val=e.value;
+      var arr=val.split(',');
+      var myTable = document.getElementById('example');
+      myTable.rows[rowIndex].cells[3].innerText=arr[1];
+      myTable.rows[rowIndex].cells[2].innerText=arr[2];
+      myTable.rows[rowIndex].cells[5].innerText=arr[0];
+      myTable.rows[rowIndex].cells[7].innerText=check_val_text;
+
+
+          
+      }
+      
+      
+      function print_data()
+      {
+    	  var today = new Date();
+		  var date=today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+		  var hours=today.getHours();
+		  	 if(hours>12)
+		  		 {
+		  		 hours=hours-12;
+		  		 }
+ 	   var time = hours + ":" + today.getMinutes() + ":" + today.getSeconds();
+ 	   var dateTime = date+'   '+time;
+ 	   document.getElementById("date_time_now").innerText=dateTime;
+ 	   var table=document.getElementById('example');
+ 	   var row_num=table.rows.length;
+ 	   var type=document.getElementById('SelectType').value;
+ 	   var rows="";
+ 	   for(var x=1;x<row_num;x++)
+ 		   {
+ 		   var product_name="";
+ 		   
+ 			  product_name=table.rows[x].cells[7].innerHTML;
+ 			 
+ 		   var total_quan=table.rows[x].cells[3].innerHTML;
+ 		   var quantity=table.rows[x].cells[6].innerHTML;
+ 		  rows+="<tr>"+
+ 		  "<td>"+product_name+"</td>"+
+ 		  "<td>"+quantity+"</td>"+
+ 		  "</tr>";
+ 		   }
+ 	   $('#print_tbl tbody').html(rows);
+ 	   var type_com=document.getElementById('SelectType');
+ 	   var type_text=type_com.options[type_com.selectedIndex].text;
+ 	   document.getElementById('type_val').innerHTML=type_text;
+ 	   var driv_com=document.getElementById('SelectDriver');
+ 	   var driv_text=driv_com.options[driv_com.selectedIndex].text;
+ 	   document.getElementById('driver_val').innerHTML=driv_text;
+ 	   var dest_com=document.getElementById('destination');
+ 	   var dest_text=dest_com.options[dest_com.selectedIndex].text;
+ 	   document.getElementById('dest_val').innerHTML=dest_text;
+   	   window.print();
+      }
+      
+      function changingwashing(e){
+    	  
+    	  var idx = e.selectedIndex ; 
+          var rowIndex = e.parentNode.parentNode.rowIndex;
+          var strUser = e.options[e.selectedIndex].value;
+          var myTable = document.getElementById('example');
+          myTable.rows[rowIndex].cells[6].innerHTML = strUser;
+      }
+      function changeQuantity(e)
+      {
+          var rowIndex = e.parentNode.parentNode.rowIndex;
+          var myTable = document.getElementById('example');
+          myTable.rows[rowIndex].cells[6].innerHTML = e.value;
+      }
+      
+ function Check_code()
+ {
+	 var select=document.getElementById("SelectDriver").value;
+	 
+
+	 if(select=="Please Select")
+		 {
+		 
+		 }
+	 else
+		 {
+		 validate_Code();
+		 }
+ }
+
+
+      function submitFunction()
+      {
+	    
+    	  var validation = document.getElementById("tableform").reportValidity();
+    	  var validation2=document.getElementById("verif_code").reportValidity();
+    	  var driver_val=document.getElementById("SelectDriver").value;
+    	  var dest_fac=document.getElementById("destination").value;
+    	  var check="";
+  		var x_products_check_select=document.getElementsByTagName("select");
+  		for(var i=0;i<x_products_check_select.length;i++)
+  			{
+  			if(x_products_check_select[i].value=="Please Select")
+  				check="Not_Valid";
+  			}
+  		console.log(check);
+  		if(check=="Not_Valid"||dest_fac=="Please Select"||driver_val=="Please Select")
+  			{
+  			if(driver_val=="Please Select")
+  				{
+  				swal("<spring:message code="ShipmentList.Error.Title" />","<spring:message code="SelectValidDriver" />","error")
+  				/*$.alert({
+  	  				 title: "<spring:message code="ShipmentList.Error.Title" />",
+  	       		    content:"<spring:message code="SelectValidDriver" />",
+  	       		   
+  	  		          }); */
+  				}
+  			else if(dest_fac=="Please Select")
+  				{
+  				swal("<spring:message code="ShipmentList.Error.Title" />","<spring:message code="SelectValidWarehouse" />","error");
+  				/*$.alert({
+ 	  				 title: "<spring:message code="ShipmentList.Error.Title" />",
+ 	       		    content:"<spring:message code="SelectValidWarehouse" />",
+ 	  		          }); */
+  				}
+  			else
+  				{
+  				swal("<spring:message code="ShipmentList.Error.Title" />","<spring:message code="SelectValidProduct" />","error");
+  				/*$.alert({
+	  				 title: "<spring:message code="ShipmentList.Error.Title" />",
+	       		    content:"<spring:message code="SelectValidProduct" />",
+	  		          }); */
+  				}
+  				
+  		
+  			}
+    		else
+ 			{    			
+    			var check_auth_done_or_no=document.getElementById("check_auth_done").value;
+    			var auth_val=document.getElementById("auth_driver").value;
+    			  var validation = document.getElementById("tableform").reportValidity();
+    	    	  var validation2=document.getElementById("verif_code").reportValidity();
+    			if(validation!=false && validation2!=false&&check_auth_done_or_no=='done'&&auth_val=='Auth')
+     		 {
+     	
+     		
+      		var check_authe_driver=document.getElementById("auth_driver").value;
+      		if(check_authe_driver!="Auth")
+ 			{
+      			swal("<spring:message code="ReleasingProducts.validation.title"/>","<spring:message code="ReleasingProducts.validation.content"/>","error");
+ 			/*$.alert({
+	            
+                title: "<spring:message code="ReleasingProducts.validation.title"/>",
+    		    content:"<spring:message code="ReleasingProducts.validation.content"/>"
+                }); */
+ 			document.getElementById("verif_code").focus();
+ 			}
+      		else
+      			{
+      			document.getElementById("verif_code").disabled=true;
+      			document.getElementById("destination").disabled=true;
+     		document.getElementById("submitBtn").disabled = true;
+	    	document.getElementById("SelectDriver").disabled = true;
+  	    	document.getElementById("deleterows").disabled = true;
+  	    	document.getElementById("addrows").disabled = true;
+  	    	$('#tableform input[type="number"]').prop("disabled", true);
+			$('#tableform select').prop("disabled", true);
+			$('#tableform  input[type=checkbox]').prop("disabled", true);
+     		 var table = $('#example').tableToJSON(
+       			  { }
+       			  );
+       	  //alert(table);
+       	  console.log(table);
+       	  var dest_warehouse=document.getElementById("destination").value;
+    	  var Driver_val=document.getElementById("SelectDriver").value;
+    	  var clean_form ={
+    			  "prod_lst" : table ,
+    			  "agent_name":'${clean_form.agent_name}',
+    			  "dest_id":dest_warehouse,
+    			  "driver_id":Driver_val
+    	  };
+    	  
+    	  console.log(clean_form);
+    	var xhttp = new XMLHttpRequest();
+    	xhttp.onreadystatechange = function() {
+
+    	if (this.readyState == 4 && this.status == 200) {
+    		var response= this.responseText;
+    		if(response == "true")
+    			{
+    			document.getElementById("printBtn").disabled=false;
+    			document.getElementById("verif_code").disabled=true;
+         		document.getElementById("submitBtn").disabled = true;
+    	    	document.getElementById("SelectDriver").disabled = true;
+      	    	document.getElementById("deleterows").disabled = true;
+      	    	document.getElementById("addrows").disabled = true;
+      	    	$('#tableform input[type="number"]').prop("disabled", true);
+    			$('#tableform select').prop("disabled", true);
+    			$('#tableform  input[type=checkbox]').prop("disabled", true);	
+    			document.getElementById("printBtn").disabled=false;
+    			document.getElementById("cancel_btn").disabled=true;
+    			/*$.alert({
+    				 title: "<spring:message code="ShipmentList.Success.Title" />",
+         		    content:"<spring:message code="CreateCleanShipmentSubmittedSuccessfully" />",
+    		          }); */
+    			 swal("<spring:message code="ShipmentList.Success.Title" />", "<spring:message code="CreateCleanShipmentSubmittedSuccessfully" />", "success"); 
+    	 }
+    		else{
+    			swal("<spring:message code="ShipmentList.Error.Title" />",response,"error")
+    		/*	$.alert({
+     				 title: "<spring:message code="ShipmentList.Error.Title" />",
+          		    content:response
+     		          }); */
+    			document.getElementById("destination").disabled=false;
+    			document.getElementById("verif_code").disabled=false;
+         		document.getElementById("submitBtn").disabled = false;
+    	    	document.getElementById("SelectDriver").disabled = false;
+      	    	document.getElementById("deleterows").disabled = false;
+      	    	document.getElementById("addrows").disabled = false;
+      	    	$('#tableform input[type="number"]').prop("disabled", false);
+    			$('#tableform select').prop("disabled", false);
+    			$('#tableform  input[type=checkbox]').prop("disabled", false);	
+    			document.getElementById("printBtn").disabled=true;
+    			
+    		}
+    	 }
+    	}
+    	 xhttp.open("POST","SubmitSendCleanShipment", true);
+    	 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    	 xhttp.send(JSON.stringify(clean_form));
+     		 }
+     		 
+     	 
+      
+     		 }
+    			else
+    				{
+    				var check_authe_driver=document.getElementById("auth_driver").value;
+        			var check_auth_done_or_no=document.getElementById("check_auth_done").value;
+
+    	      		if(check_authe_driver!="Auth"&&check_auth_done_or_no=='done')    {
+    	      			swal("<spring:message code="ReleasingProducts.validation.title"/>","<spring:message code="ReleasingProducts.validation.content"/>","error");
+    	      			/*$.alert({
+    	      		
+    		            
+    	                title: "<spring:message code="ReleasingProducts.validation.title"/>",
+    	    		    content:"<spring:message code="ReleasingProducts.validation.content"/>"
+    	                }); */
+    	 			document.getElementById("verif_code").focus();
+    				}
+    				}
+     		 }
+      }
+      
+     
+   </script>
+   
+   <script >
+    $(document).ready(function(){
+  	    $('.js-example-basic-multiple').select2();
+
+        $(".add-row").click(function(index){
+        	
+        	var tbl=document.getElementById("example");
+        	var val0=tbl.rows[1].cells[0].innerHTML;
+        	var val1=tbl.rows[1].cells[1].innerHTML;
+        	var val2=tbl.rows[1].cells[2].innerHTML;
+        	var val3="";
+        	var val4=tbl.rows[1].cells[4].innerHTML;
+        	 var markup = "<tr> "+
+             "<td class='first'><input type='checkbox' name='record'></td>"+
+             " <td>"+val1+"</td>";
+             if(document.getElementById('SelectType').value==1)
+            	 {
+            	 markup+="<td></td>";
+            	 }
+             else
+            	 {
+            	 markup+="<td style='display:none;'></td>";
+            	 }
+             
+             markup +=" <td></td>"+
+             " <td>"+val4+"</td>"+
+             " <td style='display: none;'></td>" +
+             " <td style='display: none;'></td>" +
+             "<td style='display: none;'></td>"+
+             "<td style='display:none;'></td>"
+             "</tr>";
+             $("#example tbody").append(markup);
+        	       
+        });
+        
+        $(".delete-row").click(function(){
+        	var rowCount = document.getElementById('example').rows.length;
+        	
+        	if($("#tableform input:checkbox:checked").length > 0)
+    		{
+        	$.confirm({
+        	    title: '<spring:message code="DeleteRowsMessage" />',
+        		icon:'glyphicon glyphicon-remove-sign',
+        		theme: 'supervan',
+        	    content:'',
+        	    
+        	    buttons: {
+        	    	  
+        	    	
+        	        OK: function () {
+        	        	 $("table tbody").find('input[name="record"]').each(function(){
+				            	if($(this).is(":checked")){
+				            		  var row=this.parentNode.parentNode.rowIndex;
+				   		           // alert(row);
+				   		           if(row>1)
+				   		            	{
+				   		                    $(this).parents(" table tbody tr  ").remove();
+				   		            	}
+				   		            
+				                }
+				            });
+
+        	        },
+        	        cancel: function () {
+        	        }
+        	        
+        	    }
+        	});
+    		}
+
+        });
+             
+    }); 
+    function select_all()
+    {
+    	var check_val=document.getElementById("selectall").checked;
+    	if(check_val==true)
+    		{
+    		var allrows=document.getElementsByTagName("input");
+    		for(var i=1;i<allrows.length;i++)
+    			{
+    			if(allrows[i].type=='checkbox'&&allrows[i].disabled==false)
+    				allrows[i].checked=true;
+    			}
+    		}
+    	else
+    		{
+    		var allrows=document.getElementsByTagName("input");
+    		for(var i=1;i<allrows.length;i++)
+    			{
+    			if(allrows[i].type=='checkbox')
+    				allrows[i].checked=false;
+    			}
+    		}
+    }
+    
+    function get_products()
+    {
+    	var type_val=document.getElementById('SelectType').value;
+    	if(type_val=="No_value")
+    		{
+    		swal("<spring:message code="ShipmentList.Error.Title"/>","<spring:message code="SelectValidType"/>","error");
+    		/*$.alert({
+	            
+                title: "<spring:message code="ShipmentList.Error.Title"/>",
+    		    content:"<spring:message code="SelectValidProduct"/>"
+                }); */
+    		}
+    	else
+    		{
+    		var clean_form={
+    				"dest_id":type_val
+    		};
+    		console.log(clean_form);
+    		var xhttp = new XMLHttpRequest();
+      		xhttp.onreadystatechange = function() {
+      			
+
+      			if (this.readyState == 4 && this.status == 200) {
+      			var resp=this.responseText;
+      			if(resp=="No_Pro")
+    				{
+      				swal("<spring:message code="ShipmentList.Error.Title"/>","<spring:message code="NoProductsAvailableSelectValidType"/>","error");
+    				/*$.alert({
+    		            
+                    title: "<spring:message code="ShipmentList.Error.Title"/>",
+        		    content:"<spring:message code="NoProductsAvailableSelectValidType"/>"
+                    }); */
+
+    				}
+      			else
+      				{
+     				console.log(resp);
+
+     				var products=JSON.parse(resp);
+     				if(document.getElementById("SelectType").value==1)
+     					{
+     				var pro_selection="<select onchange='changingproduct(this)'><option>Please Select</option>";
+     				for(var x=0;x<products.length;x++)
+     					{
+     					pro_selection+="<option value="+products[x].product_sku+','+products[x].total_stock_quantity+','+products[x].treatment_name+">"+products[x].product_name+','+products[x].treatment_name+"</option>";
+     					}
+     				pro_selection+="</select>";
+     				var rows="<tr>"+
+     			    "<td class='first'><input type='checkbox' name='record' disabled='disabled'></td>"+
+                    "<td>"+pro_selection+"</td>"+
+			     "<td class='treatment'></td>"+
+                      "<td ></td>"+
+                    
+                    "<td><input required='required' min='1' onchange='changeQuantity(this)' type='number' class='span6'/></td>"+
+            "<td style='display:none;'></td>"+
+               
+                   "<td style='display:none;'></td>"+
+                    "<td style='display:none;'></td>"+
+                "</tr>";
+                $('#example tbody').html(rows);
+     					}
+     				else
+     					{
+     					
+     					var pro_selection="<select onchange='changingproduct(this)'><option>Please Select</option>";
+         				for(var x=0;x<products.length;x++)
+         					{
+         					pro_selection+="<option value="+products[x].product_sku+','+products[x].total_stock_quantity+','+products[x].treatment_name+">"+products[x].product_name+"</option>";
+         					}
+         				pro_selection+="</select>";
+         				var rows="<tr>"+
+         			    "<td class='first'><input type='checkbox' name='record' disabled='disabled'></td>"+
+                        "<td>"+pro_selection+"</td>"+
+    			     "<td class='treatment' ></td>"+
+                          "<td ></td>"+
+                        
+                        "<td><input required='required' min='1' onchange='changeQuantity(this)' type='number' class='span6'/></td>"+
+                "<td style='display:none;'></td>"+
+                   
+                       "<td style='display:none;'></td>"+
+                        "<td style='display:none;'></td>"+
+                    "</tr>";
+                    $('#example tbody').html(rows);	
+                    var tr=document.getElementsByClassName('treatment');
+ 					for(var x=0;x<tr.length;x++)
+ 						{
+ 						tr[x].style.display='none';
+ 						}
+     					}
+                document.getElementById('example').style.visibility='visible';
+                document.getElementById('SelectType').disabled=true;
+                document.getElementById('next_btn').style.visibility='hidden';
+                document.getElementById('data').style.visibility='visible';
+                document.getElementById('tableBtns').style.visibility='visible';
+                document.getElementById('submitBtn').style.visibility='visible';
+                document.getElementById('printBtn').style.visibility='visible';
+                document.getElementById('cancel_btn').style.visibility='visible';
+
+                
+                
+
+
+      				}
+      			}
+      			}
+      		xhttp.open("POST","GetProductByType", true);
+     		 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+     		 xhttp.send(JSON.stringify(clean_form));
+    		}
+    }
+    
+    function validate_Code()
+    {
+  	 document.getElementById("check_auth_done").value='';
+  	 document.getElementById("auth_driver").value='';
+  	  
+    	var ver_code=document.getElementById("verif_code").value;
+    	var user_name=document.getElementById("SelectDriver").value;
+    	var selected_driver={
+				 "selectedDriver":user_name,
+				 "code":ver_code
+		 };
+    	console.log(user_name);
+    	console.log(ver_code);
+    	console.log(selected_driver);
+  		var xhttp = new XMLHttpRequest();
+  		xhttp.onreadystatechange = function() {
+  			
+
+  			if (this.readyState == 4 && this.status == 200) {
+  			var resp=this.responseText;
+  			if(resp=="not autheticate")
+				{
+  				document.getElementById("auth_driver").value=resp;
+  				 document.getElementById("check_auth_done").value='done';
+  				 swal("<spring:message code="ReleasingProducts.validation.title"/>","<spring:message code="ReleasingProducts.validation.content"/>","error");
+				/*$.alert({
+		            
+                title: "<spring:message code="ReleasingProducts.validation.title"/>",
+    		    content:"<spring:message code="ReleasingProducts.validation.content"/>"
+                }); */
+	 			document.getElementById("verif_code").focus();
+
+				}
+  			else
+  				{
+ 				 document.getElementById("check_auth_done").value='done';
+
+  				document.getElementById("auth_driver").value='Auth';
+
+  				}
+  			}
+  			}
+  		xhttp.open("POST","CheckDriverAuth", true);
+ 		 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+ 		 xhttp.send(JSON.stringify(selected_driver));
+    }
+</script>
+
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

@@ -1,0 +1,23 @@
+package com.jwt.model;
+
+import java.util.List;
+
+public class Payment_submit {
+
+	private List<PayrollPayment> payments_lst;
+	private double totalPayed;
+	public List<PayrollPayment> getPayments_lst() {
+		return payments_lst;
+	}
+	public void setPayments_lst(List<PayrollPayment> payments_lst) {
+		this.payments_lst = payments_lst;
+	}
+	public double getTotalPayed() {
+		return totalPayed;
+	}
+	public void setTotalPayed(double totalPayed) {
+		this.totalPayed = totalPayed;
+	}
+	
+	
+}

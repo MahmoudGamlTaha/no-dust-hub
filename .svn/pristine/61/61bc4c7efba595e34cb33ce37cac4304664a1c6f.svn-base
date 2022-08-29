@@ -1,0 +1,157 @@
+   <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+    <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" />
+   
+<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="#"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                     <!--    <li>  <a href="#">Home</a> <span class="divider">&nbsp;</span></li> -->
+                         
+                       
+                      <li><a href="#">Home</a><span class="divider-last">&nbsp;</span></li>
+                  </ul>
+            <!--     
+				  <div class="page-title pull-right">
+				  
+					 <button class="btn btn-danger"><i class="icon-trash icon-white"></i> Delete</button>
+					 <button class="btn btn-info"><i class="icon-ban-circle icon-white"></i> Cancel</button>
+                     <button class="btn btn-success"><i class="icon-save icon-white"></i> Save</button>   
+
+					<div class="btn-group">
+						 <a class="btn" href="#"><i class="icon-cog"></i> More Action</a>
+						 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="icon-caret-down"></span></a>
+					 
+						 <ul class="dropdown-menu">
+							 <li><a href="#"><i class="icon-plus"></i> Add</a></li>
+							 <li><a href="#"><i class="icon-edit"></i> Edit</a></li>
+							 <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
+						 </ul>
+                    </div>
+					
+                   </div>
+			 -->	   
+               </div>
+            </div>
+       
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                        <div class="widget-title">
+                           <h4>Home</h4>
+                        </div>
+                        
+						<div class="widget-body">
+						<div class="row-fluid">
+                        <c:forEach items="${lst_daily_shipment}" var="shipment">
+                        <Strong>Total ${shipment.shipment_type} :  ${shipment.total_num}</Strong> 
+                        <br>
+                         </c:forEach>
+                        </div>
+	<div >
+	<h5><spring:message code="Total_Expected_Cash_Out"/><strong>${expected_cash}</strong></h5>
+	</div>
+	<div class="row-fluid"  >
+		<ul class="nav nav-tabs">
+ 
+			    <li class="nav-item active">
+			      <a class="nav-link" data-toggle="tab" href="#tab1"><spring:message code="ExpectedOut_Data"/></a>
+			    </li>
+			    <li class="nav-item">
+			      <a class="nav-link" data-toggle="tab" href="#tab2"><spring:message code="ExpectedIn_Data"/></a>
+			    </li>
+          </ul>
+            <div class="tab-content">
+			   
+			    <div id="tab1" class="container tab-pane active"><br>
+	<table class="table table-striped table-bordered   table-advance table-hover table-responsive">
+	<thead>
+	<tr>
+	<td>Product</td>
+	<td>Treatment</td>
+	<td>Expected To Be Out</td>
+	<td>Available Quantity</td>
+	</tr>
+	</thead>
+	<tbody>
+	<c:forEach items="${expected_out}" var="product">
+	<tr>
+	<td>${product.product_name}</td>
+	<td>${product.treatment_name}</td>
+	<td>${product.quantity}</td>
+	<td><c:if test="${product.available_quantity==null}">0</c:if>
+	<c:if test="${product.available_quantity!=null}">${product.available_quantity}</c:if>
+	</td>
+	</tr>
+	</c:forEach>
+	</tbody>
+	</table>		     
+			
+			      
+                         
+                      
+			    </div>
+			    <div id="tab2" class="container tab-pane fade"><br>
+			<table class="table table-striped table-bordered   table-advance table-hover table-responsive">
+	<thead>
+	<tr>
+	<td>Product</td>
+	<td>Type</td>
+	<td>Expected To Be IN</td>
+	<td>Available Quantity</td>
+	</tr>
+	</thead>
+	<tbody>
+	<c:forEach items="${expected_in}" var="product">
+	<tr>
+	<td>${product.product_name},${product.treatment_name}</td>
+	<td>${product.type}</td>
+	<td>${product.expected}</td>
+	<td><c:if test="${product.total_stock_quantity==null}">0</c:if>
+	<c:if test="${product.total_stock_quantity!=null}">${product.total_stock_quantity}</c:if>
+	</td>
+	</tr>
+	</c:forEach>
+	</tbody>
+	</table>		       
+			  
+                            
+                              
+                           
+                             
+                             		    </div>
+			  </div>
+	
+	</div>
+	
+						 </div>
+						 	
+	
+                        </div>
+                           
+                     </div>
+                  </div>
+               </div>
+            
+           
+            </div>
+       
+         </div>
+   

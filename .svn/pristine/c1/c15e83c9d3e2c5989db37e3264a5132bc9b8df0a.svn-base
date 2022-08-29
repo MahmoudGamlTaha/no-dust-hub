@@ -1,0 +1,18 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import com.jwt.model.DirtyProduct;
+import com.jwt.model.DirtyShipment;
+import com.jwt.model.DirtyShipmentData;
+
+public interface ViewDirtyShipmentService {
+	public List<DirtyShipment> getAllDirtyShipments(int id);
+	public List<DirtyShipmentData> getShipmentData(String shipment_id);
+	public List<DirtyProduct> getDirtyShipmentProduct(String Shipment_id);
+	public String appproveDirtyShipment(String ids , String ids2 , int shipment_id , String useName  );
+	public String checkStateOfShipment(int id);
+
+
+
+}

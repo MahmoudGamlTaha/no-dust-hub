@@ -1,0 +1,468 @@
+package com.jwt.controller;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.SimpleFormatter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.jwt.model.CashOnCoverForm;
+import com.jwt.model.DirtyFinancialAccount;
+import com.jwt.model.Driver;
+import com.jwt.model.DriverAuthentication;
+import com.jwt.model.ExpectedCashOnCover;
+import com.jwt.model.ExpectedCashOnShipment;
+import com.jwt.model.Facility;
+import com.jwt.model.ReconciliationShipmentList;
+import com.jwt.model.Shipment;
+import com.jwt.model.ShipmentDetailsData;
+import com.jwt.model.ShipmentProduct;
+import com.jwt.model.User;
+import com.jwt.model.drivers;
+import com.jwt.service.CashOnCoverService;
+import com.jwt.service.ReceivingProductsService;
+import com.jwt.service.ReleasingProductsService;
+import com.jwt.service.UserService;
+@Controller
+public class ReceivingCashOnCoverController {
+	@Autowired
+	private ReceivingProductsService shipmentService;
+	
+	@Autowired
+	private CashOnCoverService cashcoverService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@RequestMapping(value = "/ReceivingCashOnCover")
+	public ModelAndView ReceivingCashOnCover(ModelAndView model) throws IOException {
+		Facility fac=new Facility();
+		User u = new User();
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+			    u=userService.getUser(userDetail.getUsername());
+			    List<drivers> lst_drivers=shipmentService.GetAllDrivers();
+			    DriverAuthentication selected_driver=new DriverAuthentication();
+			    model.addObject("selected_driver", selected_driver);
+			    model.addObject("lst_drivers", lst_drivers);
+			  
+			}
+		model.setViewName("ReceivingCashOnCover");
+		return model;
+	}
+@RequestMapping(value="/CheckReceivingCashAuthentication",method=RequestMethod.POST,consumes="application/json")
+public ResponseEntity<String> CheckRecevingAuthentication(@RequestBody DriverAuthentication selected_driver,ModelAndView model)
+{
+	String check_auth=shipmentService.checkAuthentication(selected_driver.getSelectedDriver(), selected_driver.getCode());
+	if(check_auth.equals("Not Auth"))
+	{
+		return new  ResponseEntity<String>("NotAuth",HttpStatus.OK);
+	}
+	else
+	{
+		List<Shipment> shipment_lst_of_driver=cashcoverService.get_driver_shipment(selected_driver.getSelectedDriver());
+		if(shipment_lst_of_driver.size()==0)
+		{
+			List<Shipment> shipment_lst_recon_of_driver=cashcoverService.Check_reconcation_cash_shipment(selected_driver.getSelectedDriver());
+			if(shipment_lst_recon_of_driver.size()==0)
+			{
+				List<Shipment> check_shipment_in_progress=cashcoverService.Check_Recon_In_Progress(selected_driver.getSelectedDriver());
+				if(check_shipment_in_progress.size()!=0)
+				{
+					return new ResponseEntity<String>("ShipmentInProgress",HttpStatus.OK);
+					
+				}
+				else
+				{
+					List<ExpectedCashOnCover>lst_view_cash=cashcoverService.Get_expected_Cash(selected_driver.getSelectedDriver());
+					List<ExpectedCashOnShipment> lst_check_expected_for_recon=cashcoverService.Get_Expected_ForCollections(selected_driver.getSelectedDriver());
+					if(lst_view_cash.size()==0)
+					{
+						if(lst_check_expected_for_recon.size()==0)
+						{
+							return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+
+						}
+						else
+						{
+							BigDecimal zero_var=new BigDecimal("0");
+							if(lst_check_expected_for_recon.get(0).getExpected_money()==zero_var)
+							{
+								return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+
+							}
+						}
+					}
+					else
+					{
+						double zero_check=0;
+						if(lst_view_cash.get(0).getExpected_money()==zero_check)
+						{
+							return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+
+						}
+					}
+				return new ResponseEntity<String>("NewShipment",HttpStatus.OK);
+				}
+			}
+			else
+			{
+				
+			return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+			}
+		}
+		else
+		{
+			return new ResponseEntity<String>("HasShipment",HttpStatus.OK);
+		}
+		
+	}
+	
+}
+@RequestMapping(value = "/ReconciliationCashShipment", method = RequestMethod.GET)
+public ModelAndView GetReconciliationShiments(ModelAndView model,@RequestParam(value = "driver_id", required = true) String driver_id,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+ModelAndView newMod=new ModelAndView();
+Facility fac=new Facility();
+User u = new User();
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	ModelAndView mod=new ModelAndView();
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		
+	    u=userService.getUser(userDetail.getUsername());
+	}
+	
+	List<Shipment> lst_shipments=cashcoverService.get_driver_shipment(driver_id);
+System.out.println(lst_shipments.size());
+List<ReconciliationShipmentList>Recon_shipment_list=new ArrayList<ReconciliationShipmentList>();
+List<drivers> driver_lst=shipmentService.Get_Driver_by_UserName(driver_id);
+drivers x_driver=driver_lst.get(0);
+for(int i=0;i<lst_shipments.size();i++)
+{
+	ReconciliationShipmentList shipment_lst_obj=new ReconciliationShipmentList();
+	shipment_lst_obj.setShipment_obj(lst_shipments.get(i));
+	String x_date=String.valueOf(lst_shipments.get(i).getShipment_actual_delivery_date());
+	String[] arr_date=x_date.split(" ");
+	DateFormat format=new SimpleDateFormat("dd-MM-yyyy");
+	shipment_lst_obj.setShipment_date(format.format(lst_shipments.get(i).getShipment_actual_delivery_date()));
+Recon_shipment_list.add(shipment_lst_obj);
+}
+newMod.addObject("shipmentlst",Recon_shipment_list);
+newMod.addObject("driver", x_driver);
+newMod.setViewName("ReconciliationShipments");
+return newMod;
+
+}
+	
+@RequestMapping(value = "/ReceivingCashOnCoverDetails", method = RequestMethod.GET)
+public ModelAndView ReceivingCashOnCoverDetails(ModelAndView model,@RequestParam(value = "driver_id", required = true) String driver_id,@RequestParam(value = "shipment_id", required = true) int Shipment_id,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+
+	Facility fac=new Facility();
+	User u = new User();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ModelAndView mod=new ModelAndView();
+		 Date rec_date;
+		 String ship_date;
+		 String Related_shipments;
+		 float x_cash_val=0;
+		// double x_total_rent=cashcoverService.get_total_rent_val(driver_id);
+		 double x_total_rent=0;
+
+		//double x_sales_promos=cashcoverService.get_sales_promos_val(driver_id);
+		 double x_sales_promos=0;
+
+		 double x_corporate_invoice=0;
+		 //double x_corporate_invoice=cashcoverService.get_corprate_invoice(driver_id);
+		 double total=x_total_rent+x_sales_promos+x_corporate_invoice;
+		//String x_corporate_due_credit=cashcoverService.get_corporate_due_credit(driver_id);
+	/*	List<String> lst_corporate_due_credit=new ArrayList<String>();
+		String[] x_cor_arr=x_corporate_due_credit.split(",");
+		for(int i=0;i<x_cor_arr.length;i++)
+		{
+			lst_corporate_due_credit.add(x_cor_arr[i]);
+		}
+		 System.out.println("Due_Credit : "+x_corporate_due_credit);*/
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			 String state_request="";
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+			
+		    u=userService.getUser(userDetail.getUsername());
+		// List<ShipmentProduct> shipment_details=cashcoverService.getShipmentProducts(shipment_id);
+		 CashOnCoverForm Data_Object=new CashOnCoverForm();
+		 fac=shipmentService.Get_Facility_Info(u.getOrg_unit_id());
+		 
+		 List<DirtyFinancialAccount> dirty_accounts=shipmentService.getdirtyFinancialAccounts(u.getOrg_unit_id());
+		 System.out.println(dirty_accounts.size());
+		 double expected_cash;
+		    double reconciled_cash;
+		    String Area_name="";
+		 if(Shipment_id==0)
+		 {
+			 Area_name=shipmentService.Get_Area_Name(driver_id);
+		 LocalDate date=LocalDate.now();
+	    rec_date=java.sql.Date.valueOf(date);
+	    DateFormat format2=new SimpleDateFormat("dd-MM-yyyy");
+	    
+	    ship_date=format2.format(rec_date);
+		List<Shipment> shipment_lst_recon_of_driver=cashcoverService.Check_reconcation_cash_shipment(driver_id);
+		if(shipment_lst_recon_of_driver.size()!=0)
+		{
+			 x_cash_val=Float.parseFloat(shipment_lst_recon_of_driver.get(0).getShipment_actual_money_out());
+			 Data_Object.setActualCash(x_cash_val);
+			 state_request="done";
+		}
+	    Related_shipments="";
+	    List<ExpectedCashOnCover> expected_cash_data=cashcoverService.Get_expected_Cash(driver_id);
+	   if(expected_cash_data.size()==0)
+	   {
+		   List<ExpectedCashOnShipment> lst_shipment_collections=cashcoverService.Get_Expected_ForCollections(driver_id);
+		   if(lst_shipment_collections.size()==0)
+		   {
+		   expected_cash=0;
+		   reconciled_cash=0;
+		   }
+		   else
+		   {
+			   expected_cash=lst_shipment_collections.get(0).getExpected_money().doubleValue();
+			   reconciled_cash=lst_shipment_collections.get(0).getReconciliated_money().doubleValue();
+		   }
+	   }
+	   else
+	   {
+	    expected_cash=expected_cash_data.get(0).getExpected_money();
+	    reconciled_cash=expected_cash_data.get(0).getReconciliated_money();
+		 }
+		 }
+		 else
+		 {
+			 String Rel_sh=shipmentService.Get_Related_Shipments(Shipment_id);
+			 if(Rel_sh==null)
+			 {
+				 Rel_sh="";
+			 }
+			 else
+			 {
+				String [] rel_arr=Rel_sh.split(",");
+				if(rel_arr.length!=0)
+				{
+					
+					for(int i=0;i<rel_arr.length;i++)
+					{
+						String area_x=shipmentService.Get_Area_Name_By_Shipment(Integer.parseInt(rel_arr[i]));
+						if(area_x!=""||area_x!=null)
+						{
+							Area_name=Area_name+area_x;
+							if(rel_arr.length-i>1)
+							{
+								Area_name=Area_name+',';
+							}
+						}
+						else
+						{
+							Area_name="";
+
+						}
+					}
+					if(Area_name==null||Area_name=="null")
+					{
+						Area_name="";
+					}
+					Data_Object.setArea_name(Area_name);
+				}
+			 }
+			 Shipment ship=cashcoverService.get_shipment_data(Shipment_id);
+			  ship_date=String.valueOf(ship.getShipment_actual_delivery_date());
+			 String[] x_date=ship_date.split(" ");
+			 DateFormat format=new SimpleDateFormat("dd-MM-yyyy");
+			 
+			 ship_date=format.format(ship.getShipment_actual_delivery_date());
+			 Related_shipments=ship.getRelated_shipments();
+			// rec_date=ship_date;
+			 if(ship.getLast_status()!=null||ship.getLast_status()=="")
+			 {
+			 int status=Integer.parseInt(ship.getLast_status());
+					 if(status==9||status==10||status==14)
+					 {
+						 x_cash_val=Float.parseFloat(ship.getShipment_actual_money_out());
+						 Data_Object.setActualCash(x_cash_val);
+						 state_request="done";
+					 }
+			 }
+			    List<ExpectedCashOnCover> expected_cash_data=cashcoverService.Get_expected_Cash(driver_id);
+			    List<ExpectedCashOnShipment> cash_on_shipment=new ArrayList<ExpectedCashOnShipment>();
+		    	cash_on_shipment=cashcoverService.Get_Cash_On_Shipment(Shipment_id);
+
+		    	if(cash_on_shipment.size()==0)
+		    	{
+		    		expected_cash=0;
+		    		reconciled_cash=0;
+		    	}
+		    	else
+		    	{
+			 expected_cash=cash_on_shipment.get(0).getExpected_money().doubleValue();
+			    reconciled_cash=cash_on_shipment.get(0).getReconciliated_money().doubleValue();
+		    	}
+		 }
+	   
+	   
+	   //	double x=shipmentService.getExpected_Cash(driver_id);
+		List<drivers> d=shipmentService.Get_Driver_by_UserName(driver_id);
+		Driver driver_data=new Driver();
+		 driver_data.setFULL_NAME_AR(d.get(0).getFull_name_ar());
+		 driver_data.setFULL_NAME_EN(d.get(0).getFull_name_en());
+		 driver_data.setUSER_NAME(d.get(0).getUser_name());
+		// Data_Object.setProductslst(shipment_details);
+		 Data_Object.setWareHouseName(fac.getFacility_name());
+		 Data_Object.setDirty_accounts(dirty_accounts);
+		// Data_Object.setAssignDate(String.valueOf(rec_date));
+		 Data_Object.setDate_Recon(ship_date);
+		 //System.out.println(ship_date);
+		 Data_Object.setAgentName(u.getDisplay_name()+','+userDetail.getUsername());
+		 Data_Object.setArea_name(Area_name);
+		 Data_Object.setShipment_id(Shipment_id);
+		 Data_Object.setDriver(driver_data);
+		 Data_Object.setExpectedCash(expected_cash);
+		 Data_Object.setReconciledCash(reconciled_cash);
+		 Data_Object.setDriver_id(driver_id);
+		 Data_Object.setRelated_shipments(Related_shipments);
+		 mod.addObject("data", Data_Object);
+		mod.addObject("total_rent", x_total_rent);
+		mod.addObject("sales_promos", x_sales_promos);
+		mod.addObject("corporate_invoice", x_corporate_invoice);
+		mod.addObject("total_expected", total);
+		 mod.addObject("req_state",state_request);
+		// mod.addObject("due_credit", lst_corporate_due_credit);
+		}
+return mod;
+}
+
+
+@RequestMapping(value="/submitReceivingCashOnCover", method = RequestMethod.POST,consumes="application/json")
+public ResponseEntity<String> submitReceivingCashOnCover(@RequestBody CashOnCoverForm cashCoverForm ,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+{
+	String out_submit="";
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	User u=new User();
+	String user="";
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		System.out.println(userDetail);
+	user=userDetail.getUsername();
+    u=userService.getUser(user);
+	}
+	System.out.println("SKU:"+cashCoverForm.getSku_selected());
+	System.out.println("Actual_Cash:"+cashCoverForm.getActualCash());
+	System.out.println("driver_id:"+cashCoverForm.getDriver_id());
+	System.out.println("User:"+user);
+	System.out.println("Shipment:"+cashCoverForm.getShipment_id());
+	String ship_id=String.valueOf(cashCoverForm.getShipment_id());
+	
+	if(cashCoverForm.getShipment_id()==0)
+		{
+		List<Shipment> shipment_lst_recon_of_driver=cashcoverService.Check_reconcation_cash_shipment(cashCoverForm.getDriver_id());
+		if(shipment_lst_recon_of_driver.size()!=0)
+		{
+			return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+		}
+		else
+		{
+			List<Shipment> lst_cash_added=cashcoverService.CheckLastShipmentHasCash(cashCoverForm.getDriver_id());
+			String last_status=lst_cash_added.get(0).getLast_status();
+			System.out.println(last_status);
+			if(last_status.equals("9") || last_status.equals("10"))
+			{
+				List<ShipmentDetailsData> lst_details=cashcoverService.GetLastReconDetails(lst_cash_added.get(0).getId());
+				System.out.println("Size : "+lst_details.size());
+				
+				if(lst_details.size()>0)
+				{
+					ShipmentDetailsData cash_amounts=lst_details.get(0);
+					System.out.println("Last Expected : "+cash_amounts.getDms_planned_quantity());
+					System.out.println("New Expected : "+cashCoverForm.getExpectedCash());
+					System.out.println("Last Reconciled : "+cash_amounts.getReconciled_money_amount());
+					System.out.println("New Reconciled : "+cashCoverForm.getReconciledCash());
+					BigDecimal old_expected=new BigDecimal(String.valueOf(cash_amounts.getDms_planned_quantity()));
+					BigDecimal new_expected=new BigDecimal(String.valueOf(cashCoverForm.getExpectedCash()));
+					BigDecimal old_recon=new BigDecimal(String.valueOf(cash_amounts.getReconciled_money_amount()));
+					BigDecimal new_recon=new BigDecimal(String.valueOf(cashCoverForm.getReconciledCash()));
+					if((old_expected.compareTo(new_expected)==0) && (old_recon.compareTo(new_recon)==0))
+					{
+						return new ResponseEntity<String>("AmountsAdded",HttpStatus.OK);
+					}
+					
+				}
+			}
+			else
+			{
+				return new ResponseEntity<String>("cashnot_addedonrecon",HttpStatus.OK);
+			}
+			out_submit=cashcoverService.Submit_Cash_OnCover(ship_id,cashCoverForm.getDriver_id(), cashCoverForm.getSku_selected(), user, cashCoverForm.getActualCash(), cashCoverForm.getExpectedCash(),cashCoverForm.getReconciledCash());
+			System.out.println(out_submit);
+			return new ResponseEntity<String>(out_submit,HttpStatus.OK);
+		}
+		}
+	
+	else
+	{
+		System.out.println("Shipment_id"+cashCoverForm.getShipment_id());
+		Shipment ship_data=cashcoverService.get_shipment_data(cashCoverForm.getShipment_id());
+		List<Shipment> shipment_lst_recon_of_driver=cashcoverService.Check_reconcation_cash_shipment(cashCoverForm.getDriver_id());
+
+		if(shipment_lst_recon_of_driver.size()!=0)
+		{
+			return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+		}
+		else
+		{
+			int status_ship=Integer.parseInt(ship_data.getLast_status());
+			if(status_ship==9||status_ship==10)
+			{
+				return new ResponseEntity<String>("ReconExist",HttpStatus.OK);
+
+			}
+		out_submit=cashcoverService.Submit_Cash_OnCover(ship_id,cashCoverForm.getDriver_id(), cashCoverForm.getSku_selected(), user, cashCoverForm.getActualCash(), cashCoverForm.getExpectedCash(),cashCoverForm.getReconciledCash());
+		System.out.println(out_submit);
+		return new ResponseEntity<String>(out_submit,HttpStatus.OK);
+		}
+	}
+	
+	//return new ResponseEntity<String>(out_submit,HttpStatus.OK);
+
+
+
+
+
+}
+
+
+
+}
+}
+	  
+
+
+

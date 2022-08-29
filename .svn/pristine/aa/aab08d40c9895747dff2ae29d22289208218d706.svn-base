@@ -1,0 +1,384 @@
+package com.jwt.controller;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.jboss.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.jwt.model.CoverProduct;
+import com.jwt.model.CoverProductWithQuentity;
+import com.google.gson.Gson;
+import com.jwt.ApiClient.ApiClient;
+import com.jwt.model.Cover;
+import com.jwt.model.CoverModel;
+import com.jwt.model.Driver;
+import com.jwt.model.DriverAuthentication;
+import com.jwt.model.Facility;
+import com.jwt.model.ProductListsCoverForm;
+import com.jwt.model.Shipment;
+import com.jwt.model.User;
+import com.jwt.service.ReleasingProductsService;
+import com.jwt.service.UserService;
+
+@Controller
+public class ReleasingProductsController {
+
+	@Autowired
+	private ReleasingProductsService shipmentService;
+	
+	@Autowired
+	private UserService userService;
+	
+	private static final Logger logger = Logger
+			.getLogger(ReleasingProductsController.class);
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    binder.setAutoGrowCollectionLimit(1000);
+	}
+	
+	@RequestMapping(value = "/DispatchingProducts")
+	public ModelAndView ReleasingProducts(HttpServletRequest request,ModelAndView model,
+			@RequestParam(value = "error", required = false) String error,@RequestParam(value="selected_driver_userName", required = false) String selectedDriver) throws IOException {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		System.out.println("cred : "+auth.getCredentials());
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+		String user="";
+		List<Driver> lst_drivers = shipmentService.GetAllDrivers();
+
+		DriverAuthentication selected_driver = new DriverAuthentication();
+		if(selectedDriver==null)
+			model.addObject("selected_driver", selected_driver);
+		else
+		{
+			selected_driver.setSelectedDriver(selectedDriver); 
+			model.addObject("selected_driver", selected_driver);
+		}
+
+		//System.out.println("drivers count = "+lst_drivers.get(0).getUSER_NAME());
+		model.addObject("lst_drivers", lst_drivers);
+		user=userDetail.getUsername();
+		System.out.println("user : "+user);
+		System.out.println("auth :"+userDetail.getAuthorities());
+	//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+		 
+		User u=userService.getUser(user);
+		System.out.println("user State :"+u.getActive());
+	    u.setActive(1);
+	    userService.updateUser(u);
+		 //UserSession u=new UserSession();
+		   // u.setListRoles(listRoles);
+		   // HttpServletRequest request=null;
+		   // HttpSession session=null;
+		   // session.setAttribute("Role",listRoles.get(0));
+		   // httpSession.setAttribute("Role",listRoles.get(0));
+	    
+		    request.getSession().setAttribute("active", u.getActive());
+		    request.getSession().setAttribute("user",u);
+		    
+		    String teams="";
+//		    for(int i = 0 ; i<listTeam.size() ; i++) {
+//		    	System.out.println("Team : "+listTeam.get(i).getTEAM_NAME());
+//		    	teams += listTeam.get(i).getTEAM_NAME();
+//		        if (i != listTeam.size() - 1) {
+//		        	teams += ",";
+//		        } else {
+//		            break;
+//		        }
+//	    	
+//	    	//authority.add(new SimpleGrantedAuthority(listRoles.get(i).getROLE()));
+//	    	 //authority.add(new SimpleGrantedAuthority(listRoles.get(i).getROLE()));
+//	        }
+	//	 System.out.println("teams : "+teams);
+	//	 request.getSession().setAttribute("role",teams);
+		}
+		if(error!=null)
+			model.addObject("error",error);
+	
+		model.setViewName("ReleasingProducts");
+		return model;
+	}
+	@RequestMapping(value = "/Driversubmit",  method = RequestMethod.POST,consumes ="application/json")
+	public ResponseEntity<String> checkAuth(@RequestBody DriverAuthentication selected_driver ,ModelAndView model,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+		
+	//	DriverAuthentication selected=(DriverAuthentication) model.getModel().get("selected_driver");
+	//	System.out.println("Driver is "+ selected_driver.getSelectedDriver());
+		String Auth = shipmentService.checkAuthentication(selected_driver.getSelectedDriver(), selected_driver.getCode());
+		System.out.println("Driver is "+Auth);
+		if (Auth.equals("Not Auth"))
+		{
+			return new ResponseEntity<String>(Auth, HttpStatus.OK);
+		}
+		else if(Auth.equals("Not Auth Have Recon"))
+		{
+			return new ResponseEntity<String>(Auth, HttpStatus.OK);
+		}
+    	//
+		List<Shipment> check_recon_money=shipmentService.Check_Reconcile_Cash(selected_driver.getSelectedDriver());
+		if(check_recon_money.size()>0)
+		{
+			return new ResponseEntity<String>("Not Auth Have Recon", HttpStatus.OK);
+
+		}
+		return new ResponseEntity<String>("success", HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/CoverList", method = RequestMethod.GET)
+	public ModelAndView coverLists(ModelAndView model,HttpServletRequest request, HttpServletResponse response ,@RequestParam(value = "Username", required = true) String Username )throws ServletException, IOException {
+
+		List<Cover> covers_lst = shipmentService.getCoversOfDriver(Username);
+		ModelAndView newMod = new ModelAndView();
+    	newMod.setViewName("CoverList");
+    	newMod.addObject("Username", Username);
+    	List<CoverModel>covermod=new ArrayList<CoverModel>();
+    	for(int i=0;i<covers_lst.size();i++)
+    	{
+    		CoverModel cov=new CoverModel();
+    		cov.setDriver_id(covers_lst.get(i).getDriver_id());
+    		cov.setAssignment_date(covers_lst.get(i).getAssignment_date());
+    		cov.setDriver_name_ar(covers_lst.get(i).getDriver_name_ar());
+    		cov.setDriver_name_en(covers_lst.get(i).getDriver_name_en());
+    		Date x_date=java.sql.Date.valueOf(covers_lst.get(i).getAssignment_date());
+    		DateFormat format=new SimpleDateFormat("dd-MM-yyyy");
+    		cov.setAssign_date(format.format(x_date));
+    		covermod.add(cov);
+    		
+    	}
+    	newMod.addObject("covers_lst",covermod );
+		return newMod;
+	}
+	
+	@RequestMapping(value = "/CoverDetails", method = RequestMethod.GET)
+	public ModelAndView coverDetails(ModelAndView model,HttpServletRequest request, HttpServletResponse response ,@RequestParam(value = "Username", required = true) String Username , @RequestParam(value = "date", required = true) String Assignment_date ,@RequestParam(value = "error", required = false) String error)throws ServletException, IOException {
+
+		User u = new User();
+		ProductListsCoverForm coverForm = new ProductListsCoverForm();
+		//System.out.println(cover.getArea_name());
+		if(model.getModel().get("productsLst")!= null)
+		{
+		ProductListsCoverForm actual = (ProductListsCoverForm)model.getModelMap().get("productsLst");
+		System.out.println("actual"+actual.getAssignDate());
+		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+		String user="";
+		
+		
+			Driver driver = shipmentService.getDriverById(Username);
+			List<CoverProduct> coverProducts = shipmentService.getCoverProducts(Username, Assignment_date);
+			List<CoverProductWithQuentity> productsLst = this.convertProductCovers(coverProducts);
+			Cover cover = shipmentService.getCoverOfDriverAndDate(Username, Assignment_date);
+			List<String> areas = shipmentService.getAreas(Username, Assignment_date);
+			//System.out.println(areas.size());
+			String AllAreas = "";
+			for(int i=0;i<areas.size();i++)
+			{
+				if (i>0)
+					AllAreas+=",";
+				AllAreas+=areas.get(i);
+			}
+			System.out.println(AllAreas);
+			coverForm.setCoverProducts(productsLst);
+			coverForm.setDriver(driver);
+			coverForm.setAssignDate(Assignment_date);
+			coverForm.setAreaName(AllAreas);
+		user=userDetail.getUsername();
+		
+		
+		System.out.println("user : "+user);
+		System.out.println("auth :"+userDetail.getAuthorities());
+	//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+	    u=userService.getUser(user);
+		Facility facility = shipmentService.getFacilityById(u.getOrg_unit_id());
+		coverForm.setWareHouseName(facility.getFacility_name());
+		coverForm.setAssignDate(Assignment_date);
+		coverForm.setWareHouseName(facility.getFacility_name());
+
+		}
+		
+		ModelAndView newMod = new ModelAndView();
+		
+		if (error == null || error.equals(""))
+		{
+
+		}
+		else {
+			newMod.addObject("error",error);
+
+		}
+		//System.out.println("warehouseName "+ facility.getFacility_name());
+		
+		//newMod.addObject("warehouseName", facility.getFacility_name());
+		Date ass_date=java.sql.Date.valueOf(Assignment_date);
+		DateFormat format=new SimpleDateFormat("dd-MM-yyyy");
+		newMod.addObject("assignment_date", Assignment_date);
+		newMod.addObject("assign_date", format.format(ass_date));
+		
+		newMod.addObject("productsLst",coverForm);
+		newMod.addObject("Username", Username);
+
+    	newMod.setViewName("CoverDetails");
+		return newMod;
+	}
+	
+	public List<CoverProductWithQuentity> convertProductCovers(List<CoverProduct> products){
+		List<CoverProductWithQuentity> lst = new ArrayList<CoverProductWithQuentity>();
+		for(int i =0; i<products.size();i++)
+		{
+			CoverProduct product = products.get(i);
+			CoverProductWithQuentity cQ= new CoverProductWithQuentity(); 
+			//cQ.setActual_quantity(0);
+			cQ.setAssignment_date(product.getAssignment_date());
+			cQ.setDriver_id(product.getDriver_id());
+			cQ.setHandle(product.getHandle());
+			cQ.setKind(product.getKind());
+			cQ.setProduct_id(product.getProduct_id());
+			cQ.setProduct_name(product.getProduct_name());
+			cQ.setQuantity(product.getQuantity());
+			cQ.setTreatment_id(product.getTreatment_id());
+			cQ.setTreatment_name(product.getTreatment_name());
+			cQ.setType(product.getType());
+			lst.add(cQ);
+		}
+		return lst;
+		}
+	
+	/*@RequestMapping(value = "/CreateNewTicket", method = RequestMethod.GET,consumes ="application/json")
+	public ResponseEntity<ProductListsCoverForm> GetTestResponse() {
+		ProductListsCoverForm tmp=new ProductListsCoverForm();
+		tmp.setDriver(new Driver());
+	return new ResponseEntity<ProductListsCoverForm>(tmp, HttpStatus.OK);
+	}*/
+	//submitCoverDetails
+	@RequestMapping(value = "/submitCoverDetails", method = RequestMethod.POST,consumes ="application/json")
+	public ResponseEntity<String> submitCoverDetails(@RequestBody  ProductListsCoverForm coverForm)throws ServletException, IOException {
+		System.out.println("driver "+ coverForm.getDriver().getUSER_NAME());
+		//System.out.println("date"+coverForm.getCoverProducts().size());
+		ModelAndView newMod = new ModelAndView();
+		Gson gson = new Gson();
+		String json = gson.toJson(coverForm.getCoverProducts());
+		  
+		  
+			//System.out.println("Actual : "+prCoverForm.getCoverProducts().get(0).getActual_quantity());
+		   User u = new User();
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				System.out.println(userDetail);
+			String user="";
+			user=userDetail.getUsername();
+		//	System.out.println("user : "+user);
+		//	System.out.println("auth :"+userDetail.getAuthorities());
+		//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+		    u=userService.getUser(user);
+			}
+			System.out.println(coverForm.getAssignDate());
+			String shipment_id = new String();
+			if(u.getUSER_NAME() != null)
+			{
+				shipment_id=shipmentService.submitCover(coverForm.getDriver().getUSER_NAME(), u.getUSER_NAME(), json , coverForm.getAssignDate());		
+
+			}
+			else {
+				return new ResponseEntity<String>("no session", HttpStatus.OK);
+			}
+			System.out.println("submited : "+shipment_id);
+			ApiClient apiClient = new ApiClient();
+			if(shipment_id == null || shipment_id.equals(""))
+			{
+				return new ResponseEntity<String>("not success", HttpStatus.OK);
+
+			}
+			else {
+				//apiClient.callOracleApiForRelease(shipment_id, coverForm.getAssignDate());
+				return new ResponseEntity<String>("success", HttpStatus.OK);
+
+
+			}
+	}
+	
+/*	@RequestMapping(value = "/SubmittedData", method = RequestMethod.GET)
+	public String ViewSubmittedData(ModelAndView model,HttpServletRequest request, HttpServletResponse response){
+		
+			request.setAttribute("error","SubmitedSucessfully");
+		return "CoverDetails";
+	}
+*/
+	
+/*	//submitCoverDetails
+	@RequestMapping(value = "/submitCoverDetails", method = RequestMethod.POST)
+	public String submitCoverDetails(@ModelAttribute("productsLst")ProductListsCoverForm prCoverForm,@RequestParam(value = "date", required = false) String Assignment_date,ModelAndView model,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+		System.out.println("size "+prCoverForm.getCoverProducts().size());
+		Gson gson = new Gson();
+		   String json = gson.toJson(prCoverForm.getCoverProducts());
+		   System.out.println(json);
+			//System.out.println("Actual : "+prCoverForm.getCoverProducts().get(0).getActual_quantity());
+		   User u = new User();
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				System.out.println(userDetail);
+			String user="";
+			user=userDetail.getUsername();
+		//	System.out.println("user : "+user);
+		//	System.out.println("auth :"+userDetail.getAuthorities());
+		//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+		    u=userService.getUser(user);
+			}
+			
+			int flag =0;
+			for(int i =0; i<prCoverForm.getCoverProducts().size();i++)
+			{
+				if(prCoverForm.getCoverProducts().get(i).getActual_quantity( )> 0)
+					flag++;
+			}
+			if(flag ==0)
+			{
+				request.setAttribute("error","shouldBeAtLeastOneRecored");
+				return "CoverDetails";
+			}
+			String submited =shipmentService.submitCover(prCoverForm.getDriver().getUSER_NAME(), u.getUSER_NAME(), json);
+			System.out.println("submited : "+submited);
+			
+			if(submited.equals("true"))
+			{
+				request.setAttribute("error","SubmitedSucessfully");
+
+			}
+			else {
+				request.setAttribute("error","notDone");
+			//	model.addObject("error","notDone");
+
+			}
+			return "CoverDetails";
+	}
+*/
+}

@@ -1,0 +1,240 @@
+package com.jwt.dao;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.DirtyProductInPackage;
+import com.jwt.model.Facility;
+import com.jwt.model.ProductsType;
+import com.jwt.model.ProgramsData;
+import com.jwt.model.WashingPrograms;
+import com.jwt.model.drivers;
+
+import oracle.net.aso.s;
+
+@Repository
+public class CreateDirtyShipmentDAOImp implements CreateDirtyShipmentDAO {
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyProductInPackage> getProductsList(int facility_id) {
+		List<DirtyProductInPackage>dirtydata=sessionFactory.getCurrentSession().createSQLQuery("SELECT CAST(pro.product_id AS varchar),CAST( pro.type AS varchar), pro.product_name, pro.product_sku, CAST(pro.product_category AS varchar), pro.dms_product_id , CAST(info.total_stock_quantity as INTEGER )AS quantity\r\n" + 
+				"	FROM products pro , facility_product_info info\r\n" + 
+				"	where pro.product_category = 5 AND pro.type =3 AND pro.product_sku = info.product_id AND info.total_stock_quantity > 0  AND info.facility_id ="+facility_id+" "
+						+ "ORDER BY pro.product_name").setResultTransformer(Transformers.aliasToBean(DirtyProductInPackage.class)).list();
+				return dirtydata;
+	//	return sessionFactory.getCurrentSession().createQuery("from DirtyProductInPackage v where v.product_category = 5 and v.type =3")
+	//			.list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<WashingPrograms> getWashingPrograms(int type) {
+		return sessionFactory.getCurrentSession().createQuery("from WashingPrograms where program_type="+type+"and active=1")
+				.list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<drivers> getAllDrivers() {
+		return sessionFactory.getCurrentSession().createQuery("from drivers v where v.user_group in (1,3) ORDER BY v.full_name_en")
+				.list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Facility> getAllLundryies() {
+		return sessionFactory.getCurrentSession().createQuery("from Facility v where v.facility_type_id = 3 ")
+				.list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String submitDirtyShipment(String driver, String user, String Lundry, String Products) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("create_new_dirty_shippment");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_laundry_id", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(user);
+		procedureCall.getParameterRegistration("p_laundry_id").bindValue(Lundry);
+		procedureCall.getParameterRegistration("p_products").bindValue(Products);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Facility> getExternalLundries() {
+		return sessionFactory.getCurrentSession().createQuery("from Facility v where v.facility_type_id = 4 ORDER BY v.facility_name")
+				.list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Facility getAbuRawashData() {
+		List<Facility> lst= sessionFactory.getCurrentSession().createQuery("from Facility v where v.id = 1")
+				.list();
+		return lst.get(0);
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyProductInPackage> getProductsListNotPack(int facility_id) {
+		List<DirtyProductInPackage>dirtydata=sessionFactory.getCurrentSession().createSQLQuery("SELECT CAST(pro.product_id AS varchar),CAST( pro.type AS varchar), pro.product_name, pro.product_sku, CAST(pro.product_category AS varchar), pro.dms_product_id , CAST(info.total_stock_quantity as INTEGER )AS quantity\r\n" + 
+				"	FROM products pro , facility_product_info info\r\n" + 
+				"	where pro.product_category = 1 AND pro.type =2 AND pro.product_sku = info.product_id AND info.total_stock_quantity > 0  AND info.facility_id ="+facility_id+" ORDER BY pro.product_name").setResultTransformer(Transformers.aliasToBean(DirtyProductInPackage.class)).list();
+				return dirtydata;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String submitInternalLundry(String products, String user, String source, String destination,
+			int facility_id , int from_type , int to_type) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_internal_dirty_shipment");
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_source_id", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_destination_id", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_from_type", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_to_type", Integer.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_products").bindValue(products);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(user);
+		procedureCall.getParameterRegistration("p_source_id").bindValue(source);
+		procedureCall.getParameterRegistration("p_destination_id").bindValue(destination);
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_from_type").bindValue(from_type);
+		procedureCall.getParameterRegistration("p_to_type").bindValue(to_type);
+
+		
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String submitExternalShipment(String driver, String user, String Lundry, String Products) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("create_new_external_dirty_shipment");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_laundry_id", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(user);
+		procedureCall.getParameterRegistration("p_laundry_id").bindValue(Lundry);
+		procedureCall.getParameterRegistration("p_products").bindValue(Products);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductsType> Get_Products_Type_By_Category(int Cat_id) {
+		// TODO Auto-generated method stub
+		return (List<ProductsType>)sessionFactory.getCurrentSession().createSQLQuery("select pt.id as type_id, pt.type as type_name from products_type pt , program_type pgt \r\n" + 
+				"where pt.id=pgt.from_type and pgt.category_id="+Cat_id).setResultTransformer(Transformers.aliasToBean(ProductsType.class)).list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductsType> Get_To_Types(BigDecimal from_type) {
+		// TODO Auto-generated method stub
+		return (List<ProductsType>)sessionFactory.getCurrentSession().createSQLQuery("select pt.id as type_id, pt.type as type_name from products_type pt , program_type pgt \r\n" + 
+				"where pt.id=pgt.to_type and pgt.from_type="+from_type).setResultTransformer(Transformers.aliasToBean(ProductsType.class)).list();
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProgramsData> Get_Programs(BigDecimal from, BigDecimal to) {
+		// TODO Auto-generated method stub
+		return (List<ProgramsData>)sessionFactory.getCurrentSession().createSQLQuery("select pr.id , pr.program from washing_programs pr , program_type pt\r\n" + 
+				"where pr.program_type=pt.type_id\r\n" + 
+				"and pt.from_type="+from+" and pt.to_type="+to+" \r\n" + 
+				"and pr.active=1").setResultTransformer(Transformers.aliasToBean(ProgramsData.class)).list();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_Dying_Programs(int from_type, int to_type, int facility_id, String logged_user,
+			String proudcts) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_dying_program");
+		procedureCall.registerParameter("p_from_type", int.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_to_type", int.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_facility_id", int.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_from_type").bindValue(from_type);
+		procedureCall.getParameterRegistration("p_to_type").bindValue(to_type);
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_products").bindValue(proudcts);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	
+	
+	}
+
+
+
+

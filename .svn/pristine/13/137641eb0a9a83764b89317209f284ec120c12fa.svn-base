@@ -1,0 +1,70 @@
+package com.jwt.dao;
+
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.Facility;
+import com.jwt.model.Products;
+import com.jwt.model.drivers;
+@Repository
+public class CreateShipmentDAOImpl implements CreateShipmentDAO{
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<drivers> Get_driver_List() {
+		// TODO Auto-generated method stub
+		return (List<drivers>) sessionFactory.getCurrentSession().createQuery("from drivers where user_group in (1,3)").list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Facility> Get_detsination_facility(int fac_id) {
+		// TODO Auto-generated method stub
+		return (List<Facility>)sessionFactory.getCurrentSession().createQuery("from Facility where facility_type_id=1 and id !="+fac_id).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Products> Get_Clean_Packs(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<Products>)sessionFactory.getCurrentSession().createSQLQuery(" select pr.product_sku,pr.treatment_id ,pr.dms_product_id,pr.product_name, tt.\"TRE_NAME\" as treatment_name , fi.total_stock_quantity from facility_product_info fi , products pr,\"TREATMENT_TYPES\" tt where fi.product_id =(select substr(pr.product_sku,2)) and tt.\"TRE_ID\"=pr.treatment_id and  fi.facility_id="+facility_id+"and fi.total_stock_quantity>0  and pr.type=7 order by product_name").setResultTransformer(Transformers.aliasToBean(Products.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_Send_clean_Shipment(int fac_id, int dest_fac, String driver_id, String products,
+			String logged_user) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("create_new_clean_shipment");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_driver_id", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_dest_id", Integer.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(fac_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_products").bindValue(products);
+		procedureCall.getParameterRegistration("p_driver_id").bindValue(driver_id);
+		procedureCall.getParameterRegistration("p_dest_id").bindValue(dest_fac);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+}

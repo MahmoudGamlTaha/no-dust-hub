@@ -1,0 +1,121 @@
+package com.jwt.service;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.ReportDAO;
+import com.jwt.model.Facility;
+import com.jwt.model.InventoryCheck;
+import com.jwt.model.InventoryDetail;
+import com.jwt.model.LostRlostReportProducts;
+import com.jwt.model.Operation;
+import com.jwt.model.Order;
+import com.jwt.model.OrderDetail;
+import com.jwt.model.ReportShipment;
+import com.jwt.model.ReportType;
+import com.jwt.model.ShipmentDetailsData;
+import com.jwt.model.ShipmentLog;
+import com.jwt.model.ShipmentStatus;
+import com.jwt.model.ShipmentType;
+import com.jwt.model.WashingPrograms;
+@Service
+@Transactional
+public class ReportServiceImpl implements ReportService {
+	@Autowired
+	private ReportDAO dao;
+
+	@Override
+	public List<Facility> getALLWarehouses() {
+		return dao.getALLWarehouses();
+	}
+
+	@Override
+	public List<ShipmentType> getShipmentTypes() {
+		return dao.getShipmentTypes();
+	}
+
+	@Override
+	public List<ReportShipment> getShipmentsOfFacility(int facility_id, int Ship_type) {
+		return dao.getShipmentsOfFacility(facility_id, Ship_type);
+	}
+
+	@Override
+	public ReportShipment getShipmentByID(int ship_id) {
+		return dao.getShipmentByID(ship_id);
+	}
+
+	@Override
+	public List<Operation> getAllOperationShipID(int ship_id) {
+		return dao.getAllOperationShipID(ship_id);
+	}
+
+	@Override
+	public List<ShipmentLog> getLogsShipment(int ship_id) {
+		return dao.getLogsShipment(ship_id);
+	}
+
+	@Override
+	public List<ShipmentStatus> getAllStatus() {
+		return dao.getAllStatus();
+	}
+
+	@Override
+	public List<LostRlostReportProducts> getLostRlost(int shipment_id) {
+		return dao.getLostRlost(shipment_id);
+	}
+
+	@Override
+	public List<ReportShipment> getShipmentsByDate(int facility, int ship_type, String from_date, String to_date) {
+		return dao.getShipmentsByDate(facility, ship_type, from_date, to_date);
+	}
+
+	@Override
+	public List<Order> getOrdersByFacility(int facility ,String type, String from_date ,String to_date) {
+		return dao.getOrdersByFacility(facility,type,from_date,to_date);
+	}
+
+	@Override
+	public List<InventoryCheck> getinventoryChecks(int facility, String from_date, String to_date) {
+		return dao.getinventoryChecks(facility, from_date, to_date);
+	}
+
+	@Override
+	public List<ShipmentDetailsData> getShipDetails(int ship) {
+		return dao.getShipDetails(ship);
+	}
+
+	@Override
+	public Order getOrderByID(int order_id) {
+		return dao.getOrderByID(order_id);
+	}
+
+	@Override
+	public List<OrderDetail> getOrderDetails(int order) {
+		return dao.getOrderDetails(order);
+	}
+
+	@Override
+	public List<WashingPrograms> getAllWashingPrograms() {
+		return dao.getAllWashingPrograms();
+	}
+
+	@Override
+	public InventoryCheck getCheckByID(int checkId) {
+		return dao.getCheckByID(checkId);
+	}
+
+	@Override
+	public List<InventoryDetail> getInventoryDetails(int checkId) {
+		return dao.getInventoryDetails(checkId);
+	}
+
+	@Override
+	public List<ReportType> getOrdersTypes() {
+		return dao.getOrdersTypes();
+	}
+
+}

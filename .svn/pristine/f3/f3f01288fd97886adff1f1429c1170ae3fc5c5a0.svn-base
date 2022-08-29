@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <title> Payroll Payment</title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+ 
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+      <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+      <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.5.1/css/colReorder.dataTables.min.css"/>
+      <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+      
+      
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+     <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+   <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+   <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js"></script>
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+   	     <script type="text/javascript" src="resources/assetsnodust/js/jasontable.js"></script>
+
+
+ <style type="text/css">
+ .dataTables_filter, .dataTables_info { display: none; }
+ 
+   .disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+#logoprint{visibility:hidden;}
+#printing_data{
+display:none;
+}
+ #Approved_Data
+{
+  visibility:hidden;
+  }
+  #lost_Data
+{
+  visibility:hidden;
+  }
+
+@font-face {
+  font-family: ArbFONTS;
+  src: url(ArbFONTS-Abdo-salem-Bold.ttf);
+}
+ #date_time_now
+{
+visibility:hidden;
+}
+#nodust_misr{
+  visibility:hidden;
+  }
+
+   </style>
+   
+<style type="text/css" media="print">
+
+
+  @page { size:A4 ; }
+  
+  @media print {
+  #printBtn {
+    display: none;
+  }
+   #Approved_Data
+{
+  visibility:visible;
+  }
+   #tableform_{
+  display:none;
+  }
+  #lost_Data
+{
+  visibility:visible;
+  }
+  #submitBtn {
+    display: none;
+  }
+  #hiddenform{
+   display: none;
+  }
+  #links{
+  display: none
+  }
+ #navBar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+ #endorsement
+ {
+ direction: rtl;
+ }
+ #printing_data{
+display:inline-block;
+}
+ 
+  #titlepage{ display: none;}
+}
+ #date_time_now
+{
+visibility:visible;
+}
+#nodust_misr{
+  visibility:visible;
+  }
+
+#logoprint{visibility: visible;}
+
+#contentpage{ margin-top: -50px;}
+
+ #Header, #Footer { display: none !important; }
+#footer{ display: none;}
+
+}
+</style>
+
+</head>
+
+<body class="fixed-top">
+
+<div id="navBar">
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="HideButton"/>
+	 </jsp:include>
+   </div>
+    
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+   
+   <div id="sidemenu">
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    </div>
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul id="links" class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                       <li>
+                           <a href="#"> <spring:message code="Payroll_payments" /> <span class="divider">&nbsp;</span>
+                       </li>
+                       <li><a href="#"></a><span class="divider-last">&nbsp;</span></li>
+                  </ul>
+                
+				  
+				   
+               </div>
+            </div>
+       
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                        <div class="widget-title" id="titlepage">
+                           <h4> <spring:message code="Payroll_payments" /></h4>
+                        </div>
+                        
+						
+						
+						<div class="widget-body" style="text-align: left;" id="contentpage">
+						
+						<table width="100%" dir="rtl">
+<tr>
+<td>
+
+<div class="row-fluid invoice-list" >
+
+                              
+                             <div>
+                                <div class="span6">
+                                    <div> <h5 ><spring:message code="warehousename" />
+                                     <strong>${formData.wareHouseName} </strong>	</h5></div>
+                                </div>
+                                 <div class="span6">
+                                    <div > <h5 ><spring:message code="Date" /> 
+                                     <strong> ${formData.assignDate} </strong>	</h5></div>
+                                </div>
+                             </div>
+                                
+                              <div>
+                                <div class="span6">
+                                    <div > <h5 ><spring:message code="Agentname" />
+                                   <strong>${formData.agentName} </strong>	</h5></div>
+                                </div>
+                                <div ></div>
+                            
+                               </div>
+                              
+                                <div id = "printing_data">
+                            		<div class="span6">
+                                    <div > <h5 ><spring:message code="DriverNameOnly" />:
+                                   <strong id="driver_name"></strong>	</h5></div>
+                             	   </div>
+                              <div class="span6">
+                                    <div > <h5 ><spring:message code="Total" />:
+                                   <strong id="total_cash"></strong>	</h5></div>
+                             	   </div>
+                               </div>
+                               
+                                
+                            </div>
+</td>
+</tr>
+</table>
+						
+		                 <img src="resources/assetsnodust/img/logored.png" alt="logo NODUST" style=" width: 25%;  float: right; margin-right:35%;   margin-top: -170px ; " id="logoprint">
+						
+                            
+                           <br> 
+                            
+					<form:form id="tableform" modelAttribute="formData" class="form-horizontal"  >
+                       <div id="hiddenform" class="row-fluid">
+                                <div class="span6 invoice-block ">
+                                    <ul class="unstyled amounts" data-select2-id="4">
+                                    
+                                       <li>  <strong class="span3">  <spring:message code="DriverNameOnly" /> :</strong> 
+                                     <form:select path="selectedDriver" onchange="selectDriverfn(this)" id="selectDriver" class= "span8 js-example-basic-multiple">
+                                  		<option value="no_value">Please Select Driver</option>
+								       <c:forEach items="${formData.drivers_lst}" var="driver">
+								        <option value="${driver.user_name}" >${driver.full_name_en} , ${driver.user_name}</option>
+								     </c:forEach>
+								     
+							       </form:select>
+							       	
+								    </li> 
+                                        <li><strong class="span3"><spring:message code="CashOnCover.CashAccount" /></strong> <form:input id="cashAccount"  path="accounts[0].product_name"  class="span8" disabled="true" /></li>
+                                        <li><strong class="span3"><spring:message code="CashOnCover.AvailableBalance" /></strong> <form:input id="total" path="accounts[0].total_stock_quantity"  class="span8" disabled="true" /></li>
+                                        <li><strong class="span3"><spring:message code="Total" /></strong> <form:input id="totalPayed" value="0.0" class="span8" path="" disabled="true" step="0.01" /></li>
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+                                                       <br> 
+                                                       <br> 
+                            
+                            
+                            <table id="tableform_" class="table dataTable table-striped table-bordered table-advance table-hover table-responsive" >
+						          <thead>
+                                    <tr>
+                                        <th class="first">  <input onchange="selectDeselectAll(this)" id="selectAll" type='checkbox' name='selectAll'> </th>                                        
+                                         <th style="display: none;">ID</th>
+                                        <th style="display: none;"><spring:message code="DriverNameOnly"/></th>
+                                        <th style="display: none;">TYPE</th>
+                                        <th data-override="payment_value"><spring:message code="amount_only"/></th>
+                                        <th style="display: none;">check</th>
+                                        <th style="display: none;">cloud_transid</th>
+                                        <th ><spring:message code="reference"/></th>
+                                        <th><spring:message code="payment_type"/></th>
+                                        <th><spring:message code="notes"/></th>
+                                        <th style="display: none;">notes</th>
+                                    </tr>
+                                    
+                                    </thead>
+						                 <tbody>
+						            <c:forEach var="pay" items="${pays}" varStatus="vs">
+                                    <tr class="odd gradeX ">
+                                      <td class="first" ><input class="commonClass" onchange="changeState(this)" type='checkbox' name='record' >
+                                      </td>                                      
+                                        <td style="display: none;">${pay.emp_id}</td>
+                                        <td style="display: none;">${pay.emp_name}</td>
+                                        <td style="display: none;">${pay.emp_type}</td>
+                                        <td>${pay.payment_value}</td>
+                                        <td style="display: none;">false</td>
+                                         <td style="display: none;">${pay.cloud_transid}</td>
+                                        <td>${pay.payment_refrence}</td>
+                                        <td>${pay.payment_type}</td>
+                                        <td><textarea   onchange="changeComment(this)" rows="1"></textarea></td>
+                                        <td style="display: none;"></td>
+                                    </tr>
+                                    </c:forEach>
+                                    </tbody>
+						      
+                             </table>
+                                                        
+                              <div  class="space20" ></div>
+                        <div class="clearfix"></div>
+                            <div class="row-fluid" id="Approved_Data">
+                            <strong><spring:message code="paidPayroll"/></strong>
+                            <table id="approved_tbl"   class="table table-striped table-bordered   table-advance table-hover table-responsive">
+                            <thead>
+                             <tr>
+                                        <th data-override="payment_value"><spring:message code="amount_only"/></th>
+                                        <th ><spring:message code="reference"/></th>
+                                        <th><spring:message code="payment_type"/></th>
+                                        <th><spring:message code="notes"/></th>
+                                 
+                                       </tr>
+                                       </thead>
+                                       <tbody>
+                                       </tbody>
+                            </table>
+                            </div> 
+                                                        <div class="row-fluid" id="lost_Data" style="margin-top: 15px;">
+                            <strong><spring:message code="unpaidPayroll"/></strong>
+                            <table id="lost_prod" class="table table-striped table-bordered   table-advance table-hover table-responsive">
+                            <thead>
+                            <tr>
+                                        <th data-override="payment_value"><spring:message code="amount_only"/></th>
+                                        <th ><spring:message code="reference"/></th>
+                                        <th><spring:message code="payment_type"/></th>
+                                        </thead>
+                                    <tbody></tbody>    
+                            </table>
+                            </div>
+                            
+                       
+                       <div class="row-fluid  ">
+                                                         <button type="button"  id="submitBtn" onclick="validateForm()" class="btn btn-success pull-right green mright5 "><i class="icon-save icon-white"></i> <spring:message code="Submit" /></button>   
+                            
+                             <button type="button" id="printBtn"  disabled="true" style="margin-right:5px;" class="btn btn-primary pull-right" onclick="print_data()"><i class="icon-print  icon-white"></i> <spring:message code="Print" /></button>   
+                            
+       
+                            </div>
+                            
+                             
+                          <div class="clearfix"></div>
+                      </form:form>
+                           
+						 </div>
+						 
+						            
+                             <br> <br> <br>   
+                        <div  class="row-fluid  " > 
+                            <strong id="nodust_misr" style="text-align:left;"><spring:message code="MisrNoDust"/></strong>
+                       
+                        <strong id="date_time_now" style="text-align: center; margin-left:200px;"> </strong>
+                        </div>
+						
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            
+           
+            </div>
+          
+         </div>
+   
+	
+    </div>
+
+ 
+ 
+   <div id="footer">
+       &copy; <spring:message code="CopyRights" />
+   
+   </div>
+ 
+ <!-- Open & close MENU -->
+  
+   <script>
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      });
+      
+      
+      function print_data()
+      {
+   	   var today = new Date();
+     	   var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+     	   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+     	   var dateTime = date+' '+time;
+     	   document.getElementById("date_time_now").innerText=dateTime;
+     	   var table=document.getElementById("tableform_");
+   		   var row_num=table.getElementsByTagName("tr").length;
+	     	  var emp_body="";
+	     	 $("#lost_prod tbody").html(emp_body);
+	     	 $("#approved_tbl tbody").html(emp_body);
+	     	var lost_rec="";
+  		  var approved_rec="";
+	     	 for(var x=1;x<row_num;x++)
+   		  {
+	     	if(table.rows[x].cells[5].innerText=="true")
+	     		{
+	     		var row_val="<tr><td>"+table.rows[x].cells[4].innerText+"</td><td>"+table.rows[x].cells[7].innerText+"</td><td>"+table.rows[x].cells[8].innerText+"</td><td>"+table.rows[x].cells[10].innerText+"</td></tr>";
+	     		approved_rec = approved_rec+ row_val;
+	     		}
+	     	else{
+	     		var row_val="<tr><td>"+table.rows[x].cells[4].innerText+"</td><td>"+table.rows[x].cells[7].innerText+"</td><td>"+table.rows[x].cells[8].innerText+"</td></tr>";
+	     		lost_rec = lost_rec+ row_val;
+	     	}
+	     	
+   		  }
+	     	 if(lost_rec =="")
+	     		 {
+	     		 document.getElementById("lost_Data").style.display='none';
+	     		 }
+	     	 else{
+	     	 $("#lost_prod tbody").append(lost_rec);
+	     	 }
+	     	$("#approved_tbl tbody").append(approved_rec);
+           window.print();
+      }
+      
+      
+      
+      
+      function validateForm() {
+    	  
+    		document.getElementById("selectDriver").disabled = true ;
+        	$('#tableform_  input[type=checkbox]').prop("disabled", true);
+        	$("#tableform_ textarea").prop("disabled", true);
+	    	document.getElementById("submitBtn").disabled = true;
+	    	
+      	  var driver_selected =  document.getElementById("selectDriver").value;
+      	  var totalPayed =   parseFloat(document.getElementById("totalPayed").value).toFixed(2);
+      	  var avaiableCash =   parseFloat(document.getElementById("total").value).toFixed(2);
+          var difference = avaiableCash-totalPayed;
+      	  if (driver_selected=="no_value")
+      		  {
+      		document.getElementById("selectDriver").disabled = false ;
+        	$('#tableform_  input[type=checkbox]').prop("disabled", false);
+        	$("#tableform_ textarea").prop("disabled", false);
+	    	document.getElementById("submitBtn").disabled = false;
+      		$.alert({
+   	          title: "Error",
+   			    content:"Please Select Valid Driver",
+   	          }); 
+      		  }
+      	  else if(totalPayed==0.00)
+      		  {
+      		document.getElementById("selectDriver").disabled = false ;
+        	$('#tableform_  input[type=checkbox]').prop("disabled", false);
+        	$("#tableform_ textarea").prop("disabled", false);
+	    	document.getElementById("submitBtn").disabled = false;
+      		  
+      		$.alert({
+     	          title: "Error",
+     			    content:"Please Select a Payment at least",
+     	          }); 
+      		  }
+      	  else if(difference < 0.00){
+      		  
+      		document.getElementById("selectDriver").disabled = false ;
+        	$('#tableform_  input[type=checkbox]').prop("disabled", false);
+        	$("#tableform_ textarea").prop("disabled", false);
+	    	document.getElementById("submitBtn").disabled = false;
+      		  
+        		$.alert({
+       	          title: "Error",
+       			    content:"Total Payments is greater than Availble Balance",
+       	          }); 
+      	  }
+      	  else{
+      		submitData(totalPayed);
+      	  }
+      	  
+       
+      	 
+	}
+      
+      function selectDriverfn(selected) {
+    	 
+    	  var table =$('#tableform_').DataTable();
+    	  $("#selectAll"). prop("checked", false);
+    	  $('.commonClass').attr('checked',false).change();
+    	  document.getElementById("totalPayed").value = parseFloat(0.0).toFixed(2) ;
+    	  var selected_driver= selected.value;
+    	  var selectedText = $("#selectDriver option:selected").html();
+    	  if(selectedText!="Please Select Driver")
+    		  {
+    	  var nameArr = selectedText.split(',');
+    	  document.getElementById("driver_name").innerHTML=nameArr[0];
+    		  }
+          
+    	  table
+          .columns( 1 )
+          .search( selected_driver )
+          .draw();
+
+	}
+      
+      function submitData(totalPayed) {
+    		 var table = $('#tableform_').tableToJSON(
+          			  { ignoreColumns:[0,1,2,3,4,7,8,9]}
+          			  );
+    		 var table2 =  $('#tableform_').tableToJSON(
+         			  { ignoreColumns:[0,1,2,3,5,7,8,9]}
+ 			  );
+    		 console.log(table);
+    		 console.log(table2);
+    		 for (var i = table.length - 1; i >= 0; i--)  {
+    		   		var x = table[i];
+    		   		if (x.check=="false")
+    		   			{
+    		   			table.splice( i, 1 );
+    		   			table2.splice( i, 1 );
+    		   			}
+    		   			
+    		     	}
+    		 
+    		 console.log(table2);
+    	    var payments ={
+    			  "payments_lst" : table2 ,
+    			  "totalPayed" : totalPayed 
+    			   	  };
+    	 
+    	 console.log(payments);
+    	var xhttp = new XMLHttpRequest();
+    	xhttp.onreadystatechange = function() {
+
+    	if (this.readyState == 4 && this.status == 200) {
+    		var response= this.responseText;
+    		if(response == "success")
+    			{
+    			
+    			 var totalPayed =   parseFloat(document.getElementById("totalPayed").value).toFixed(2);
+    	      	  var avaiableCash =   parseFloat(document.getElementById("total").value).toFixed(2);
+    	    	  document.getElementById("total_cash").innerHTML=totalPayed;
+
+    	      	document.getElementById("total").value = parseFloat(avaiableCash -totalPayed).toFixed(2)
+     	    	document.getElementById("printBtn").disabled = false;
+      	    	
+	      	    	$.alert({
+	      	    	  title: "Submitted successfully ",
+	         		    content:"Payments Submitted successfully ",
+	                    }); 
+	      	    	
+
+      	    	
+    			}
+    		else if(response =="no session"){
+    			location.reload();
+    		}
+    		else{
+    			
+    		    document.getElementById("submitBtn").disabled = false;
+      	    	document.getElementById("printBtn").disabled = true ;
+       	    	document.getElementById("accountSelect").disabled = false ;
+       	    	document.getElementById("selectDriver").disabled = false ;
+    			
+    		 	  $.alert({
+    		 		 title: "<spring:message code="ReleasingCash.FailedSubmit.title" />",
+         		    content:"<spring:message code="ReleasingCash.FailedSubmit.content" />",
+    		                         }); 
+    		 	
+    		}
+    	 }
+    	 }
+    	 xhttp.open("POST","submitPayrollPayments", true);
+    	 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    	 xhttp.send(JSON.stringify(payments));
+    	  
+	}
+      
+ 
+      
+      function  changeState(checkedVar) {
+    	  var rowIndex =checkedVar.parentNode.parentNode.rowIndex;
+    	  var myTable = document.getElementById('tableform_');
+          var totalPay = parseFloat(document.getElementById("totalPayed").value);
+          var payValue = parseFloat(myTable.rows[rowIndex].cells[4].innerHTML);
+    	  //alert(rowIndex);
+    	  
+    	  if (checkedVar.checked) {
+    		 
+              myTable.rows[rowIndex].cells[5].innerHTML="true";
+              document.getElementById("totalPayed").value = parseFloat(totalPay+payValue).toFixed(2) ;
+              
+    	  }
+    	  else{
+    		  myTable.rows[rowIndex].cells[5].innerHTML="false";
+    		  $("#selectAll"). prop("checked", false);
+    		  document.getElementById("totalPayed").value = parseFloat(totalPay-payValue).toFixed(2) ;
+    	  }
+      }
+      function submitFunction()
+      {
+    	  document.getElementById("submitBtn").disabled = true;
+      }
+      
+      function selectDeselectAll(checkedVar) {
+    	  
+    	  if (checkedVar.checked) {
+    		  document.getElementById("totalPayed").value = parseFloat(0.0).toFixed(2) ;
+        	  $('.commonClass').attr('checked',true).change();
+
+        	  }
+        	  else{
+        		  $('.commonClass').attr('checked',false).change();
+        	  }
+    	  }
+      function changeComment(x) {
+      	var rowIndex = x.parentNode.parentNode.rowIndex;
+          var val= x.value;
+          var myTable = document.getElementById('tableform_');
+          myTable.rows[rowIndex].cells[10].innerHTML = val;
+		}
+      
+      $(document).ready(function() {
+    	  
+    	  var table=  $('#tableform_').DataTable( {
+    		  "paging":   false ,
+    		  "info": false ,
+    		  "ordering": false
+    	    } );
+    	  
+    	  
+    	  table
+          .columns( 1 )
+          .search( "no_value" )
+          .draw();
+    	  
+    	  
+    	    $('.js-example-basic-multiple').select2();
+    	    document.getElementById("totalPayed").value = parseFloat(0.0).toFixed(2) ;    	   
+    	});
+      $('td input[type="checkbox"]').change(function () {
+    	  if (!this.checked)
+    		  {
+    		  $(this).closest('tr').find('textarea').val('');
+    		  }
+    	 
+    	  $(this).closest('tr').find('textarea').prop('disabled', !this.checked);
+    	  
+    	}).change();
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

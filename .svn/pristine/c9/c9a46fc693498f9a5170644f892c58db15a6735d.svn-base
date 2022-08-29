@@ -1,0 +1,206 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+    <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+    <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+    <%@page session="true"%>
+    
+      <!-- BEGIN SIDEBAR -->
+   
+	  <div id="sidebar" class="nav-collapse collapse">
+
+
+ <!--       <div class="sidebar-toggler  hidden-phone" ></div>	
+       
+       <div class="sidebar-togggler  hidden-phone" ></div>  -->	
+       
+    
+       
+	   <!-- BEGIN SIDEBAR MENU -->
+	
+          <ul class="sidebar-menu" style="visibility: visible;">
+          
+             <li><a class="" href="DashboardNoDust"><span class="icon-box"><i class="icon-home"></i></span> <spring:message code="Home.PageTitle"/></a></li>
+                     <sec:authorize access="hasAnyAuthority('ReleasingCash.View','RealesingProducts.View','ReleasingCashWithoutCover.View')">
+         <li class="has-sub  ">
+         <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span>Dispatch<span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+                  <sec:authorize access="hasAuthority('RealesingProducts.View')">
+                                 <li><a class="" href="DispatchingProducts"><spring:message code="ReleasingProducts.PageTitle"/></a></li>
+                                 </sec:authorize>
+                                 <sec:authorize access="hasAuthority('ReleasingCashWithoutCover.View')">
+             <li><a class="" href="DispatchingCash"> <spring:message code="ReleasingCash.PageTitle"/></a></li>
+                </sec:authorize>
+                                 <sec:authorize access="hasAuthority('ReleasingCash.View')">
+                      <li><a class="" href="DispatchingCashOnCover"><spring:message code="ReleasingCashOnCover.PageTitle"/></a></li>
+                      </sec:authorize>	
+                      
+                  </ul>
+         </li>
+         </sec:authorize>
+         <sec:authorize access="hasAnyAuthority('ReceivingProducts.View','ReceivingCash.View')">
+          <li class="has-sub  ">
+         <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span>Receive<span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+                  <sec:authorize access="hasAuthority('ReceivingProducts.View')">
+             <li><a class="" href="ReceivingProduct"> Receiving Products</a></li>
+             </sec:authorize>
+             <sec:authorize access="hasAuthority('ReceivingCash.View')">
+               <li><a class="" href="ReceivingCash"><spring:message code="ReceivingCash.PageTitle"/></a></li>
+                
+                      <li><a class="" href="ReceivingCashOnCover">Receiving Cash On Cover</a></li>
+				</sec:authorize>
+                  </ul>
+                  </li>
+         </sec:authorize>
+           <sec:authorize access="hasAuthority('ShipmentList.View')">
+				      <li><a class="" href="ViewShipmentList "><span class="icon-box"><i class="icon-home"></i></span>Shipment List </a></li> 
+	       </sec:authorize>
+	                         <sec:authorize access="!hasAuthority('Report.View')">
+	       
+	       <li class="has-sub  ">
+         <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span>Reports<span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+                  <sec:authorize access="!hasAuthority('Report.View')">
+                  	 <li><a class="" href="reports">Reports </a></li>
+                  	 </sec:authorize>
+                   <sec:authorize access="hasAuthority('GeneralReport.View')">
+                   <li><a class="" href="GeneralReports"><spring:message code="GeneralReport.PageTitle"/></a></li>
+                </sec:authorize> 
+                 
+	       </ul>
+	       </li>
+	       </sec:authorize>
+			  <sec:authorize access="hasAuthority('InventoryCheck.View')">
+            
+            <li class="has-sub ">
+                  <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span><spring:message code="InventoryCheck.PageTitle"/><span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+                  
+                     <li><a  href="InventoryCheck"><spring:message code="CreateInventoryCheck.PageTitle"/></a></li>
+                     <sec:authorize access="hasAuthority('MyInventoryCheck.View')">
+                     <li><a  href="MyInventoryCheck"><spring:message code="MyInventoryCheck.PageTitle"/></a></li>
+                     </sec:authorize>
+				
+                  </ul>
+                  
+              </li>  
+              
+           </sec:authorize>	
+				
+				<sec:authorize access="hasAnyAuthority('CashTransfer.View','CashTransferList.View')">
+	          <li class="has-sub ">
+                  <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span><spring:message code="CashTransfer.PageTitle" /><span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+                                     				<sec:authorize access="hasAuthority('CashTransfer.View')">
+             
+                      <li><a class="" href="InternalCashTransfer"><spring:message code="InternalCashTransfer.PageTitle" /></a></li>
+                        <li><a class="" href="CreateCashTransfer"><spring:message code="CreateCashTransfer"/></a></li>
+                        </sec:authorize>
+                        				<sec:authorize access="hasAuthority('CashTransferList.View')">
+                        
+				      <li><a class="" href="ViewCashTransferList">ViewCashTransferList</a></li>
+				      </sec:authorize>
+			
+                  </ul>
+                  
+              </li>  
+              </sec:authorize> 
+               
+				<sec:authorize access="hasAnyAuthority('CreateDirtyShipment.View','ViewDirtyShipment.View','ExternalShipments.View','ReceiveUntreatedProducts.View')">
+	          <li class="has-sub ">
+                  <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span>Dirty Shipments<span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+				<sec:authorize access="hasAuthority('CreateDirtyShipment.View')">
+                    <li><a class="" href="CreateDirtyShipment"><spring:message code="CreateDirtyShipment.PageTitle" /></a></li>
+                  </sec:authorize>
+                  
+                  <sec:authorize access="hasAuthority('ViewDirtyShipment.View')">
+                    <li><a class="" href="ViewDirtyShipments"><spring:message code="ViewDirtyShipments.PageTitle"/></a></li>
+                   </sec:authorize>
+                   <sec:authorize access="hasAuthority('ExternalShipments.View')">
+                                  <li><a class="" href="ViewExternalShipments"><spring:message code="ViewExternalShipments.PageTitle"/></a></li>
+                   
+                   </sec:authorize>
+                    <sec:authorize access="hasAuthority('ReceiveUntreatedProducts.View')">
+                    <li><a class="" href="ReceiveUntreatedProducts"><spring:message code="RecieveUntreatedProducts.PageTitle"/></a></li>
+                   
+                   </sec:authorize>
+                   
+                   <sec:authorize access="hasAuthority('CreateInternalDirtyShipment.View')">
+                    <li><a class="" href="InternalDirtyShipment"><spring:message code="CreateInternalDirtyShipment.PageTitle"/></a></li>
+                   </sec:authorize>
+				</ul>
+				</li>
+				</sec:authorize>
+				<!--  
+				                   <sec:authorize access="hasAnyAuthority('CreateCleanShipment.View','ReceiveCleanShipment.View')">
+				
+				    <li class="has-sub ">
+                  <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span><spring:message code="CleanShipment"/><span class="arrow"></span>
+                  </a>
+                  <ul class="sub">
+                  				                   <sec:authorize access="hasAuthority('CreateCleanShipment.View')">
+                  
+                  <li><a class="" href="CreateCleanShipment"><spring:message code="SendCleanShipment"/></a></li>
+                  
+                  </sec:authorize>
+                  
+                                                       <li><a class="" href="CleanShipmentList"><spring:message code="ReceiveCleanShipment"/></a></li>
+                   
+				
+                  </ul>
+                  
+              </li>  
+              </sec:authorize>
+              -->
+				  <sec:authorize access="hasAnyAuthority('StockManagement.View','ProductsList.View')">
+              
+                 <li class="has-sub ">
+                  <a href="#" class="">
+                      <span class="icon-box"> <i class="icon-home"></i></span> <spring:message code="StockManagement.PageTitle"/> <span class="arrow"></span>
+                  </a>
+                  <ul class="sub"> 
+              <sec:authorize access="hasAuthority('ProductsList.View')">
+                    <li><a class="" href="MyProducts"><spring:message code="Inventory.productList.PageTitle"/></a></li>
+                  </sec:authorize>
+                   <sec:authorize access="hasAuthority('CreateConvertRequest.View')">
+                      <li><a class="" href="Convertproduct"><spring:message code="ConvertProduct.PageTitle"/></a></li>
+                      </sec:authorize>
+                      
+                                         <sec:authorize access="hasAuthority('ConvertProduct.View')">
+                      
+                       <li><a class="" href="ProductConversion"><spring:message code="ProductConversion"/></a></li>
+                      </sec:authorize>
+                       <sec:authorize access="hasAuthority('ConvertRequest.View')">
+                      <li><a class="" href="ConvertProductRequests"><spring:message code="ConvertProductRequests.PageTitle"/></a></li>
+				 
+				</sec:authorize>
+				
+                  </ul>
+                  
+              </li>  
+              </sec:authorize>
+				
+				
+				
+          </ul>
+     
+		 <!-- END SIDEBAR MENU -->
+      </div>
+	 	 
+      <!-- END SIDEBAR -->
+      
+      

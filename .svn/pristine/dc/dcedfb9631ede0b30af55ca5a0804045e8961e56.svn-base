@@ -1,0 +1,28 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.UntreatedProductsDAO;
+import com.jwt.model.DirtyProductInPackage;
+
+@Service
+@Transactional
+public class UntreatedProductsServiceImpl implements UntreatedProductsService {
+
+	@Autowired
+	private UntreatedProductsDAO dao;
+	@Override
+	public List<DirtyProductInPackage> getUntreatedProducts() {
+		return dao.getUntreatedProducts();
+	}
+	@Override
+	public String submitRecieveUntreatedProducts(String destination, String source_id, String products,
+			String logged_user, String driver_id) {
+		return dao.submitRecieveUntreatedProducts(destination, source_id, products, logged_user, driver_id);
+	}
+
+}

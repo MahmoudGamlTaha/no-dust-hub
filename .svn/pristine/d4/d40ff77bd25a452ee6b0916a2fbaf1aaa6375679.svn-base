@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <title> Product Reconciliation</title> 
+   <link href="img/no.jpeg" rel="icon" />
+    
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+ 
+ <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet"  />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+  <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+    <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+    
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+     <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+   <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+
+    <script type="text/javascript" src="resources/assetsnodust/js/jasontable.js"></script>
+   
+<style >
+.errorblock {
+         color: #000;
+         background-color: #ffEEEE;
+         border: 3px solid #ff0000;
+         padding: 8px;
+         margin: 16px;
+      }
+.rotate {
+    -moz-transition: all .5s linear;
+    -webkit-transition: all .5s linear;
+    transition: all .5s linear;
+}
+.rotate.down {
+    -moz-transform:rotate(90deg);
+    -webkit-transform:rotate(90deg);
+    transform:rotate(90deg);
+}
+.popup-overlay {
+visibility:hidden;
+}
+
+.popup-content {
+visibility:hidden;
+}
+.fail{
+background-color:rgb(255,0,0);
+}
+.pass
+{
+background-color:rgb(0,128,0);
+
+}
+.validation_Rec{
+    width:100%;
+    height:100%;
+    background-color:rgb(0,0,0,0.7);
+    top:0;
+    display:none;
+    justify-content: center;
+    align-items: center;
+    position:absolute;
+}
+.val_data{
+width:300px;
+height:300px;
+    background-color:white;
+    
+
+}
+</style>
+</head>
+
+<body class="fixed-top">
+
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="Dashboardli"/>
+	 </jsp:include>
+   
+    
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                       <li>
+                           <a href="ReceivingProduct"> <spring:message code="ProductReconciliation.ReceivingProducts"/></a> <span class="divider">&nbsp; &nbsp;</span>
+                       </li> 
+                       
+                       <li><a href="ProductReconcilaitionData?driver_id=${Rec_data.driver_id}"> <spring:message code="ProductReconciliation.ProductReconciliation"/></a><span class="divider-last">&nbsp;</span></li>
+                  </ul>
+      	  
+				   
+               </div>
+            </div>
+            
+	   
+           <form:form  id="reconciliationform" class="form-horizontal"  modelAttribute="Rec_data" name="Recon_form"  >
+        
+                                      
+          
+            <div id="page" >
+               <div class="row-fluid">
+                  <div class="span12">
+                 
+                     <div class="widget">
+                     
+                        <div class="widget-title">
+                           <h4> <spring:message code="ProductReconciliation.ProductReconciliation"/></h4>
+                           
+                        </div>
+                        
+                        <div class="widget-body">
+                        <div class="space10"></div>
+                         <div class="widget-title">
+                           <h4> <spring:message code="ShipemntsData_Page_Title"/></h4>
+                           
+                        </div>
+                        <div class="row-fluid invoice-list" style="border:outset;">
+                              <form:hidden path="rec_date"/>
+                              <form:hidden path="warehouse_name"/>
+                              <form:hidden path="agent_name"/>
+                              <form:hidden path="driver_name"/>
+                              <form:hidden path="driver_id"/>
+                              <form:hidden path="ship_id"/>
+                             <div class="row-fluid">
+                                
+                                    <div style="float:left;width:40%;"> <h5 style="margin-left:5px;"><strong> <spring:message code="warehousename" /> </strong>
+                                      ${Rec_data.warehouse_name }	</h5></div>
+                                    
+                                     <div style="float:left; width:30%;"> <h5 ><strong><spring:message code="Agentname" /></strong> 
+                                      ${Rec_data.agent_name} 	</h5></div>
+                                    
+                                     <div style="float:left; width:30%;"> <h5 ><strong><spring:message code="Date" /></strong>
+                                      ${Rec_data.rec_date} 	</h5></div>
+                                    
+                                 <div style="float:left;width:40%;"> <h5 style="margin-left:5px;"><strong><spring:message code="Drivername" /></strong> 
+                                     ${Rec_data.driver_name} 	</h5></div>   
+                           <div style="float:left;"> <h5 ><strong><spring:message code="areaName" /></strong> 
+                                     ${Rec_data.area_name} 	</h5></div>
+                               
+                                 
+                             </div>
+                                
+                             
+                              
+                              
+                            </div>
+				
+                     </div>
+                    
+                                    <div>
+						
+							<table id="example2" class="table table-striped table-bordered   table-advance  table-responsive " style="width:80%;margin:auto;">
+						      <thead>
+						       <tr>
+						        <th style="display:none;">dms_product_id</th>
+						        <th style="display:none;">treatment_id</th>
+						        <th style="display:none;">product_sku</th>
+						        <th style="display:none;">expected_clean</th>
+						        <th style="display:none;">expected_dirty</th>
+						         <th style="display:none;">driver_id</th>
+						         <th style="display:none;">recon_clean</th>
+						         <th style="display:none;">recon_dirty</th>
+						         <th style="display:none;">actual_calculated</th>
+						         <th  style="display:none;">actual_Quantity</th>
+						         <th  style="display:none;">product_type</th>
+								<th data-override="product_name"><spring:message code="ProductReconciliation.ProductTable.ProductName" /></th>
+								<th ><spring:message code="DMSExpectedQuantity"/></th>
+								<th ><spring:message code="ReconciliationQuantity"/></th>
+								<th data-override="actual_calculated"><spring:message code="ActualCalculated"/></th>
+								<th><spring:message code="ActualQ"/></th>
+								<th><spring:message code="ProductReconciliation.ProductTable.ReturnedLost" /></th>
+								    	<th style="display:none;">quantity</th>
+								    	</tr>
+							</thead>
+							   <tbody>
+								    <c:forEach items="${Rec_data.actual_counts}" var="Data" varStatus="var_status">
+								    
+                                <tr class="odd gradeX ">
+						       
+						       <!--  
+								    <td class="btnClose">
+								    
+								    <span class="badge badge-important rotate" style="padding: 3px 7px;"><i class=" icon-caret-right rotate" style="font-size: 16px;"></i></span> 
+								    
+								    </td>
+								    -->
+								  <!--  <form:hidden path="actual_counts[${var_status.index}].dms_product_id"/>
+								    <form:hidden path="actual_counts[${var_status.index}].treatment_id"/>
+								     <form:hidden path="actual_counts[${var_status.index}].product_sku"/>
+								     <form:hidden path="actual_counts[${var_status.index}].proudct_name"/>
+								     <form:hidden path="actual_counts[${var_status.index}].quantity"/>
+								     <form:hidden path="actual_counts[${var_status.index}].expected_clean"/>
+                                   <form:hidden path="actual_counts[${var_status.index}].expected_dirty"/>
+                                   <form:hidden path="actual_counts[${var_status.index}].driver_id"/>
+                                     <form:hidden path="actual_counts[${var_status.index}].recon_clean"/>
+                                      <form:hidden path="actual_counts[${var_status.index}].recon_dirty"/>
+                                      <form:hidden path="actual_counts[${var_status.index}].expected_new"/>
+                                      <form:hidden path="actual_counts[${var_status.index}].actual_new"/>
+                                      <form:hidden path="actual_counts[${var_status.index}].cancel"/>
+                                       <form:hidden path="actual_counts[${var_status.index}].actual_cancel"/>
+                                       <form:hidden path="actual_counts[${var_status.index}].returned_lost"/>
+                                       <form:hidden path="actual_counts[${var_status.index}].actual_calculated"/>
+                                  <form:hidden path="actual_counts[${var_status.index}].product_type"/> -->
+                                  <td style="display:none;">${Data.dms_product_id}</td>
+						        <td style="display:none;">${Data.treatment_id}</td>
+						        <td style="display:none;">${Data.product_sku}</td>
+						        <td style="display:none;">${Data.expected_clean}</td>
+						        <td style="display:none;">${Data.expected_dirty}</td>
+						         <td style="display:none;">${Data.driver_id}</td>
+						         <td style="display:none;">${Data.recon_clean}</td>
+						         <td style="display:none;">${Data.recon_dirty}</td>
+						         <td style="display:none;">${Data.actual_calculated}</td>
+						         <td  id="actual_quan[${var_status.index}]" style="display:none;">${Data.actual_Quantity}</td>
+						         <td  style="display:none;">${Data.product_type}</td>
+                                   <td>${Data.proudct_name}</td>
+                                  
+                                   <c:if test="${Data.product_type==1}">
+                                    <td >${Data.expected_clean}</td>
+                                    </c:if>
+                                     <c:if test="${Data.product_type!=1}">
+                                    <td >${Data.expected_dirty}</td>
+                                    </c:if>
+                                     <c:if test="${Data.product_type==1}">
+									<td >${Data.recon_clean}</td>
+									</c:if>
+									<c:if test="${Data.product_type!=1}">
+									<td >${Data.recon_dirty}</td>
+									</c:if>
+                                     <td >${Data.actual_calculated}</td>						                                                       
+                             <td ><form:input   type="text" path="actual_counts[${var_status.index}].actual_Quantity" id="Actual_data[${var_status.index}]" onchange="change_Quan(${var_status.index})" pattern="^(?=\d*[0-9])\d+$" title="This field should be positive integer" required="required"/></td>
+                            <td>${Data.returned_lost}</td>
+                               <td style="display:none;">${Data.quantity}</td>
+                                </tr>
+                                <!--  
+								 <c:if test="${Data.product_type!=1}">
+								<tr style="display:none;" id="detailsTable">
+	
+								<td class="accordion-body collapse"  colspan="10">
+							
+									
+													
+													  <table class="table table-striped table-bordered" id="rlost-pro">
+														<thead>
+														   <tr>
+															
+																 
+																<td><spring:message code="ProductReconciliation.LostTable.ProductName" /> </td>
+																<td><spring:message code="ProductReconciliation.LostTable.Quantity" /></td>
+																<td><spring:message code="ProductReconciliation.LostTable.Source" /></td>
+																<td><spring:message code="ProductReconciliation.LostTable.Accountable" /></td>
+																
+																
+															</tr>
+														</thead>
+														<tbody>
+															<tr class="odd gradeX ">
+											
+															</tr>
+															
+														</tbody>
+														</table>
+																			
+														
+												
+		
+							  </td>
+							</tr>
+							 </c:if>
+	
+	                 -->
+	                  </c:forEach>
+							
+	
+                              
+                                </tbody>
+						 
+						      
+                             </table>
+                              </div>
+                             	     <div class="space20"></div> 
+                             	                               <button type="button" onclick="Submit_Form()" class="btn btn-success pull-right  green mright5" id="submit_btn" style="margin-right:10px;"><i class="icon-save icon-white"></i> <spring:message code="Next"/></button>
+                             	     <div class="space10"></div>
+						 <div class="clearfix" ></div>
+						 
+                        
+                                     
+                                    </div>
+                                 </div>
+                                 
+                        
+						  
+						    
+						  </div>
+                        </div>
+          
+                     </div>
+                  </div>
+                  
+                   
+                     </div>
+               <div id="footer">
+       &copy; <spring:message code="CopyRights"/>
+   
+   </div>
+                 </form:form>
+              
+              
+            
+            
+          
+            
+         
+ 
+	
+    
+ 
+ 
+   
+ 
+ <!-- Open & close MENU -->
+  
+   <script>
+      jQuery(document).ready(function() {			
+      	App.init();
+      });
+      //submitactuals
+     function change_Quan(index)
+     {
+    	 var Quan=document.getElementById("Actual_data["+index+"]").value;
+    	 document.getElementById("actual_quan["+index+"]").innerHTML=Quan
+     }
+      function Submit_Form()
+      {
+  		
+
+    	  	 var validate_form = document.getElementById("reconciliationform").reportValidity()
+    	  var rec_data=$('#example2').tableToJSON({ignoreColumns:[12,13,15]});
+    	  console.log(rec_data);
+    	  var ship_date='${Rec_data.rec_date}';
+    	  var driver_id='${Rec_data.driver_id}';
+    	  var ship_id='${Rec_data.ship_id}';
+        	var rec_form={
+        			"actual_counts":rec_data,
+        			"Rec_date":'${Rec_data.rec_date}',
+        			"agent_name":'${Rec_data.agent_name}',
+        			"driver_id":'${Rec_data.driver_id}',
+        			"ship_id":ship_id
+        	};
+        	console.log(rec_form);
+        	if(validate_form!=false)
+        		{
+        		document.getElementById("submit_btn").disabled=true;
+        	var xhttp = new XMLHttpRequest();
+      		xhttp.onreadystatechange = function() {
+      			
+
+      			if (this.readyState == 4 && this.status == 200) {
+      			var resp=this.responseText;
+      			console.log(resp);
+      			if(resp=="done")
+      				{
+      				window.location.replace("ReconciliationValidate?driver_id="+driver_id);
+      				}
+      			if(resp==="alreadysubmitted")
+      				{
+      				$.alert({
+    		              title: "Reconciliation Not Submited Successfully",
+    		  		    content:"Reconciliation already Submitted",
+    		              }); 
+    				document.getElementById("submit_btn").disabled=true;
+      				}
+      			if(resp==="notdone")
+  				{
+  				$.alert({
+		              title: "Reconciliation Not Submited Successfully",
+		  		    content:"Please insert correct data",
+		              }); 
+				document.getElementById("submit_btn").disabled=true;
+  				}
+      			}
+      		}
+      		xhttp.open("POST","submitactuals", true);
+      		 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+      		 xhttp.send(JSON.stringify(rec_form));
+        		}
+      }
+   </script>
+   
+      
+      <script>
+  $(document).ready(function() {
+    $( ".btnClose" ).on( "click", function( event ) {
+    	
+		 var x= $(this).closest("tr").next().toggle();
+		 $(this).toggleClass("down");
+    });
+  
+}); 
+ 
+   </script>
+   
+     <script>
+  $(document).ready(function() {
+
+    $(".rotate").click(function () {
+        $(this).toggleClass("down");
+    })
+}); 
+
+   </script>
+   
+   <script>
+   $(document).ready(function(){
+       $(".add-row2").click(function(){
+    	 //  var table=$(this).parent().find("table tr");
+    	 //  var pro_val=table.rows[0].cells[1].innerHTML;
+    	   
+    	//	var x=document.getElementById("example2");
+            //	var closest_tr=($this).parent.find("tr");
+            //	var index=closest_tr.rowIndex;
+            	var val=x.rows[1].cells[3].innerHTML;
+            	var sel=document.getElementById("lost-pro");
+            	var data=x.rows[1].cells[4].innerHTML;
+            
+                            //   $(this).parents().closest(".tab2 table  tbody").append(markup);
+       });
+   });
+   /*
+    $(document).ready(function(){
+    	if('${state}'==null||'${state}'=="")
+    		{
+    		alert("disable")
+    		}
+    	else if('${state}'=='Success')
+    		{
+    		alert("jjj")
+    		}*/
+        $(".add-row").click(function(index){
+     	  // var table=$(this).parents().find("lost-pro");
+     	   
+    	 // var pro_val=table.rows[0].cells[1].val;
+    	 //alert(pro_val);
+        	var x=document.getElementById("example2");
+        	//var closest_tr=$(this).parent.find("tr");
+        	//var lost_val= $(this).parent().find("table");
+        	//var values=lost_val.rows[]
+        	//var index=closest_tr.rowIndex;
+        //	alert(index);
+        	var val=x.rows[1].cells[3].innerHTML;
+        	//alert(val);
+        	var sel=document.getElementById("lost-pro");
+        	alert(sel);
+        	var data=sel.rows[1].cells[4].innerHTML;
+        	alert(data);
+        //	var par=$(this).parents().closest("lost-pro").next();
+        	var details=$(this).parents('tr').attr('id');
+        	
+        	
+          //  var row=$(this).closest('#tab1 table tbody');
+         //   var clone=row.clone();
+          //  $(this).closest('table tbody').append(markup);
+
+//          $('#tab1 table tbody').append(clone);
+        });
+        
+        $(".delete-row").click(function(){
+        
+            $(" #lost-pro  tbody ").find('input[name="record"]').each(function(){
+            	//var tbl_len=document.getElementById("clean_lost_pro").size();
+            	
+            	
+            	if($(this).is(":checked")){
+                    $(this).parents(" #lost-pro tbody tr ").remove();
+                }
+            		
+            });
+        });
+        
+        
+        
+        $(".delete-row2").click(function(){
+            $(" #Rlost_pro tbody").find('input[name="record"]').each(function(){
+            	//var tbl_len=document.getElementById("clean_lost_pro").size();
+            	
+            	
+            	if($(this).is(":checked")){
+            		
+                    $(this).parents(" #Rlost_pro tbody tr ").remove();
+                }
+            		
+            });
+        });
+     
+     
+</script>
+
+
+ 
+
+
+<script>
+function Validate_Change_Quan(index,DMS)
+{
+	var id_quan="quan["+index+"]";
+	var quan_val=parseInt(document.getElementById(id_quan).value);
+	var id_new="New["+index+"]";
+	var new_val=parseInt(document.getElementById(id_new).value);
+	var total=quan_val+new_val;
+	if(total!=DMS)
+		{
+		alert("Invalid Data ! \n Please insert Valid Quantities")
+		} 
+		
+}
+function validate_dirty_Quantity(index,DMS)
+{
+      
+ 
+	var dirty_quan_id="dirty_quan["+index+"]";
+	var dirty_quan_val=parseInt(document.getElementById(dirty_quan_id));
+	var lost_quan_id="lost_quan["+index+"]";
+	var lost_quan_val=parseInt(document.getElementById(lost_quan_id));
+	var rlost_quan_id="rlost_quan["+index+"]";
+	var rlost_quan_val=parseInt(document.getElementById(rlost_quan_id));
+	var validated_Quan=dirty_quan_val+lost_quan_val-rlost_quan_val;
+	var x=parseInt(DMS);
+	var val=parseInt(validated_Quan);
+	if(val!=x)
+		{
+		alert("Invalid Data ! \n Please insert Valid Quantities")
+		//alert("Invalid Data !");
+		}
+}
+function Validate_Lost_Quan()
+{
+	
+}
+
+</script>
+<script>
+function Validate_before_Submit()
+{
+	var table =document.findElementById("emxaple");
+	var Clean_Quantity_Val=table.findElementById("input");
+	var dirty_table=document.findElementById("example2");
+	var dirty_inputs=dirty_table.findElementById("input");
+	
+	
+}
+</script>
+
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+ 
+</body>
+<!-- END BODY -->
+</html>
+
+
+
+
+
+
+
+

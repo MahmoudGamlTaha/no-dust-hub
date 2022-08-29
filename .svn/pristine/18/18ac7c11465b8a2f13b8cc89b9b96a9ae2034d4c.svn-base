@@ -1,0 +1,138 @@
+package com.jwt.dao;
+
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.ActualCounts;
+import com.jwt.model.Facility;
+import com.jwt.model.ModuleSession;
+import com.jwt.model.User;
+import com.jwt.model.UserData;
+
+@Repository
+public class UserDAOImpl  implements UserDAO{
+	
+	JdbcTemplate template;
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public User getUser(String UserName) {
+		// TODO Auto-generated method stub
+		//return (User) sessionFactory.getCurrentSession().createQuery("from User c where c.USER_NAME='"+UserName+"'");
+		
+		return (User) sessionFactory.getCurrentSession().get(User.class, UserName);
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public User updateUser(User user) {
+	   sessionFactory.getCurrentSession().update(user);
+	   return user;  
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> GetAllUsers() {
+		// TODO Auto-generated method stub
+		return sessionFactory.getCurrentSession().createQuery("from User c ").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public UserData get_user_data(String userName) {
+		// TODO Auto-generated method stub
+		List<UserData> lst_data=sessionFactory.getCurrentSession().createQuery("from UserData where user_name='"+userName+"'").list();
+		return lst_data.get(0);
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String get_decrypted_pass(String pass) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("get_decrypted_val");
+		procedureCall.registerParameter("p_encrypted_val", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_encrypted_val").bindValue(pass);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Update_user_pass(String userName, String pass) {
+		// TODO Auto-generated method stub
+		
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("update_password");
+		procedureCall.registerParameter("p_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_password", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_user_name").bindValue(userName);
+		procedureCall.getParameterRegistration("p_password").bindValue(pass);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Facility> get_all_facilities() {
+		// TODO Auto-generated method stub
+		return (List<Facility>)sessionFactory.getCurrentSession().createQuery("from Facility where facility_type_id=1").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Update_Login_Time(String user_name) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("update_login_time");
+		procedureCall.registerParameter("p_user_name", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_user_name").bindValue(user_name);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Logout_user(String User_name) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("logout");
+		procedureCall.registerParameter("p_user_name", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_user_name").bindValue(User_name);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public ModuleSession get_session_timeout(int module_id) {
+		// TODO Auto-generated method stub
+		List<ModuleSession>lst=(List<ModuleSession>)sessionFactory.getCurrentSession().createQuery("from ModuleSession where module_id="+module_id).list();
+		if(lst.size()>0)
+		{
+			return lst.get(0);
+		}
+		else {
+		return null;
+		}
+	}
+	
+}

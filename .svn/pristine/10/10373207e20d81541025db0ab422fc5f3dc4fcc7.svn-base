@@ -1,0 +1,167 @@
+package com.jwt.controller;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.gson.Gson;
+import com.jwt.model.CleanShipment;
+import com.jwt.model.CleanShipmentForm;
+import com.jwt.model.Facility;
+import com.jwt.model.Products;
+import com.jwt.model.User;
+import com.jwt.model.drivers;
+import com.jwt.service.CleanShipmentService;
+import com.jwt.service.ReceivingProductsService;
+import com.jwt.service.UserService;
+
+@Controller
+public class CleanShipmentController {
+	@Autowired
+	UserService user_service;
+	@Autowired
+	ReceivingProductsService receiving_service;
+
+	@Autowired
+	CleanShipmentService clean_service;
+@RequestMapping(value="/CreateCleanShipment")
+public ModelAndView Create_Clean_Shipment()
+{	ModelAndView new_Mod=new ModelAndView();
+	User u=new User();
+	CleanShipmentForm clean_form=new CleanShipmentForm();
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		System.out.println("UserName"+userDetail.getUsername());
+	    u=user_service.getUser(userDetail.getUsername());
+	    clean_form.setAgent_name(u.getDisplay_name());
+	    Facility fac=receiving_service.Get_Facility_Info(u.getOrg_unit_id());
+	    clean_form.setWarehouse_name(fac.getFacility_name());
+	    LocalDate date1=LocalDate.now();
+		Date rec_date1=java.sql.Date.valueOf(date1);
+		String check_current=String.valueOf(rec_date1);
+		String [] split_date=check_current.split(" ");
+		clean_form.setReq_date(split_date[0]);
+		List<drivers>lst_drivers=clean_service.Get_driver_List();
+		List<Facility> dest_warehouses=clean_service.Get_detsination_facility(u.getOrg_unit_id());
+		System.out.println("Dest_size"+dest_warehouses.size());
+		clean_form.setDriver_lst(lst_drivers);
+		clean_form.setFacilities(dest_warehouses);
+	//	System.out.println("Size"+lst_drivers.size());
+		List<Products> lst_prod=clean_service.Get_Clean_Packs(u.getOrg_unit_id());
+		System.out.println(lst_prod.get(0).getQuantity());
+		clean_form.setProd_lst(lst_prod);
+}
+	new_Mod.addObject("clean_form", clean_form);
+	
+	new_Mod.setViewName("CreateCleanShipment");
+	
+
+	return new_Mod;
+}
+@RequestMapping(value="/SubmitSendCleanShipment",method = RequestMethod.POST,consumes = "application/json")
+public ResponseEntity<String> Submit_Clean_Shipment(@RequestBody CleanShipmentForm clean_form)
+{
+	String resp="";
+	String pro="";
+	User u=new User();
+	Gson gson_products=new Gson();
+	List<Products> prod_lst=clean_form.getProd_lst();
+	String json_str=gson_products.toJson(prod_lst);
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		System.out.println("UserName"+userDetail.getUsername());
+	    u=user_service.getUser(userDetail.getUsername());
+	}
+	List<String> sku=new ArrayList<String>();
+	String unique_skus="";
+	
+for(int i=0;i<prod_lst.size();i++)
+{
+	if(unique_skus.contains(prod_lst.get(i).getProduct_id()))
+	{
+		
+	}
+	else
+	{
+		if(unique_skus=="")
+		{
+			unique_skus+=prod_lst.get(i).getProduct_id();
+
+		}
+		else
+		{
+		unique_skus+=','+prod_lst.get(i).getProduct_id();
+		}
+	}
+}
+String [] sku_arr=unique_skus.split(",");
+int [] quantity;
+for(int x=0;x<sku_arr.length;x++)
+{
+	BigDecimal total_quan;
+	int sum_quan=0;
+int quan;
+for(int i=0;i<prod_lst.size();i++)
+{
+	if(prod_lst.get(i).getProduct_id().equals(sku_arr[x]))
+	{
+
+		total_quan=prod_lst.get(i).getTotal_stock_quantity();
+		quan=Integer.parseInt(String.valueOf(prod_lst.get(i).getQuantity()));
+		sum_quan+=quan;
+		BigDecimal check_quan=new BigDecimal(sum_quan);
+		if(check_quan.compareTo(total_quan)>=1)
+		{
+			String x_product_name=prod_lst.get(i).getProduct_name()+" Has Wrong Quantities";
+			System.out.println(x_product_name);
+			return new ResponseEntity<String>(x_product_name,HttpStatus.OK);
+		}
+	}
+	
+}
+}
+System.out.println("UniqueSKUS:"+unique_skus);
+	 resp=clean_service.Submit_Send_clean_Shipment(u.getOrg_unit_id(), clean_form.getDest_id(), clean_form.getDriver_id(), json_str, clean_form.getAgent_name());
+	return new ResponseEntity<String>(resp,HttpStatus.OK);
+}
+@RequestMapping(value="/CleanShipmentList")
+public ModelAndView Get_Clean_Shipment_List()
+{
+	ModelAndView new_mod=new ModelAndView();
+	List<CleanShipment> lst_shipment=clean_service.Get_Clean_Shipment();
+	System.out.println(lst_shipment.size());
+	new_mod.addObject("lst_shipment", lst_shipment);
+	new_mod.setViewName("CleanShipmentList");
+	return new_mod;
+}
+@RequestMapping(value ="/CleanShipmentDetails",method=RequestMethod.GET)
+public ModelAndView Get_Clean_Shipment_Details(@RequestParam(value = "shipment_id", required = true) int shipment_id,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+ModelAndView new_mod=new ModelAndView();
+System.out.println(shipment_id);
+new_mod.setViewName("CleanShipmentDetails");
+return new_mod;
+}
+}

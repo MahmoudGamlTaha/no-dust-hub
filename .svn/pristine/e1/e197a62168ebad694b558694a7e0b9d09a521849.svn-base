@@ -1,0 +1,410 @@
+package com.jwt.dao;
+
+import java.sql.ResultSet;
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.ActualCounts;
+import com.jwt.model.DailyShipments;
+import com.jwt.model.DashBoardData;
+import com.jwt.model.DirtyShipmentData;
+import com.jwt.model.ExpectedProductsIN;
+import com.jwt.model.ExpectedProductsOut;
+import com.jwt.model.ExpectedQuantityOfProducts;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.NewProduct;
+import com.jwt.model.ProductComponentDetails;
+import com.jwt.model.ProductRawMaterial;
+import com.jwt.model.Products;
+import com.jwt.model.ProductsType;
+import com.jwt.model.Treatment;
+import com.mysql.jdbc.Connection;
+
+
+@Repository
+public class StockManagmentDAOImpl implements StockManagmentDAO {
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryProduct> getAllProducts(int facility_id) {
+		List<InventoryProduct>products=sessionFactory.getCurrentSession().createSQLQuery("SELECT facilty_info.facility_id,CAST( facilty_info.total_stock_quantity AS varchar)AS quantity, products_.product_name ,trt.\"TRE_NAME\" AS treatment ,facilty_info.product_id \r\n" + 
+				"	FROM facility_product_info facilty_info , facilities facility  ,products products_ , \"TREATMENT_TYPES\" trt \r\n" + 
+				"	where facilty_info.facility_id = facility.id AND trt.\"TRE_ID\" = products_.treatment_id AND facilty_info.product_id = products_.product_sku\r\n" + 
+				"	AND facilty_info.facility_id = "+facility_id+"AND products_.product_category =1 And products_.type =1 AND facilty_info.total_stock_quantity >0 ORDER BY products_.product_name").setResultTransformer(Transformers.aliasToBean(InventoryProduct.class)).list();
+				return products;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String submitConvetProducts(int facility_id, String products, String username) {
+
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_convert_product");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products_data", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_products_data").bindValue(products);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(username);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		//System.out.println("function response "+ result);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyShipmentData> getConvertRequests(int facility_id) {
+		List<DirtyShipmentData>shipments=sessionFactory.getCurrentSession().createSQLQuery("select orders.id AS shipment_id , orders.order_time AS shipment_date , orders.logged_user , orders_status.status_name AS last_status \r\n" + 
+				"from orders  , orders_status \r\n" + 
+				"where orders_status.status_id=orders.order_status_id and orders.order_status_id in (2,3,4) and orders.order_type='2' and orders.order_source_id="+facility_id+" order by orders.id desc\r\n" + 
+				"").setResultTransformer(Transformers.aliasToBean(DirtyShipmentData.class)).list();
+				return shipments;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryProduct> getConvertReqProducts(int convert_id) {
+		List<InventoryProduct>products=sessionFactory.getCurrentSession().createSQLQuery("select  pro.product_name , treatment.\"TRE_NAME\" as treatment , CAST(details.quantity_requested AS VARCHAR)as quantity,details.comment \r\n" + 
+				"from orders_details details , products pro , \"TREATMENT_TYPES\" treatment\r\n" + 
+				"where details.product_id = pro.product_sku  and treatment.\"TRE_ID\" = pro.treatment_id\r\n" + 
+				"and details.order_id= "+convert_id+"order by pro.product_name").setResultTransformer(Transformers.aliasToBean(InventoryProduct.class)).list();
+				return products;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DirtyShipmentData getConvertReqWith(int id) {
+		List<DirtyShipmentData>shipments=sessionFactory.getCurrentSession().createSQLQuery("select ship.id AS shipment_id , ship.order_time AS shipment_date, ship.logged_user , os.status_name AS last_status , ship.approved_by AS approved_by , ship.approval_time AS approval_time \r\n" + 
+				"from orders ship , orders_status os \r\n" + 
+				"where order_type='2' and os.status_id=ship.order_status_id and ship.id="+id).setResultTransformer(Transformers.aliasToBean(DirtyShipmentData.class)).list();
+				if(shipments.size()>0)
+		          return shipments.get(0);
+				else 
+					return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String approveRejectConvertRequest(long shipment_id, int facility_id, String logged_user,
+			String approval_val) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("approve_convert_product");
+		procedureCall.registerParameter("p_shipment_id", Long.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_approval_val", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(shipment_id);
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_approval_val").bindValue(approval_val);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Products> get_product_list(int type,int fac_id) {
+		// TODO Auto-generated method stub
+		return (List<Products>)sessionFactory.getCurrentSession().createSQLQuery(" select pr.product_sku,pr.treatment_id ,pr.dms_product_id,pr.product_name, tt.\"TRE_NAME\" as treatment_name , fi.total_stock_quantity from facility_product_info fi , products pr,\"TREATMENT_TYPES\" tt where pr.product_sku=fi.product_id and tt.\"TRE_ID\"=pr.treatment_id and  fi.facility_id="+fac_id+"and fi.total_stock_quantity>0  and pr.type="+type+" and product_category=1 order by product_name").setResultTransformer(Transformers.aliasToBean(Products.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_Conversion(int fac_id, String logged_user, String from_type, String to_type,
+			String prod_data) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_product_conversion");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_from_type", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_to_type", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(fac_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_from_type").bindValue(from_type);
+		procedureCall.getParameterRegistration("p_to_type").bindValue(to_type);
+		procedureCall.getParameterRegistration("p_products").bindValue(prod_data);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+		// TODO Auto-generated method stub
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Treatment> Get_treatment_List() {
+		// TODO Auto-generated method stub
+		return (List<Treatment>)sessionFactory.getCurrentSession().createSQLQuery("select \"TRE_ID\" as treatment_id , \"TRE_NAME\" as treatment_name from \"TREATMENT_TYPES\" order by treatment_name").setResultTransformer(Transformers.aliasToBean(Treatment.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<NewProduct> Get_New_Product_List() {
+		// TODO Auto-generated method stub
+		return (List<NewProduct>)sessionFactory.getCurrentSession().createSQLQuery("   select\r\n" + 
+				"        pr.product_name ,\r\n" + 
+				"        pr.product_sku  \r\n" + 
+				"    from\r\n" + 
+				"        products pr \r\n" + 
+				"    where\r\n" + 
+				"        pr.product_sku in (\r\n" + 
+				"            select\r\n" + 
+				"                distinct(pc.product_sku) from product_component pc \r\n" + 
+				"        ) order by pr.product_name").setResultTransformer(Transformers.aliasToBean(NewProduct.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_Create_New_Product(String products, String logged_user, int facility) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_create_new_product");
+
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility);
+		procedureCall.getParameterRegistration("p_products").bindValue(products);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductComponentDetails> Get_Component_Details(String product_sku, int fac) {
+		// TODO Auto-generated method stub
+		return (List<ProductComponentDetails>)sessionFactory.getCurrentSession().createSQLQuery("select pr.product_name , CAST(fc.total_stock_quantity AS numeric),CAST(pc.quantity AS numeric)\r\n" + 
+				"from products pr, facility_product_info fc, product_component pc\r\n" + 
+				"where pr.product_sku=pc.component_sku and fc.facility_id= "+fac+" and fc.product_id=pc.component_sku and pc.product_sku='"+product_sku+"' order by pr.product_name").setResultTransformer(Transformers.aliasToBean(ProductComponentDetails.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductRawMaterial> Get_Raw_Materials(int order_id) {
+		// TODO Auto-generated method stub
+		return (List<ProductRawMaterial>)sessionFactory.getCurrentSession().createSQLQuery("select products.product_name , CAST(products.quantity as numeric), mu.unit\r\n" + 
+				"from\r\n" + 
+				"(select pr.product_name , CAST(sum(op.product_quantity) AS numeric)as quantity , pr.first_measurment_unit\r\n" + 
+				"from products pr , operations op\r\n" + 
+				"where op.transaction_id="+order_id+" and transaction_type_id='3' and transaction_movement_type='-1' and pr.product_sku=op.product_id\r\n" + 
+				"group by pr.product_name , pr.first_measurment_unit\r\n" + 
+				"order by pr.product_name) products\r\n" + 
+				"LEFT JOIN measurment_unit mu ON CAST(mu.id AS TEXT)=CAST(products.first_measurment_unit AS text)").setResultTransformer(Transformers.aliasToBean(ProductRawMaterial.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductsType> lst_shipment_type() {
+		// TODO Auto-generated method stub
+		return (List<ProductsType>)sessionFactory.getCurrentSession().createSQLQuery("select pt.id as type_id , pt.type as type_name from products_type pt where transition_flag = 1 order by pt.type").setResultTransformer(Transformers.aliasToBean(ProductsType.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public int Get_Dispatch_Count(int facility) {
+		// TODO Auto-generated method stub
+		List<DashBoardData>lst=(List<DashBoardData>)sessionFactory.getCurrentSession().createSQLQuery("select CAST(count(id) AS integer)AS dispatch_count from shippments where shipment_type_id=1 and  to_date(to_char(shipment_actual_delivery_date,'yyyy-mm-dd'),'yyyy-mm-dd') >current_date -1 and shippment_souce_id='"+facility+"'").setResultTransformer(Transformers.aliasToBean(DashBoardData.class)).list();
+	return lst.get(0).getDispatch_count();
+		//return Integer.parseInt(String.valueOf(lst.get(0)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public int Get_Reconciliation_Count(int facility) {
+		// TODO Auto-generated method stub
+		
+	
+		List<DashBoardData>lst=(List<DashBoardData>)sessionFactory.getCurrentSession().createSQLQuery("select CAST(count(id) AS integer) As reconciliation_count from shippments where shipment_type_id=2 and  to_date(to_char(shipment_actual_delivery_date,'yyyy-mm-dd'),'yyyy-mm-dd') >current_date -1 and shippment_destination_id='"+facility+"'").setResultTransformer(Transformers.aliasToBean(DashBoardData.class)).list();
+		return lst.get(0).getReconciliation_count();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DashBoardData Get_data(int facility) {
+		// TODO Auto-generated method stub
+		List<DashBoardData>lst_data=(List<DashBoardData>)sessionFactory.getCurrentSession().createSQLQuery("select CAST(count(sh1.id) AS integer) as dispatch_count,CAST(count(sh2.id) AS integer) as reconciliation_count , sum(expected.expected_money) as expected_money\r\n" + 
+				"		from shippments sh1 , shippments sh2 , expected_drivers_money_to_reconciliate expected \r\n" + 
+				"		where sh1.shipment_type_id=1 and to_date(to_char(sh1.shipment_actual_delivery_date,'yyyy-mm-dd'),'yyyy-mm-dd') >current_date -1 and sh1.shippment_souce_id='"+facility+"'\r\n" + 
+				"		and sh2.shipment_type_id=1 and to_date(to_char(sh2.shipment_actual_delivery_date,'yyyy-mm-dd'),'yyyy-mm-dd') >current_date -1 and sh1.shippment_destination_id='"+facility+"'").setResultTransformer(Transformers.aliasToBean(DashBoardData.class)).list();
+		if(lst_data!=null)
+		{
+		return lst_data.get(0);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public double Get_Expected_Cash() {
+		// TODO Auto-generated method stub
+		List<DashBoardData>lst=(List<DashBoardData>)sessionFactory.getCurrentSession().createSQLQuery("select CAST(sum(expected_money) AS TEXT) as expected_money from  expected_drivers_money_to_reconciliate ").setResultTransformer(Transformers.aliasToBean(DashBoardData.class)).list();
+		
+		return lst.get(0).getExpected_money();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryProduct> Get_Clean_Dirty_Products(int facility) {
+		// TODO Auto-generated method stub
+		return (List<InventoryProduct>)sessionFactory.getCurrentSession().createSQLQuery("select pr.product_name , pt.type , CAST(fc.total_stock_quantity  AS TEXT)as system_quantity \r\n" + 
+				"from products pr , products_type pt , facility_product_info fc \r\n" + 
+				"where fc.facility_id="+facility+" and pr.product_sku=fc.product_id and pt.id=pr.type and pr.type in (1,2) and product_category=1 order by product_name").setResultTransformer(Transformers.aliasToBean(InventoryProduct.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExpectedProductsOut> Get_Expected_Out(int facility) {
+		// TODO Auto-generated method stub
+		return (List<ExpectedProductsOut>)sessionFactory.getCurrentSession().createSQLQuery("select dms_cover_products.product_id, CAST(treatment_id AS integer), product_name , treatment_name , CAST(sum(quantity) AS integer) as quantity , CAST(fc.total_stock_quantity AS Text) as available_quantity \r\n" + 
+				"from dms_cover_products \r\n" + 
+				"LEFT JOIN facility_product_info fc \r\n" + 
+				"ON fc.facility_id="+facility+" and fc.product_id=(CASE WHEN treatment_name!=' ' THEN  (select concat(dms_cover_products.product_id,treatment_name)) ELSE   dms_cover_products.product_id END)\r\n" + 
+				"group by dms_cover_products.product_id, treatment_id,product_name , treatment_name,fc.total_stock_quantity\r\n" + 
+				"order by product_name , treatment_name").setResultTransformer(Transformers.aliasToBean(ExpectedProductsOut.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DailyShipments> Get_Daily_Shipments_Data(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<DailyShipments>)sessionFactory.getCurrentSession().createSQLQuery("select CAST(count(sh.id) AS integer)as total_num, CAST(sht.shipment_type_id AS integer),sht.shipment_type from shippments sh , shipments_types sht\r\n" + 
+				"where to_date(to_char(sh.shipment_expected_delivery_date,'yyyy-mm-dd'),'yyyy-mm-dd') > current_date -1\r\n" + 
+				"and sht.shipment_type_id=sh.shipment_type_id\r\n" + 
+				"and (sh.shippment_destination_id='"+facility_id+"' or sh.shippment_souce_id='"+facility_id+"')\r\n" + 
+				"group by sht.shipment_type , sht.shipment_type_id").setResultTransformer(Transformers.aliasToBean(DailyShipments.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExpectedProductsIN> Get_Expcted_IN(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<ExpectedProductsIN>)sessionFactory.getCurrentSession().createSQLQuery("select rp.product_name,rp.treatment_name ,rp.product_sku , pt.type,CAST(rp.product_type AS integer) ,sum(rp.dms_quantity) AS expected ,fc.total_stock_quantity \r\n" + 
+				"from reconciliation_products rp \r\n" + 
+				"LEFT JOIN facility_product_info fc ON facility_id="+facility_id+" and  fc.product_id=rp.product_sku \r\n" + 
+				"LEFT JOIN products_type pt ON pt.id=rp.product_type\r\n" + 
+				"group by product_name, product_sku,product_type , treatment_name ,  fc.total_stock_quantity ,pt.type\r\n" + 
+				"order by  product_name,treatment_name \r\n" + 
+				"").setResultTransformer(Transformers.aliasToBean(ExpectedProductsIN.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExpectedQuantityOfProducts> Get_Total_Expected_Dirty(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<ExpectedQuantityOfProducts>)sessionFactory.getCurrentSession().createSQLQuery("select rp1.product_name , rp1.dms_product_id , fac_info.available_quantity as available_quantity  \r\n" + 
+				"				from reconciliation_products rp1 \r\n" + 
+				"				LEFT JOIN \r\n" + 
+				"				(\r\n" + 
+				"					select sum(fc.total_stock_quantity) as available_quantity , pr.dms_product_id\r\n" + 
+				"				from facility_product_info fc , products pr where \r\n" + 
+				"				pr.product_sku = fc.product_id and fc.facility_id= "+facility_id+" and pr.dms_product_id in (select distinct(dms_product_id) from reconciliation_products ) \r\n" + 
+				"				group by pr.dms_product_id  \r\n" + 
+				"				) fac_info ON fac_info.dms_product_id = rp1.dms_product_id\r\n" + 
+				"				where rp1.product_type=1\r\n" + 
+				"				 group by rp1.dms_product_id ,  fac_info.available_quantity , rp1.product_name").setResultTransformer(Transformers.aliasToBean(ExpectedQuantityOfProducts.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Treatment> lst_treatment_for_dispatch() {
+		// TODO Auto-generated method stub
+		return (List<Treatment>)sessionFactory.getCurrentSession().createSQLQuery("select \"TRE_ID\" as treatment_id , \"TRE_NAME\" as treatment_name  from \"TREATMENT_TYPES\" where \"TRE_ID\" in (select distinct(treatment_id) from dms_cover_products)\r\n" + 
+				"").setResultTransformer(Transformers.aliasToBean(Treatment.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExpectedQuantityOfProducts> Get_Clean_Products(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<ExpectedQuantityOfProducts>)sessionFactory.getCurrentSession().createSQLQuery("select rp1.product_name , rp1.product_id , fac_info.available_quantity as available_quantity  \r\n" + 
+				"				from dms_cover_products rp1 \r\n" + 
+				"				LEFT JOIN \r\n" + 
+				"				(\r\n" + 
+				"					select sum(fc.total_stock_quantity) as available_quantity , pr.dms_product_id\r\n" + 
+				"				from facility_product_info fc , products pr where \r\n" + 
+				"				pr.product_sku = fc.product_id and fc.facility_id= "+facility_id+" and pr.dms_product_id in (select product_id from dms_cover_products ) \r\n" + 
+				"				group by pr.dms_product_id  \r\n" + 
+				"				) fac_info ON fac_info.dms_product_id = rp1.product_id\r\n" + 
+				"				 group by rp1.product_id ,  fac_info.available_quantity , rp1.product_name").setResultTransformer(Transformers.aliasToBean(ExpectedQuantityOfProducts.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExpectedQuantityOfProducts> Get_Clean_Products_treatments(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<ExpectedQuantityOfProducts>)sessionFactory.getCurrentSession().createSQLQuery("select dcp.product_id , dcp.treatment_id,sum(dcp.quantity) as clean_quantity ,fc.total_stock_quantity as available_quantity\r\n" + 
+				"				from dms_cover_products dcp, products pr, facility_product_info fc\r\n" + 
+				"				where pr.dms_product_id=dcp.product_id and pr.treatment_id=dcp.treatment_id and pr.type=1\r\n" + 
+				"				and fc.product_id=pr.product_sku  and fc.facility_id="+facility_id+"\r\n" + 
+				"				group by dcp.product_id , dcp.treatment_id,fc.total_stock_quantity").setResultTransformer(Transformers.aliasToBean(ExpectedQuantityOfProducts.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Treatment> lst_treatment_for_reconciliation() {
+		// TODO Auto-generated method stub
+		return (List<Treatment>)sessionFactory.getCurrentSession().createSQLQuery("select \"TRE_ID\" as treatment_id , \"TRE_NAME\" as treatment_name from \"TREATMENT_TYPES\" where \"TRE_ID\" in (select distinct(treatment_id) from reconciliation_products)").setResultTransformer(Transformers.aliasToBean(Treatment.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExpectedQuantityOfProducts> Get_Reconciliation_Products(int facility_id) {
+		// TODO Auto-generated method stub
+		return (List<ExpectedQuantityOfProducts>)sessionFactory.getCurrentSession().createSQLQuery("select rp.dms_product_id ,(CASE WHEN product_type=2 THEN 0 ELSE rp.treatment_id END) , rp.product_type , sum(rp.dms_quantity) as clean_quantity ,fc.total_stock_quantity as available_quantity\r\n" + 
+				"                from reconciliation_products	rp , products pr , facility_product_info fc\r\n" + 
+				"				where pr.dms_product_id=rp.dms_product_id and pr.type=rp.product_type and pr.treatment_id=(CASE WHEN product_type=2 THEN 0 ELSE rp.treatment_id END)\r\n" + 
+				"				and fc.product_id=pr.product_sku and fc.facility_id="+facility_id+"\r\n" + 
+				"				group by rp.dms_product_id,rp.treatment_id,rp.product_type , fc.total_stock_quantity").setResultTransformer(Transformers.aliasToBean(ExpectedQuantityOfProducts.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Automatic_Inventory_Check(int facility_id) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("create_daily_inventory_check");
+
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+}

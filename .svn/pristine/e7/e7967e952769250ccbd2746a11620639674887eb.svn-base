@@ -1,0 +1,15 @@
+
+database.driver=org.postgresql.Driver
+database.url=jdbc:postgresql://192.168.0.56:5432/NoDust_HUP
+#database.url=jdbc:postgresql://192.168.0.57:5432/NoDust_HUP
+database.user=postgres
+database.password=p0$tgr3$!!!
+
+#Hibernate related properties
+#hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+
+hibernate.show_sql=true
+hibernate.format_sql=true
+hibernate.hbm2ddl.auto=update

@@ -1,0 +1,51 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.StockManagmentDAO;
+import com.jwt.model.DirtyShipmentData;
+import com.jwt.model.InventoryProduct;
+
+@Service
+@Transactional
+public class StockManagmentServiceImpl implements StockManagmentService {
+
+	@Autowired
+	private  StockManagmentDAO stockDoa;
+	
+	@Override
+	public List<InventoryProduct> getAllProducts(int facility_id) {
+		return stockDoa.getAllProducts(facility_id);
+	}
+
+	@Override
+	public String submitConvetProducts(int facility_id, String products, String username) {
+		return stockDoa.submitConvetProducts(facility_id, products, username);
+	}
+
+	@Override
+	public List<DirtyShipmentData> getConvertRequests(int facility_id) {
+		return stockDoa.getConvertRequests(facility_id);
+	}
+
+	@Override
+	public List<InventoryProduct> getConvertReqProducts(int convert_id) {
+		return stockDoa.getConvertReqProducts(convert_id);
+	}
+
+	@Override
+	public DirtyShipmentData getConvertReqWith(int id) {
+		return stockDoa.getConvertReqWith(id);
+	}
+
+	@Override
+	public String approveRejectConvertRequest(long shipment_id, int facility_id, String logged_user,
+			String approval_val) {
+		return stockDoa.approveRejectConvertRequest(shipment_id, facility_id, logged_user, approval_val);
+	}
+
+}

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <title>Shipment Report</title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+ 
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+          <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+      <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+      
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+   <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+   <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+   
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+   
+    <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+     
+   
+   	   <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+       <script type="text/javascript" src="resources/assetsnodust/js/jasontable.js"></script>
+
+<!--    <link href="resources/assetsnodust/css/style_arabic.css" rel="stylesheet" />  --> 
+
+<style type="text/css">
+#logoprint{display: none;}
+</style>
+ <style type="text/css" media="print">
+
+ @page { size:A4 ;  }
+  
+  @media print {
+  
+  table td.first { display: none; }
+  table th.first { display: none; }
+  #printBtn {
+    display: none;
+  }
+  #printBtn2 {
+    display: none;
+  }
+  #submitBtn {
+    display: none;
+  }
+  #links{
+  display: none
+  }
+ #navBar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+ 
+ #tableBtns{
+  display: none
+ }
+ 
+ #showDate{ color: black;}
+  #titlepage{ display: none;}
+}
+
+#logoprint{display: block;}
+
+#contentpage{ margin-top: -50px;}
+
+ #Header, #Footer { display: none !important; color: white !important ; background: red; }
+#footer{ display: none;  }
+
+@page {	margin:0;}
+body{ margin: 1.6cm}
+
+
+
+}
+</style>
+</head>
+
+<body class="fixed-top">
+<div id="navBar">
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="HideButton"/>
+	 </jsp:include>
+	  </div>
+   
+    
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+	  <div id="sidemenu">
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+	 </div>
+    
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul id="links" class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                      <li><a href="ShipmentsReport"><spring:message code="ShipmentReport"/></a> <span class="divider">&nbsp; &nbsp;</span></li>
+                       <li><a href="#"> <spring:message code="ShipmentReportDetails"/></a><span class="divider-last">&nbsp;</span></li>
+               
+                  </ul>
+      	  
+				   
+               </div>
+            </div>
+       
+		     <img src="resources/assetsnodust/img/logored.png" alt="logo NODUST" style=" width: 25%;  float: right; margin-right:5%;   margin-top: -20px ; " id="logoprint">
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                     
+                        <div class="widget-title">
+                           <h4> <spring:message code="ShipmentReportDetails"/></h4>
+                        </div>
+                        
+						<div class="widget-body">
+							<table width="100%" >
+<tr>
+<td>
+
+<div class="row-fluid invoice-list" >
+<div class="space10"></div>
+<div class="widget-title" >
+                           <h4> <spring:message code="shipmentData" /></h4>
+                        </div> 
+                         <div class="row-fluid" style="border:outset;">
+                               <div style="float:left;width:50%;"> <h5 style="margin-left:5px;"><strong><spring:message code="ShipmentID_" /> </strong>${shipment.shipment_id}	</h5></div>
+                               <div style="float:left;width:50%;"> <h5 ><strong><spring:message code="Drivername" /></strong>${shipment.driver} 	</h5></div>
+                               <div style="float:left;width:50%;"> <h5 style="margin-left:5px;"><strong><spring:message code="ShipmentDate_" /> </strong><fmt:formatDate value="${shipment.shipment_date}" pattern="dd-MM-yyyy" /> 	</h5></div>
+                               <div style="float:left;width:50%;" > <h5 > <strong><spring:message code="Agentname" /></strong>${shipment.agent}</h5></div>
+                              
+                            <div class="clearfix"></div>
+                            	
+                            </div>
+                       </div>
+</td>
+</tr>
+</table>
+						 </div>
+						 
+						 
+						 <div class="widget-body">
+		
+			      <table id="ShipmentDetails" class="table table-striped table-bordered table-advance table-hover table-responsive " style="max-width: 100%;">
+						        <thead>
+						            <tr>
+						            <th><spring:message code="product_only"/></th>
+								    <th><spring:message code="ProductType"/></th> 
+								    <th><spring:message code="Quantity"/></th>
+						            <th><spring:message code="ActualQ"/></th>
+						            <th class="recon_lundry_new"><spring:message code="Lost"/></th>
+						            <th class="recon"><spring:message code="RLost"/></th>
+						            <th class="recon"><spring:message code="Cancel"/></th>
+						            <th class="recon"><spring:message code="ActualCancel"/></th>
+						            <th class="recon"><spring:message code="New"/></th>
+						            <th class="recon"><spring:message code="ActualNew"/></th>
+						            <th class="recon"><spring:message code="Out"/></th>
+						            <th class="lundry_new"><spring:message code="Over_"/></th>
+						            </tr>
+						        </thead>
+						        <c:forEach var="detail" items="${details}">
+						           <tr>
+				                    <td>${detail.product_name} 
+				                    <c:if test="${detail.treatment_id!='0'}">
+				                    <c:forEach  var="treat" items="${treats}">
+				                    <c:if test="${detail.treatment_id==treat.treatment_id}">
+				                    - ${treat.treatment_name}
+				                    </c:if>
+				                    </c:forEach>
+				                    </c:if>
+				                    - ${detail.product_sku}</td>
+				                    <td>
+				                    <c:forEach var="type" items="${types}">
+				                    <c:if test="${detail.type==type.type_id}">
+				                    ${type.type_name}
+				                    </c:if>
+				                    </c:forEach></td>
+				                    <td>${detail.dms_planned_quantity}</td>
+				                    <td>${detail.quantity_shipped}</td>
+				                    <td class="recon_lundry_new"> 
+				                    <c:if test="${detail.lost == null}">0</c:if>
+				                    <c:if test="${detail.lost != null}">${detail.lost}</c:if>
+				                    </td>
+				                    <td class="recon">
+				                    <c:if test="${detail.returned_lost == null}">0</c:if>
+				                    <c:if test="${detail.returned_lost != null }">${detail.returned_lost}</c:if>
+				                    </td>
+				                    <td class="recon">
+				                    <c:if test="${detail.cancel == null}">0</c:if>
+				                    <c:if test="${detail.cancel != null}">${detail.cancel}</c:if>
+				                    </td>
+				                    <td class="recon">
+				                    <c:if test="${detail.actual_cancel == null}">0</c:if>
+				                    <c:if test="${detail.cancel != null}">${detail.cancel}</c:if>
+				                    </td>
+				                     <td class="recon">
+				                    <c:if test="${detail.expected_new == null}">0</c:if>
+				                    <c:if test="${detail.expected_new != null}">${detail.expected_new}</c:if>
+				                    </td>
+				                     <td class="recon">
+				                    <c:if test="${detail.actual_new == null}">0</c:if>
+				                    <c:if test="${detail.actual_new != null}">${detail.actual_new}</c:if>
+				                    </td>
+				                    <td class="recon">
+				                    <c:if test="${detail.quantity == null}">0</c:if>
+				                    <c:if test="${detail.quantity != null}">${detail.quantity}</c:if>
+				                    </td>
+				                    <td class="lundry_new">
+				                    <c:if test="${detail.over == null}">0</c:if>
+				                    <c:if test="${detail.over != null}">${detail.over}</c:if>
+				                    </td>
+				                   </tr>
+						         </c:forEach>
+                             </table>
+                             <div class="space20"> </div>
+							 <button type="button"  onclick="ExportTableOUtAsExcel('shipment')" class="btn btn-primary pull-right" style="margin-bottom: 20px; margin-left: 5px;"><i class="icon-save icon-white"></i> Save As Excel</button>                                         
+                             <button type="button" id="printBtn" style="margin-right:5px;" class="btn btn-primary pull-right" onclick="javascript:window.print();" ><i class="icon-print  icon-white"></i> Print</button>
+                         <div class="space10"></div>
+                          
+                          
+			  
+			  
+          </div>
+						
+						
+						
+						 </div>
+                        </div>
+                        
+                     </div>
+                  </div>
+               </div>
+            
+           
+            </div>
+          
+         </div>
+   
+	
+    </div>
+
+ 
+ 
+   <div id="footer">
+       &copy; <spring:message code="CopyRights" />
+   
+   </div>
+ 
+ <!-- Open & close MENU -->
+  
+   <script>
+      jQuery(document).ready(function() {			
+      	App.init();
+      	
+      });
+      $(document).ready(function() {
+    	  
+    	  if ('${shipment.shipment_type_id}'!= 2)
+    		  {
+    		  $(".recon").hide()
+    		 
+    		  }
+    	  
+    	  if ('${shipment.shipment_type_id}'!= 2 && '${shipment.shipment_type_id}'!= 5 && '${shipment.shipment_type_id}'!= 9 )
+    		  {
+    		  $(".recon_lundry_new").hide()
+    		  }
+    	  if ('${shipment.shipment_type_id}'!= 5 && '${shipment.shipment_type_id}'!= 9)
+		  {
+		  $(".lundry_new").hide()
+		  }
+    	  
+      });
+      
+      
+      function ExportTableOUtAsExcel(file_name) {
+    	    var uri = 'data:application/vnd.ms-excel;base64,',
+    	      template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',
+    	      base64 = function(s) {
+    	        return window.btoa(unescape(encodeURIComponent(s)))
+    	      },
+    	      format = function(s, c) {
+    	        return s.replace(/{(\w+)}/g, function(m, p) {
+    	          return c[p];
+    	        })
+    	      }
+    	      var toExcel = "";//document.getElementById("ExpectedOut").innerHTML;
+      	    
+      	    var rows=document.getElementById("ShipmentDetails").rows;
+            	
+            	for(var x=0;x<rows.length;x++)
+            		{
+            		toExcel += '<tr>'
+            		var row=[];
+            		var columns=rows[x].querySelectorAll("td, th");
+            		var columnLenght = columns.length;
+                	if ('${shipment.shipment_type_id}'==1)
+                		columnLenght =3;
+                	else if('${shipment.shipment_type_id}'==2)
+                		columnLenght=10;
+                	else 
+                		columnLenght=4;
+            		for(var i=0;i<=columnLenght;i++)
+            			{
+            			toExcel +='<td>'+columns[i].innerText+'</td>'
+            			//row.push(columns[i].innerText);
+            			}
+            		if ('${shipment.shipment_type_id}'==5 ||'${shipment.shipment_type_id}'==9)
+            			{
+            			toExcel +='<td>'+columns[11].innerText+'</td>'
+            			//row.push(columns[11].innerText)
+            			}
+            		toExcel += '</tr>'
+            		}
+    	    
+    	    var ctx = {
+    	      worksheet: name || '',
+    	      table: toExcel
+    	    };
+    	    var link = document.createElement("a");
+    	    link.download = file_name+'${shipment.shipment_id}'+".xls";
+    	    link.href = uri + base64(format(template, ctx))
+    	    link.click();
+    	  }
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

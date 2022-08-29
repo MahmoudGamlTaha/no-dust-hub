@@ -1,0 +1,490 @@
+package com.jwt.dao;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.envers.internal.tools.StringTools;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.ActualCounts;
+import com.jwt.model.CoverProduct;
+import com.jwt.model.Facility;
+import com.jwt.model.Reconciliatiion_Products;
+import com.jwt.model.ReconciliationNewCancelCounts;
+import com.jwt.model.Reconciliation_Data;
+import com.jwt.model.Reconciliation_Posted;
+import com.jwt.model.Shipment;
+import com.jwt.model.ShipmentDetailsData;
+import com.jwt.model.ShipmentList;
+import com.jwt.model.ShipmentLog;
+import com.jwt.model.ShipmentProduct;
+import com.jwt.model.UserRole;
+import com.jwt.model.ValidateCarProduct;
+import com.jwt.model.ValidationData;
+import com.jwt.model.drivers;
+@Repository
+public class ReceivingProductsDAOImpl implements ReceivingProductDAO{
+
+	@Autowired
+	private SessionFactory sessionFactory;
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<drivers> GetAllDrivers() {
+		return (List<drivers>) sessionFactory.getCurrentSession().createQuery("from drivers where user_group in (1,3)").list();
+	}
+	@Override
+	@SuppressWarnings("unchecked")
+	public String checkAuthentication(String User_Name,String Code)
+	{
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("validate_mobile_user_verfication_code");
+		procedureCall.registerParameter("p_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_verfication_code", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_user_name").bindValue(User_Name);
+		procedureCall.getParameterRegistration("p_verfication_code").bindValue(Code);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		//System.out.println("function response "+ result);
+		return result;
+	}
+	@Override 
+	@SuppressWarnings("unchecked")
+
+	public List<Reconciliation_Data> Get_Reconciliation_Data(String DriverID) {
+		List<Reconciliatiion_Products> x=sessionFactory.getCurrentSession().createQuery("from Reconciliatiion_Products where driver_id='"+DriverID+"' order by product_name").list(); 
+		
+        List<Reconciliation_Data>returned_data=new ArrayList<Reconciliation_Data>();
+     
+        for(int i=0;i<x.size();i++)
+        {
+        	
+        	Reconciliation_Data cp=new Reconciliation_Data();
+        	cp.setDms_product_id(x.get(i).getDms_product_id());
+        	cp.setDms_quantity(x.get(i).getDms_quantity());
+        	cp.setDriver_id(x.get(i).getDriver_id());
+        	cp.setOut_quantity(x.get(i).getOut_quantity());
+        	cp.setProduct_name(x.get(i).getProduct_name());
+        	cp.setProduct_sku(x.get(i).getProduct_sku());
+        	cp.setProduct_type(x.get(i).getProduct_type());
+        	cp.setTreatment_id(x.get(i).getTreatment_id());
+        	cp.setTreatment_name(x.get(i).getTreatment_name());
+        	cp.setExpected_new(x.get(i).getExpected_new());
+        	cp.setActual_new(x.get(i).getActual_new());
+        	cp.setCancel(x.get(i).getCancel_quantity());
+        	returned_data.add(cp);
+        	
+        }
+        
+		return returned_data;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<drivers> Get_Driver_by_UserName(String User_Name) {
+		// TODO Auto-generated method stub
+		return (List<drivers>) sessionFactory.getCurrentSession().createQuery("from drivers where user_name='"+User_Name+"'").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<drivers> Get_Drivers_Pilots() {
+		// TODO Auto-generated method stub
+		return (List<drivers>)sessionFactory.getCurrentSession().createQuery("from drivers where user_group!=4").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Facility Get_Facility_Info(int Id) {
+		List<Facility>lst_fac=sessionFactory.getCurrentSession().createQuery("from Facility where id = '"+Id+"'").list();
+		Facility Fac_Info=lst_fac.get(0);
+		return Fac_Info;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_reconciliation(String driver_id, String Agent_Name, String Products, String Lost,
+			String RLost,String type,int ship_id) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("save_product_reconciliation_shipment");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_lost_data", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_rlost_data", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_trans_type"  , String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_shipment_id"  , int.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver_id);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(Agent_Name);
+		procedureCall.getParameterRegistration("p_rlost_data").bindValue(RLost);
+		procedureCall.getParameterRegistration("p_products").bindValue(Products);
+		procedureCall.getParameterRegistration("p_lost_data").bindValue(Lost);
+		procedureCall.getParameterRegistration("p_trans_type").bindValue(type);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(ship_id);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+		
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Reconciliation_Posted> Check_Recon_Exist(String DriverID) {
+		return (List<Reconciliation_Posted>)sessionFactory.getCurrentSession().createQuery("from Reconciliation_Posted where shippment_souce_id='"+DriverID+"'").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentProduct> reconciliated_Shipment(int Shipment_id) {
+		// TODO Auto-generated method stub
+		return (List<ShipmentProduct>)sessionFactory.getCurrentSession().createQuery("from ShipmentProduct where shipment_id='"+Shipment_id+"' order by product_name,type").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ValidateCarProduct> ValidatedQuan(int Shipment_id) {
+		// TODO Auto-generated method stub
+		return (List<ValidateCarProduct>)sessionFactory.getCurrentSession().createQuery("from ValidateCarProduct where shipment_id='"+Shipment_id+"' order by product_name").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Close_Reconciliation(String user_name, String logged_in_user, String pass_fail, int Shipment_id) {
+		
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_product_reconciliation");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_pass_fail", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(user_name);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(logged_in_user);
+		procedureCall.getParameterRegistration("p_pass_fail").bindValue(pass_fail);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(Shipment_id);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+		
+		
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentList> get_Shipment_List(String Fac_id) {
+		// TODO Auto-generated method stub
+		return (List<ShipmentList>)sessionFactory.getCurrentSession().createQuery("from ShipmentList where facility_id='"+Fac_id+"' and status_name in ('Shipment Out','Shipment Cash Released','Reconciliation Closed','Reconciliation open','Closed With Cash','Open With Cash')").list();
+	}
+	@Override
+	public ShipmentList get_shipment_details_by_Id(int ship_Id) {
+		// TODO Auto-generated method stub
+		@SuppressWarnings("unchecked")
+		List<ShipmentList> lst=(List<ShipmentList>)sessionFactory.getCurrentSession().createQuery("from ShipmentList where shipment_id='"+ship_Id+"'").list();
+		ShipmentList product_lst=lst.get(0);
+		return product_lst;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Close_Recon_Shipment(int ship_id, String Comment, String logged_in_user) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("close_reconciliation_shipment");
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_comment", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(ship_id);
+		procedureCall.getParameterRegistration("p_comment").bindValue(Comment);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(logged_in_user);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReconciliationNewCancelCounts> Get_Actuals(String driver_id) {
+		// TODO Auto-generated method stub
+		return (List<ReconciliationNewCancelCounts>)sessionFactory.getCurrentSession().createQuery("from ReconciliationNewCancelCounts where driver_id='"+driver_id+"'").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public int save_reconciliation_new_cancel_counts(String driver_id, String logged_in_user, String actual_data) {
+		
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("save_reconciliation_new_cancel_counts");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver_id);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(logged_in_user);
+		procedureCall.getParameterRegistration("p_products").bindValue(actual_data);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		int x=Integer.parseInt(result);
+		return x;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Shipment> Check_Shipment_Exist(String driver_id, int fac_id) {
+		// TODO Auto-generated method stub
+		return (List<Shipment>)sessionFactory.getCurrentSession().createQuery("from Shipment where id=(SELECT max(id) FROM Shipment where shippment_souce_id ='"+driver_id+"' and shippment_destination_id='"+fac_id+"' and shipment_type_id=2)").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ActualCounts> Get_actual_count(String driver_id, int ship_id) {
+		// TODO Auto-generated method stub
+		
+		List<ActualCounts>actual_counts=sessionFactory.getCurrentSession().createSQLQuery("SELECT FIN.dms_product_id,FIN.treatment_id,FIN.product_sku,FIN.proudct_name || '    ' || TRT.\"TRE_NAME\" proudct_name\r\n" + 
+				",FIN.quantity,FIN.expected_clean,\r\n" + 
+				"FIN.expected_dirty,FIN.driver_id,FIN.recon_clean,FIN.recon_dirty,FIN.expected_new,FIN.actual_new,FIN.cancel,\r\n" + 
+				"FIN.actual_cancel,FIN.returned_lost,FIN.actual_calculated,FIN.product_type \r\n" + 
+				"\r\n" + 
+				"				FROM  \r\n" + 
+				"				((SELECT min(AA.dms_product_id) dms_product_id, min(AA.treatment_id) treatment_id, AA.product_sku , \r\n" + 
+				"				 MIN(AA.product_name) proudct_name, SUM(AA.quantity)quantity, SUM(AA.expected_clean) expected_clean \r\n" + 
+				"				 , SUM(AA.expected_dirty) expected_dirty, driver_id , SUM(recon_clean) recon_clean, SUM(recon_dirty)recon_dirty \r\n" + 
+				"				 ,SUM(CASE WHEN BB.expected_new IS NULL THEN 0 ELSE BB.expected_new END ) expected_new \r\n" + 
+				"				  , SUM(CASE WHEN BB.actual_new IS NULL THEN 0 ELSE BB.actual_new END ) actual_new , \r\n" + 
+				"				 SUM(CASE WHEN BB.cancel IS NULL THEN 0 ELSE BB.cancel END ) cancel \r\n" + 
+				"				 , SUM(CASE WHEN BB.actual_cancel IS NULL THEN 0 ELSE BB.actual_cancel END ) actual_cancel , \r\n" + 
+				"				 SUM(CASE WHEN BB.returned_lost IS NULL THEN 0 ELSE BB.returned_lost END )  returned_lost , \r\n" + 
+				"				 SUM((CASE WHEN AA.expected_clean IS NULL THEN 0 ELSE AA.expected_clean END) -  \r\n" + 
+				"				 ((CASE WHEN BB.actual_new IS NULL THEN 0 ELSE BB.actual_new END ) -  \r\n" + 
+				"			 (CASE WHEN BB.expected_new IS NULL THEN 0 ELSE BB.expected_new END )  ) )actual_calculated , \r\n" + 
+				"				 MIN(product_type) product_type  FROM  \r\n" + 
+				"				(SELECT MIN(dd.\"ID\") id , MIN(dd.\"PRODUCT_ID\") dms_product_id , MIN(pr.Treatment_ID) treatment_id \r\n" + 
+				"				 , pr.product_sku , \r\n" + 
+				"				MIN(pr.product_name) product_name, SUM(dd.\"QUANTITY\") quantity,  \r\n" + 
+				"				SUM(dd.\"CLEAN_QTY\") expected_clean, MIN(dd.\"ASSIGN_DATE\") assign_date, \r\n" + 
+				"				--dd.\"DIRTY_QTY\"  \r\n" + 
+				"				 0 expected_dirty ,  \r\n" + 
+				"				MIN(dd.\"DRIVER_ID\") driver_id ,  \r\n" + 
+				"				SUM(dd.\"CLEAN_QTY_DRIVER_REC\") recon_clean ,  \r\n" + 
+				"				--dd.\"DIRTY_QTY_DRIVER_REC\"  \r\n" + 
+				"				0 recon_dirty , 1 product_type \r\n" + 
+				"				FROM driver_reconciliation_dms_counts dd , products pr  \r\n" + 
+				"				where dd.\"PRODUCT_ID\" = pr.dms_product_id  \r\n" + 
+				"				and dd.\"Treatment_ID\" = pr.treatment_id \r\n" + 
+				"				AND pr.type = 1 \r\n" + 
+				"				AND dd.\"DRIVER_ID\" = '"+driver_id+"' \r\n" + 
+				"				AND dd.\"ASSIGN_DATE\" BETWEEN (SELECT MIN(to_date(to_char(\"ASSIGNMENT_DATE\",'yyyy-mm-dd') , 'yyyy-mm-dd')) \r\n" + 
+				"											  FROM \"COVER_PRODUCT\"  \r\n" + 
+				"										  WHERE \"RECONCILIATION_FLAG\" = 0 \r\n" + 
+				"											 AND \"DRIVER_ID\" = '"+driver_id+"' \r\n" + 
+				"											 GROUP BY \"DRIVER_ID\") AND (SELECT MAX(to_date(to_char(\"ASSIGNMENT_DATE\",'yyyy-mm-dd') , 'yyyy-mm-dd')) \r\n" + 
+				"										  FROM \"COVER_PRODUCT\"  \r\n" + 
+				"										  WHERE \"RECONCILIATION_FLAG\" = 0 \r\n" + 
+				"											 AND \"DRIVER_ID\" = '"+driver_id+"' \r\n" + 
+				"											 GROUP BY \"DRIVER_ID\")\r\n" + 
+				"										GROUP BY pr.product_sku) AA \r\n" + 
+				"				JOIN (SELECT  ships.shipment_id,ships.product_id ,ships.expected_new, ships.actual_new,ships.cancel , \r\n" + 
+				"				ships.actual_cancel ,ships.returned_lost \r\n" + 
+				"				FROM shipments_details ships , products pr  \r\n" + 
+				"				WHERE ships.product_id = pr.product_sku \r\n" + 
+				"				and pr.type = 1 \r\n" + 
+				"				AND ships.shipment_id ="+ship_id+") BB \r\n" + 
+				"				ON AA.product_sku = BB.product_id \r\n" + 
+				"				GROUP BY AA.driver_id , product_sku) \r\n" + 
+				"				 \r\n" + 
+				"				UNION \r\n" + 
+				"				  \r\n" + 
+				"				(SELECT min(AA.dms_product_id) dms_product_id, min(AA.treatment_id) treatment_id, AA.product_sku , \r\n" + 
+				"				 MIN(AA.product_name) proudct_name, SUM(AA.quantity)quantity, SUM(AA.expected_clean) expected_clean \r\n" + 
+				"				 , SUM(AA.expected_dirty) expected_dirty, driver_id , SUM(recon_clean) recon_clean, SUM(recon_dirty)recon_dirty \r\n" + 
+				"				 ,SUM(CASE WHEN BB.expected_new IS NULL THEN 0 ELSE BB.expected_new END ) expected_new \r\n" + 
+				"				  , SUM(CASE WHEN BB.actual_new IS NULL THEN 0 ELSE BB.actual_new END ) actual_new , \r\n" + 
+				"				 SUM(CASE WHEN BB.cancel IS NULL THEN 0 ELSE BB.cancel END ) cancel \r\n" + 
+				"				 , SUM(CASE WHEN BB.actual_cancel IS NULL THEN 0 ELSE BB.actual_cancel END ) actual_cancel , \r\n" + 
+				"				 SUM(CASE WHEN BB.returned_lost IS NULL THEN 0 ELSE BB.returned_lost END )  returned_lost , \r\n" + 
+				"				  SUM((CASE WHEN AA.expected_dirty IS NULL THEN 0 ELSE AA.expected_dirty END) + ((CASE WHEN BB.actual_cancel IS NULL THEN 0 ELSE BB.actual_cancel END ) \r\n" + 
+				"				 -  (CASE WHEN BB.cancel IS NULL THEN 0 ELSE BB.cancel END )) +  \r\n" + 
+				"					 (CASE WHEN BB.returned_lost IS NULL THEN 0 ELSE BB.returned_lost END )) actual_calculated  \r\n" + 
+				"					  ,MIN(product_type) product_type FROM  \r\n" + 
+				"				(SELECT MIN(dd.\"ID\") id , min(dd.\"PRODUCT_ID\") dms_product_id , MIN(pr.Treatment_ID) treatment_id ,\r\n" + 
+				"				 pr.product_sku , \r\n" + 
+				"			MIN(pr.product_name) product_name, SUM(dd.\"QUANTITY\") quantity,  \r\n" + 
+				"				--dd.\"CLEAN_QTY\" \r\n" + 
+				"				0 expected_clean, MIN(dd.\"ASSIGN_DATE\") assign_date, \r\n" + 
+				"				SUM(dd.\"DIRTY_QTY\") expected_dirty ,  \r\n" + 
+				"				MIN(dd.\"DRIVER_ID\") driver_id ,  \r\n" + 
+				"				--dd.\"CLEAN_QTY_DRIVER_REC\" \r\n" + 
+				"				0 recon_clean ,  \r\n" + 
+				"				SUM(dd.\"DIRTY_QTY_DRIVER_REC\") recon_dirty ,2 product_type \r\n" + 
+				"				FROM driver_reconciliation_dms_counts dd , products pr  \r\n" + 
+				"				where dd.\"PRODUCT_ID\" = pr.dms_product_id  \r\n" + 
+				"				AND pr.type = 2 \r\n" + 
+				"				AND dd.\"DRIVER_ID\" = '"+driver_id+"'\r\n" + 
+				"				AND dd.\"ASSIGN_DATE\" BETWEEN (SELECT MIN(to_date(to_char(\"ASSIGNMENT_DATE\",'yyyy-mm-dd') , 'yyyy-mm-dd')) \r\n" + 
+				"										  FROM \"COVER_PRODUCT\"  \r\n" + 
+				"											  WHERE \"RECONCILIATION_FLAG\" = 0 \r\n" + 
+				"											 AND \"DRIVER_ID\" = '"+driver_id+"'\r\n" + 
+				"										 GROUP BY \"DRIVER_ID\") AND (SELECT MAX(to_date(to_char(\"ASSIGNMENT_DATE\",'yyyy-mm-dd') , 'yyyy-mm-dd')) \r\n" + 
+				"										  FROM \"COVER_PRODUCT\"  \r\n" + 
+				"										  WHERE \"RECONCILIATION_FLAG\" = 0 \r\n" + 
+				"											 AND \"DRIVER_ID\" = '"+driver_id+"'\r\n" + 
+				"											 GROUP BY \"DRIVER_ID\" )\r\n" + 
+				"											GROUP BY pr.product_sku  ) AA \r\n" + 
+				"				LEFT JOIN (SELECT  ships.shipment_id,ships.product_id ,ships.expected_new, ships.actual_new,ships.cancel , \r\n" + 
+				"				ships.actual_cancel ,ships.returned_lost \r\n" + 
+				"				FROM shipments_details ships , products pr  \r\n" + 
+				"				WHERE ships.product_id = pr.product_sku \r\n" + 
+				"				and pr.type = 2 \r\n" + 
+				"				AND ships.shipment_id ="+ship_id+") BB \r\n" + 
+				"				ON AA.product_sku = BB.product_id \r\n" + 
+				"				GROUP BY AA.driver_id , product_sku))FIN , \"TREATMENT_TYPES\" TRT\r\n" + 
+				"				WHERE FIN.treatment_id = TRT.\"TRE_ID\"\r\n" + 
+				"				ORDER BY FIN.proudct_name , FIN.driver_id , FIN.product_type").setResultTransformer(Transformers.aliasToBean(ActualCounts.class)).list();
+		
+			return actual_counts;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String save_reconciliation_clean_dirty_counts(String driver_id, String logged_in_user, String products,
+			int ship_id) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("save_reconciliation_clean_dirty_counts");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver_id);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(logged_in_user);
+		procedureCall.getParameterRegistration("p_products").bindValue(products);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(ship_id);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+		
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Close_Recon_pass_fail(String driver_id, String logged_in_user, int Ship_id) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_product_reconciliation");
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver_id);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(logged_in_user);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(Ship_id);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ValidationData> Get_validatioin_Submitted(int ship_id) {
+		// TODO Auto-generated method stub
+		return (List<ValidationData>)sessionFactory.getCurrentSession().createQuery("from ValidationData where shipment_id="+ship_id).list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Back_TO_recon_data(int ship_id, String logged_in_user, String current_status) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("back_to_reconciliation");
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_shipment_status", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(ship_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_in_user);
+		procedureCall.getParameterRegistration("p_shipment_status").bindValue(current_status);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Copy_Validation_data(int ship_id, String driver_id) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("save_validation_data");
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_driver_id", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(ship_id);
+		procedureCall.getParameterRegistration("p_driver_id").bindValue(driver_id);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentDetailsData> Get_Back_Data(int ship_id) {
+		// TODO Auto-generated method stub
+		return (List<ShipmentDetailsData>)sessionFactory.getCurrentSession().createQuery("from ShipmentDetailsData where shipment_id="+ship_id+"order by product_name , type ,treatment_name ").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Shipment get_ship_data_by_id(int ship_id) {
+		// TODO Auto-generated method stub
+		List<Shipment> shipments=(List<Shipment>)sessionFactory.getCurrentSession().createQuery("from Shipment where id="+ship_id).list();
+		return shipments.get(0);
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Get_Area_Name(String Driver_id) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("get_reconciliation_area_name");
+		procedureCall.registerParameter("p_driver_id", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_driver_id").bindValue(Driver_id);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Get_Related_Shipments(int ship_id) {
+		// TODO Auto-generated method stub
+		List<Shipment> shipment=(List<Shipment>)sessionFactory.getCurrentSession().createQuery("from Shipment where id="+ship_id).list();
+		return shipment.get(0).getRelated_shipments();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Get_Area_Name_By_Shipment(int ship_id) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("get_area_name_by_shipment");
+		procedureCall.registerParameter("p_shipment_id", int.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(ship_id);
+		ProcedureOutputs procedure_out=procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedure_out.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<UserRole> check_user_roles(String UserName) {
+		// TODO Auto-generated method stub
+		return (List<UserRole>)sessionFactory.getCurrentSession().createQuery("from UserRole where user_name='"+UserName+"'").list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentLog> Check_Back_To_Recon(int Shipment_id) {
+		// TODO Auto-generated method stub
+		return (List<ShipmentLog>)sessionFactory.getCurrentSession().createQuery("from ShipmentLog where shipment_id="+Shipment_id).list();
+	}
+	
+
+}

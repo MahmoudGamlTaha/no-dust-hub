@@ -1,0 +1,23 @@
+package com.jwt.dao;
+import java.util.List;
+
+import com.jwt.model.CleanProduct;
+import com.jwt.model.CleanShipment;
+import com.jwt.model.Facility;
+import com.jwt.model.Products;
+import com.jwt.model.ShipmentDetails;
+import com.jwt.model.ShipmentLog;
+import com.jwt.model.drivers;
+public interface CreateShipmentDAO {
+public List<drivers>Get_driver_List();
+public List<Facility>Get_detsination_facility(int fac_id);
+public List<Products>Get_Clean_Packs(int facility_id);
+public String Submit_Send_clean_Shipment(int fac_id,int dest_fac,String driver_id,String products,String logged_user);
+public List<CleanShipment> Get_Clean_Shipment(int dest_id);
+public List<CleanProduct> Get_Shipment_Details(int shipment_id);
+public CleanShipment Get_Shipment_By_Id(int shipment_id);
+public List<Products>Get_Clean_Products(int facility_id);
+public String Receive_Clean_Shipment(int shipment_id,String Approved_Sealed,String Approved_Not_Sealed,String Lost , String logged_user , String prod_data,int fac_id);
+public List<ShipmentLog> shipment_logs(int shipment_id);
+
+}

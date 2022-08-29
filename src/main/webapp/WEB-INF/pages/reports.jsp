@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <title> Reports</title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+ <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+      <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+      
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+     <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+    
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+  
+  <!--  <link href="resources/assetsnodust/css/style_arabic.css" rel="stylesheet" />  --> 
+
+<style type="text/css">
+#tablecontent{ display:block;}
+
+table, th, td {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+}
+
+</style>
+<style type="text/css" media="print">
+
+
+  @page { size:A4 ; }
+  
+  @media print {
+  #printBtn {
+    display: none;
+  }
+  #submitBtn {
+    display: none;
+  }
+  #links{
+  display: none
+  }
+ #navBar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+ #endorsement
+ {
+ direction: rtl;
+ }
+ 
+  #titlepage{ display: none;}
+}
+
+#logoprint{visibility: visible;}
+
+#contentpage{ margin-top: -50px;}
+
+ #Header, #Footer { display: none !important; }
+#footer{ display: none;}
+
+ #contentchoose{display: none;}
+
+}
+
+#tablecontent{ display:block;}
+</style>
+
+
+</head>
+
+<body class="fixed-top">
+
+<div id="navBar">
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="HideButton"/>
+	 </jsp:include>
+   
+    </div>
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul id="links" class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                       <li>
+                           <a href="#">Reports<span class="divider">&nbsp;</span>
+                       </li>
+                       <li><a href="#"></a><span class="divider-last">&nbsp;</span></li>
+                  </ul>
+                
+				  
+				   
+               </div>
+            </div>
+       
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget" id= "contentchoose">
+                        <div class="widget-title">
+                           <h4>Reports</h4>
+                        </div>
+                        
+						<div class="widget-body">
+						
+						<div id= "contentchoose"	>
+						 <div class="control-group">
+                              <label class="control-label black span2  " >  Date :</label>
+                              
+                              <div class="controls">
+                                <div class="input-group mb-3 ">
+								 <input type="date" id="from_Date" onchange="GetDriver_Area()"/>
+                                </div>
+                              </div>
+                         </div>
+					     <div class="control-group">
+                              <label class="control-label black span2  " >  Area :</label>
+                              
+                              <div class="controls">
+                                <div class="input-group mb-3 ">
+								  <select id='sel_area' class= "span10 js-example-basic-multiple" onchange="GetDriver()">
+									        <option>Select Area</option>
+								  <select>
+                                </div>
+                              </div>
+                         </div>
+                            
+					
+					
+				
+                         <div class="control-group">
+                              <label class="control-label black span2  " > Pilot  :</label>
+                              
+                              <div class="controls">
+                                <div class="input-group mb-3 ">
+								  <select id='sel_driver' class= "span10 js-example-basic-multiple">
+									        <option>Select Pilot</option>
+								  <select>
+                                </div>
+                              </div>
+                         </div>
+                         
+                       
+                         </div>
+                         <div class="row-fluid  ">
+                                <div class="widget-body">
+                             <button type="button"  class="btn btn-primary pull-right" onclick="GetCards();"><i class="icon-print  icon-white"></i> Print</button>   
+                              
+                            </div></div>
+                         
+                         
+                         
+                      
+                           
+						 </div>
+                        </div>
+                        
+                        </div></div>
+                        
+                        
+                           <div class="widget" id= "div_print" >
+                        
+                        
+                  </div>
+               </div>
+            
+           
+            </div>
+          
+         </div>
+   
+	
+    </div>
+
+ 
+ 
+   <div id="footer">
+       &copy;
+   
+   </div>
+ 
+ <!-- Open & close MENU -->
+  
+   <script>
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      });
+      
+      $(document).ready(function() {
+    	    $('.js-example-basic-multiple').select2();
+    	    
+    	    
+    	    if('${error}'!=null &&'${error}'!="")
+   		 {
+    	        console.log('${error}')
+
+   	  $.alert({
+                           title: "<spring:message code="ReleasingProducts.validation.title" /> ",
+               		    content:"<spring:message code="ReleasingProducts.validation.content" />",
+                           }); 
+   		 }
+    	});
+   </script>
+    <script type="text/javascript">
+          var BaseURL="http://gdms.nodust-eg.com:80/NoDust_Hub(Operation)/NoDust/";
+                var Pilots=[];
+        var Drivers=[];
+        var Areas=[];
+       // GetPilots();
+      //  GetDriver();
+       // GetArea();
+var now = new Date(),
+    minDate = now.toISOString().substring(0,10);
+
+$('#from_Date').prop('min', minDate);
+        function GetArea()
+        {
+            var UserDate = document.getElementById("from_Date").value;
+            ///////////////
+            var xhttp = new XMLHttpRequest();
+  
+  xhttp.onreadystatechange = function() {
+  //console.log(this.status);
+
+    if (this.readyState == 4 && this.status == 200) {
+     var res= JSON.parse(this.responseText);
+        
+        SetAreaList(res);
+	}
+	
+  };
+  xhttp.open("POST", BaseURL+"/GetArea/Date_Time='"+UserDate+"'", true); 
+
+  xhttp.send();  
+        }
+        function GetPilots()
+        {
+             var now = new Date();
+             y = now.getFullYear();
+             m = now.getMonth() + 1;
+             d = now.getDate();
+             var param_date='' + y+'-' + (m < 10 ? '0' : '') + m +'-'+ (d < 10 ? '0' : '') + d;
+            ///////////////
+            var xhttp = new XMLHttpRequest();
+  
+  xhttp.onreadystatechange = function() {
+  //console.log(this.status);
+
+    if (this.readyState == 4 && this.status == 200) {
+     var res= JSON.parse(this.responseText);
+        
+        SetPilotList(res);
+	}
+	
+  };
+  xhttp.open("POST", BaseURL+"/GetPilots/Date_Time="+param_date, true); 
+
+  xhttp.send();  
+        }
+        function SetPilotList(res)
+        {
+            Pilots=res;
+                        $("#sel_Pilot").empty();
+
+               var sel_Pilot=document.getElementById("sel_Pilot");
+             var optiontmp = document.createElement("option");
+		           optiontmp.text = "";
+	               optiontmp.value = "";
+            
+		         sel_Pilot.add(optiontmp);
+            for (var x=0; x<res.length; x++)
+                {
+                    
+                    var optiontmp = document.createElement("option");
+		           optiontmp.text = res[x].FULL_NAME_AR+'-'+res[x].USER_NAME;
+	               optiontmp.value = x;
+            
+		         sel_Pilot.add(optiontmp);
+                }
+                     //   document.multiselect('#sel_Pilot');
+
+        }
+        
+        
+         function SetDriverList(res)
+        {
+            Drivers=res;
+            $("#sel_driver").empty();
+               var sel_Pilot=document.getElementById("sel_driver");
+           var optiontmp = document.createElement("option");
+		           optiontmp.text = "Select Pilot";
+	               optiontmp.value = "";
+          
+	         sel_Pilot.add(optiontmp);
+            for (var x=0; x<res.length; x++)
+                {
+                    
+                    var optiontmp = document.createElement("option");
+		           optiontmp.text = res[x].FULL_NAME_AR+'-'+res[x].USER_NAME;
+	               optiontmp.value = x;
+            
+		         sel_Pilot.add(optiontmp);
+                }
+                       // document.multiselect('#sel_driver');
+
+        }
+        function GetDriver()
+        {   var UserDate = document.getElementById("from_Date").value;
+    
+           
+            var xhttp = new XMLHttpRequest();
+  
+  xhttp.onreadystatechange = function() {
+  //console.log(this.status);
+
+    if (this.readyState == 4 && this.status == 200) {
+     var res= JSON.parse(this.responseText);
+        
+        SetDriverList(res);
+	}
+	
+  };
+  var sel_area= $('#sel_area').val();
+
+  if(sel_area=="")
+	  {
+	  $("#sel_driver").empty();
+      var sel_Pilot=document.getElementById("sel_driver");
+  var optiontmp = document.createElement("option");
+          optiontmp.text = "Select Pilot";
+          optiontmp.value = "";
+	         sel_Pilot.add(optiontmp);
+
+	  }
+  else
+	  {
+   sel_area=Areas[sel_area].AREA_CODE;
+
+  xhttp.open("POST", BaseURL+"GetDrivers/Date_Time='"+UserDate+"'/AREA="+sel_area, true); 
+console.log(BaseURL+"GetDrivers/Date_Time='"+UserDate+"'")
+  xhttp.send();  
+	  }
+        }
+        
+        
+         function SetAreaList(res)
+        {
+            Areas=res;
+                        $("#sel_area").empty();
+                        
+
+               var sel_Pilot=document.getElementById("sel_area");
+               var optiontmp = document.createElement("option");
+	           optiontmp.text = "Select Area";
+               optiontmp.value = "";
+      
+         sel_Pilot.add(optiontmp);
+            for (var x=0; x<res.length; x++)
+                {
+                    
+                    var optiontmp = document.createElement("option");
+		           optiontmp.text = res[x].AREA_NAME+'-'+res[x].AREA_CODE;
+	               optiontmp.value = x;
+            
+		         sel_Pilot.add(optiontmp);
+                }
+                      //  document.multiselect('#sel_area');
+
+        }
+        
+        function GetCards()
+        {
+            // driver or pilot and date and area
+             var selected_driver= $('#sel_driver').val();
+             var sel_area= $('#sel_area').val();
+            var UserDate = document.getElementById("from_Date").value;
+    var ToDate = new Date();
+          ToDate .setHours(0,0,0,0);
+   
+    /// validation
+            //  if(selected_driver==null||selected_driver=="")
+              //   {
+                 /*   $.alert({
+                 title: "Print Cards",
+                 icon: 'glyphicon glyphicon-remove-sign',
+                 type: 'red',
+                 content: "You must Select Driver",
+             });
+			 return;*/
+              //   }
+             // else
+            	  if(sel_area==null||sel_area=="")
+            	  {
+                      $.alert({
+                   title: "Print Cards",
+                   icon: 'glyphicon glyphicon-remove-sign',
+                   type: 'red',
+                   content: "You must Select Area",
+               });
+  			 return;
+                   }
+    
+            else if(UserDate=="" || new Date(UserDate).getTime() <= ToDate.getTime())
+                {
+                      $.alert({
+                 title: "Print Cards",
+                 icon: 'glyphicon glyphicon-remove-sign',
+                 type: 'red',
+                 content: "You must Select Date Greater Than or equal Current Date",
+             });
+			 return;
+                }
+            else
+                {
+            
+            
+            
+            //
+           
+              var  sel_Pilot="nan";
+         
+              if(selected_driver==null||selected_driver=="")
+            	  selected_driver="nan";
+            else
+                {
+                     selected_driver=Drivers[selected_driver].USER_NAME;
+      
+                }
+            sel_area=Areas[sel_area].AREA_CODE;
+               var xhttp = new XMLHttpRequest();
+  
+  xhttp.onreadystatechange = function() {
+  //console.log(this.status);
+
+    if (this.readyState == 4 && this.status == 200) {
+     var res= JSON.parse(this.responseText);
+        
+        Print(res);
+	}
+	
+  };
+  xhttp.open("POST", BaseURL+"GetCard/AREA="+sel_area+"/PILOT="+selected_driver+"/ASSIGN_DATE='"+UserDate+"'/DRIVER="+sel_Pilot, true); 
+console.log(BaseURL+"/GetCard/AREA="+sel_area+"/PILOT="+selected_driver+"/ASSIGN_DATE='"+UserDate+"'/DRIVER="+sel_Pilot)
+  xhttp.send(); 
+
+            
+            
+            
+        }
+        }
+        
+        function Print(res)
+        {                 
+        	console.log(res)
+            var last_aid="";
+            var html_str="";
+            var div_print=document.getElementById("div_print");
+            var len=res.length-1;
+            var serial=0;
+            div_print.innerHTML="";
+            html_str='<div class="widget-title"><h4>Reports</h4> </div>';
+            var total_price=0;
+             for (var x=0; x<res.length; x++)
+                {
+                 debugger;
+
+						  
+						  if(last_aid!=res[x].AID) 
+							  {
+							     if(x!=0)
+							    	 {
+							    	   html_str+='</tbody><tbody><tr><th><span>Total</span> </th><th colspan="3" style="text-align: center;"><span >'+total_price+'</span> </th> </tr>  </tbody></table> </td></tr></tbody></table></div>';
+
+							    	 }
+							    
+							     serial=serial+1;
+							     
+							     // check if different pilot break
+							     if(x!=0&&res[x-1].PILOT!=res[x].PILOT)
+							    	 {
+							    	  html_str+='<div class="widget-body" style="page-break-before: always"> <span>Area :</span>  <strong>'+Areas[$("#sel_area").val()].AREA_NAME+'-'
+							    	  +Areas[$("#sel_area").val()].AREA_CODE+'</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Date</span>  <strong>'+
+							    	  document.getElementById("from_Date").value+'</strong>'+
+							    	  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Pilot</span>  <strong>'+res[x].PILOT+"</strong>";
+							    	 
+
+							    	 }
+							     else
+							    	 {
+							    	 if(x==0)
+							    		 {
+								    	  html_str+='<div class="widget-body" > <span>Area :</span>  <strong>'+Areas[$("#sel_area").val()].AREA_NAME+'-'+Areas[$("#sel_area").val()].AREA_CODE+'</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Date</span>  <strong>'+ document.getElementById("from_Date").value
+								    	  +'</strong>'		
+								    	  +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Pilot</span>  <strong>'+res[x].PILOT+"</strong>";
+;
+
+							    		 }
+							    	 else
+							    	  html_str+='<div class="widget-body">';
+
+							    	 }
+							      total_price=0;
+							      if(res[x].Package_NO=="0")
+									  total_price+=(parseFloat(res[x].UNIT_PRICE)*parseFloat(res[x].QUNTITY));
+									  else
+										  total_price+=(parseFloat(res[x].UNIT_PRICE));
+							     /* html_str+='<table  class="table table-striped table-bordered" >'+
+							        '<thead> <tr><th colspan="1"><span>Serial :</span>  <strong>'+serial+'</strong> </th> </tr> </thead> <tbody>'+
+							        
+					                  ' <tr> <td>Contract</td> <td>Product</td> </tr>'+'<tr><td><span>Pilot : </span> <strong>'+res[x].PILOT+'</strong> </td></tr>'+'<tr> <td><span>Card No : </span> <strong>'+res[x].CARD_NO+'</strong> </td>'+
+					                 
+					                '<td  rowspan="4"> <table class="table table-striped table-bordered" ><thead> <tr><th><span>Item :</span> </th>	<th><span>TRT :</span> </th><th><span>Q :</span> </th> <th><span>Price:</span> </th> </tr> </thead>'
+									  +'  <tbody> <tr><td>'+res[x].COMPONENT_ID+'</td><td>'+res[x].TRE_NAME+'</td><td>'+res[x].QUNTITY+'</td><td>'+res[x].UNIT_PRICE+'</td> </tr>';
+				 */					  
+							html_str+='<table width="101%" class="table table-striped table-bordered"><tbody><tr> <td style="max-width: 800px"><table width="525" border="0" cellpadding="0" cellspacing="0"> <tbody>'+
+	                        
+	                        '<tr> <td width="280" scope="row">  <span># </span>  <strong>'+serial+'</strong> &nbsp;&nbsp;&nbsp;'+
+	                       '  <span>Card No : </span> <strong>'+res[x].CARD_NO+'</strong> </td>'+
+	                       '  <td  width="243"><span>Customer Name  : </span> <strong>'+res[x].CLIENT_NAME+'</strong> </td></tr> '+
+	                       '<tr><th colspan="2" scope="row"> <span>Address : </span> <strong>'+res[x].ADDRESS+'</strong> </th></tr>'+
+	                       '<tr><th  height="38" scope="row">  <span>Operation Note  : </span> <strong>'+res[x].OPERATION_COMMENT+'</strong> </th> '+
+	                       '<td>  <span> Notes  : </span> <strong>'+res[x].DATA_COMMENT+'</strong> </td></tr></tbody></table> '+
+	                         '</td> <td width="120">  <table width="120" align="right" cellpadding="0" cellspacing="0" ><thead> <tr><th width="79%"><span>P</span> </th>'+
+	                          '<th width="9%"><span>TRT</span> </th><th width="6%"><span>Q</span> </th> <th width="6%"><span>$</span> </th> </tr> </thead> <tbody>'
+							  +'<tr><td>'+res[x].COMPONENT_ID+'</td><td>'+res[x].TRE_NAME+'</td><td>'+res[x].QUNTITY+'</td><td>'+res[x].UNIT_PRICE+'</td> </tr>'
+							  
+							  
+							  }
+						  else
+							  {
+							  if(res[x].ITEM_ID==res[x-1].ITEM_ID&&res[x].Package_NO==res[x-1].Package_NO&&res[x].Package_NO!="0")
+								  {
+								  res[x].UNIT_PRICE="0";
+								  }
+							  if(res[x].Package_NO=="0")
+							  total_price+=(parseFloat(res[x].UNIT_PRICE)*parseFloat(res[x].QUNTITY));
+							  else
+								  total_price+=(parseFloat(res[x].UNIT_PRICE));
+
+							  html_str+='<tr><td>'+res[x].COMPONENT_ID+'</td><td>'+res[x].TRE_NAME+'</td><td>'+res[x].QUNTITY+'</td><td>'+res[x].UNIT_PRICE+'</td> </tr>';
+							  }
+		                          
+						  last_aid=res[x].AID;
+                }
+            if(html_str!='')
+                {
+		    	   html_str+='</tbody><tbody><tr><th><span>Total</span> </th><th colspan="3" style="text-align: center;"><span >'+total_price+'</span> </th> </tr>  </tbody></table> </td></tr></tbody></table></div>';
+
+                    div_print.innerHTML= html_str;
+                    console.log(html_str);
+                  PrintElem('div_print');
+                }
+        }
+        function PrintElem(content)
+{
+    var mywindow = window.open('', '', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=0,status=0');
+
+   /*  mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+    mywindow.document.write('<link rel="stylesheet" href="css/midday_receipt.css" type="text/css" />');
+    mywindow.document.write('</head><body >');
+    mywindow.document.write(content);
+    mywindow.document.write('</body></html>');
+
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10
+  mywindow.print();
+   mywindow.close(); */
+    window.print();
+
+    return true;
+}
+        
+        function GetDriver_Area()
+        {
+            var UserDate = document.getElementById("from_Date").value;
+            var ToDate = new Date();
+          ToDate .setHours(0,0,0,0);
+
+   
+    /// validation
+             if(UserDate=="" || new Date(UserDate).getTime() <= ToDate.getTime())
+                {
+                      $.alert({
+                 title: "Print Cards",
+                 icon: 'glyphicon glyphicon-remove-sign',
+                 type: 'red',
+                 content: "You must Select Date Greater Than or equal Current Date",
+             });
+			 return;
+                }
+            ///////////////
+           // GetDriver();
+            GetArea();
+            
+        }
+        
+        
+    </script>
+ 
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

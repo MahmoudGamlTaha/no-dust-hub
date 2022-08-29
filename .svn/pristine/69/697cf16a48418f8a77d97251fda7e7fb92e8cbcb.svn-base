@@ -1,0 +1,45 @@
+package com.jwt.model;
+
+import java.util.List;
+
+public class InventoryFormData {
+	private List<InventoryProduct> products ;
+	private String warehouse;
+	private String date;
+	private String agent;
+
+	public List<InventoryProduct> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<InventoryProduct> products) {
+		this.products = products;
+	}
+
+	public String getWarehouse() {
+		return warehouse;
+	}
+
+	public void setWarehouse(String warehouse) {
+		this.warehouse = warehouse;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getAgent() {
+		return agent;
+	}
+
+	public void setAgent(String agent) {
+		this.agent = agent;
+	}
+	
+	
+
+}

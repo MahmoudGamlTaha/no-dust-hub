@@ -1,0 +1,75 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.CreateDirtyShipmentDAO;
+import com.jwt.model.DirtyProductInPackage;
+import com.jwt.model.Facility;
+import com.jwt.model.WashingPrograms;
+import com.jwt.model.drivers;
+
+
+@Service
+@Transactional
+public class CreateDirtyShipmentServiceImpl implements CreateDirtyShipmentService {
+
+	@Autowired
+	private CreateDirtyShipmentDAO creatDirtyDoa;
+	
+	@Override
+	public List<DirtyProductInPackage> getProductsList(int facility_id) {
+		return creatDirtyDoa.getProductsList(facility_id);
+	}
+
+	@Override
+	public List<WashingPrograms> getWashingPrograms(int type) {
+		return creatDirtyDoa.getWashingPrograms(type);
+	}
+
+	@Override
+	public List<drivers> getAllDrivers() {
+		return creatDirtyDoa.getAllDrivers();
+	}
+
+	@Override
+	public List<Facility> getAllLundryies() {
+		return creatDirtyDoa.getAllLundryies();
+	}
+
+	@Override
+	public String submitDirtyShipment(String driver, String user, String Lundry, String Products) {
+		// TODO Auto-generated method stub
+		return creatDirtyDoa.submitDirtyShipment(driver, user, Lundry, Products);
+	}
+
+	@Override
+	public List<Facility> getExternalLundries() {
+		return creatDirtyDoa.getExternalLundries();
+	}
+
+	@Override
+	public Facility getAbuRawashData() {
+		return creatDirtyDoa.getAbuRawashData();
+	}
+
+	@Override
+	public List<DirtyProductInPackage> getProductsListNotPack(int facility_id) {
+		return creatDirtyDoa.getProductsListNotPack(facility_id);
+	}
+
+	@Override
+	public String submitInternalLundry(String products, String user, String source, String destination,
+			int facility_id) {
+		return creatDirtyDoa.submitInternalLundry(products, user, source, destination, facility_id);
+	}
+
+	@Override
+	public String submitExternalShipment(String driver, String user, String Lundry, String Products) {
+		return creatDirtyDoa.submitExternalShipment(driver, user, Lundry, Products);
+	}
+
+}

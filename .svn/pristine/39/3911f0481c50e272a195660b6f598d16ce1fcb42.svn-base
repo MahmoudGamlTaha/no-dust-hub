@@ -1,0 +1,13 @@
+package com.jwt.dao;
+
+import java.util.List;
+
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.PayrollPayment;
+
+public interface PayrollVendorDAO {
+	public FinancialAccount GetPayrollAccount(int fac_id);
+	public List<PayrollPayment> getPayrollPayment();
+	public String submitPayroll(int facility , String   user_name ,  double total , String  payments );
+
+}

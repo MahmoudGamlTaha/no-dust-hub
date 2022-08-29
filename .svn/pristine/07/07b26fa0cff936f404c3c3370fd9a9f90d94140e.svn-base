@@ -1,0 +1,238 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+<http auto-config="true" use-expressions="true" pattern="/submitCoverDetails">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitCashOnCover">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitCashInOut">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/Driversubmit">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitCashReceived">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitDirtyShipment">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/ValidateReconciliationdata">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/CheckReceivingCashAuthentication">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitReceivingCashOnCover">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitReceivingProduct">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitProductReconciliation">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitactuals">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/BackToRecon">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/Close_Recon">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/approveDirtyShipment">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/loadWarehouseProducts">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitInventoryCheck">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitchangepassword">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/approveRejectInventoryCheck">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitConvertProduct">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitInternalCashTransfer">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/SubmitExternalCashTransfer">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/approveRejectConvertReq">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/loadShipments">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/checkAuth">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/updateAttachment">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitInternalLaundry">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/SubmitConversion">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/EndConversion">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitRecieveUntreatedProducts">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/GetTreatment">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/SubmitSendCleanShipment">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/approveExterenalDirtyShipment">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/ReceiveCleanShipment">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/ProductsTreatment">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/GetToTypes">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/GetProgramsData">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/GetProductsForDying">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/SubmitDying">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/ProductTreatment">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/SubmitTreatment">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/GetConsumables">
+</http>
+
+<http auto-config="true" use-expressions="true" pattern="/GetShipmentConsumable">
+</http>
+<http auto-config="true" use-expressions="true" pattern="/submitPayrollPayments">
+</http>
+    <!-- enable use-expressions -->
+	<http auto-config="true" use-expressions="true">
+	<headers>
+	<cache-control/>
+	<hsts/>
+	</headers>
+	
+	
+		<intercept-url pattern="/DashboardNoDust**" access="isAuthenticated()" />
+				<intercept-url pattern="/reports**" access="isAuthenticated()" />
+		<intercept-url pattern="/DispatchingProducts**" access="isAuthenticated()" />
+		<intercept-url pattern="/CoverList**" access="isAuthenticated()" />
+		<intercept-url pattern="/CoverDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitCoverDetails**" access="isAuthenticated()" />
+	    <intercept-url pattern="/DispatchingCashOnCover**" access="isAuthenticated()" />
+	    <intercept-url pattern="/DispatchingCashOnCoverDetails**" access="isAuthenticated()" />
+	    <intercept-url pattern="/submitCashOnCover**" access="isAuthenticated()" />
+		<intercept-url pattern="/DispatchingCash**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitCashReceived**" access="isAuthenticated()" />
+		<intercept-url pattern="/ReceivingProduct**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitReceivingProduct**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitProductReconciliation**" access="isAuthenticated()" />
+		<intercept-url pattern="/ValidateReconciliationdata**" access="isAuthenticated()" />
+		<intercept-url pattern="/BackToRecon**" access="isAuthenticated()" />
+		<intercept-url pattern="/ReceivingCashOnCover**" access="isAuthenticated()" />
+		<intercept-url pattern="/ReceivingCashOnCoverDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitReceivingCashOnCover**" access="isAuthenticated()" />
+		<intercept-url pattern="/ReceivingCash**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitCashReceived**" access="isAuthenticated()" />
+		<intercept-url pattern="/CreateDirtyShipment**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitDirtyShipment**" access="isAuthenticated()" />	
+		<intercept-url pattern="/ViewDirtyShipments**" access="isAuthenticated()" />
+		<intercept-url pattern="/DirtyShipmentDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitactuals**" access="isAuthenticated()" />
+		<intercept-url pattern="/ReconciliationValidate**" access="isAuthenticated()" />
+		<intercept-url pattern="/MyProducts**" access="isAuthenticated()" />
+		<intercept-url pattern="/loadWarehouseProducts**" access="isAuthenticated()" />
+		<intercept-url pattern="/Close_Recon**" access="isAuthenticated()" />
+		<intercept-url pattern="/ViewShipmentList**" access="isAuthenticated()" />
+		<intercept-url pattern="/ViewShipmentListDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/InventoryCheck**" access="isAuthenticated()" />
+		<intercept-url pattern="/CreateInventoryCheck**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitInventoryCheck**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitchangepassword**" access="isAuthenticated()" />
+		<intercept-url pattern="/MyInventoryCheck**" access="isAuthenticated()" />
+		<intercept-url pattern="/InventoryCheckDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/approveRejectInventoryCheck**" access="isAuthenticated()" />
+		<intercept-url pattern="/Convertproduct**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitConvertProduct**" access="isAuthenticated()" />
+		<intercept-url pattern="/ConvertProductRequests**" access="isAuthenticated()" />
+		<intercept-url pattern="/ConvertProductsDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/SubmitExternalCashTransfer**" access="isAuthenticated()" />
+		<intercept-url pattern="/InternalCashTransfer**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitInternalCashTransfer**" access="isAuthenticated()" />
+		<intercept-url pattern="/approveRejectConvertReq**" access="isAuthenticated()" />
+		<intercept-url pattern="/ChangePassword**" access="isAuthenticated()" />
+		<intercept-url pattern="/GeneralReports**" access="isAuthenticated()" />
+		<intercept-url pattern="/GenralReportDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/loadShipments**" access="isAuthenticated()" />
+		<intercept-url pattern="/CreateCashTransfer**" access="isAuthenticated()" />
+		<intercept-url pattern="/ViewCashTransferList**" access="isAuthenticated()" />
+		<intercept-url pattern="/ViewCashTransferDetails**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitInternalLaundry**" access="isAuthenticated()" />
+		<intercept-url pattern="/PayrollPayment**" access="isAuthenticated()" />
+				<intercept-url pattern="/ProductConversion**" access="isAuthenticated()" />
+			<intercept-url pattern="/ReceiveUntreatedProducts**" access="isAuthenticated()" />
+		<intercept-url pattern="/ViewExternalShipments**" access="isAuthenticated()" />
+		<intercept-url pattern="/submitRecieveUntreatedProducts**" access="isAuthenticated()" />
+				<intercept-url pattern="/CreateCleanShipment**" access="isAuthenticated()" />
+				<intercept-url pattern="SubmitSendCleanShipment**" access="isAuthenticated()" />
+				<intercept-url pattern="approveExterenalDirtyShipment**" access="isAuthenticated()" />
+					<intercept-url pattern="ReceiveCleanShipment**" access="isAuthenticated()" />
+			<intercept-url pattern="ProductsTreatment**" access="isAuthenticated()" />
+		<intercept-url pattern="GetToTypes**" access="isAuthenticated()" />
+					<intercept-url pattern="GetProgramsData**" access="isAuthenticated()" />
+									<intercept-url pattern="GetProductsForDying**" access="isAuthenticated()" />
+													<intercept-url pattern="SubmitDying**" access="isAuthenticated()" />
+																	<intercept-url pattern="ProductTreatment**" access="isAuthenticated()" />
+																					<intercept-url pattern="SubmitTreatment**" access="isAuthenticated()" />
+										<intercept-url pattern="GetConsumables**" access="isAuthenticated()" />
+														<intercept-url pattern="GetShipmentConsumable**" access="isAuthenticated()" />
+				
+		
+		
+		
+		
+		<!-- 	<intercept-url pattern="/Reporting**" access="hasRole('ROLE_ADMIN')" />
+	     <intercept-url pattern="/employees**" access="isAuthenticated()" />
+		<intercept-url pattern="/ETL**" access="isAuthenticated()" />
+			<intercept-url pattern="/DraftTicket**" access="isAuthenticated()" />
+						<intercept-url pattern="/detailTicket**" access="isAuthenticated()" />
+			
+					<intercept-url pattern="/UnAssignDraftTicket**" access="isAuthenticated()" />
+		
+							<intercept-url pattern="/AllDraftTicket**" access="isAuthenticated()" />
+							
+		    <intercept-url pattern="/OpenTicket**" access="isAuthenticated()" />
+					<intercept-url pattern="/UnAssignOpenTicket**" access="isAuthenticated()" />
+		
+							<intercept-url pattern="/AllOpenTicket**" access="isAuthenticated()" />
+						<intercept-url pattern="/CloseTicket**" access="isAuthenticated()" />
+			 -->				
+		
+		<!-- access denied page -->
+		<access-denied-handler error-page="/403" />
+		<form-login 
+		    login-page="/login" 
+		    login-processing-url="/j_spring_security_check"
+		    default-target-url="/DashboardNoDust" 
+		    authentication-failure-handler-ref="myAuthErrorHandler"
+			username-parameter="username"
+			password-parameter="password" 
+			always-use-default-target="true"/>
+		<logout logout-success-url="/login?logout"  />
+		<!-- enable csrf protection -->
+		<csrf/>
+		  <session-management >
+        <concurrency-control 
+        max-sessions="1" error-if-maximum-exceeded="true"  />
+      </session-management> 
+	</http>
+	
+	<!-- Select users and user_roles from database -->
+	<!-- Select users and user_roles from database -->
+	<authentication-manager>
+		<authentication-provider>
+			<jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query= 
+				"select user_name,PGP_SYM_DECRYPT(USER_PASSWORD::bytea, 'AES_KEY') user_password, enabled,Display_Name from sc_users where user_name=?"
+				authorities-by-username-query=
+					"SELECT USER_NAME,PERMISSION_NAME FROM &quot;SC_USER_PERMISSION&quot; where user_name =?"
+					group-authorities-by-username-query ="" />
+		</authentication-provider>
+	</authentication-manager>
+
+</beans:beans>

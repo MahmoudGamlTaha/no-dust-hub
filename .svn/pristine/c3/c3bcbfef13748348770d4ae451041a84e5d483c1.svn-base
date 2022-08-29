@@ -1,0 +1,28 @@
+package com.jwt.model;
+
+import java.util.List;
+
+public class ConsumableData {
+private String ids;
+public String getIds() {
+	return ids;
+}
+public void setIds(String ids) {
+	this.ids = ids;
+}
+public List<Consumable> getConsumable_details() {
+	return consumable_details;
+}
+public void setConsumable_details(List<Consumable> consumable_details) {
+	this.consumable_details = consumable_details;
+}
+public List<Consumable> getTotal_consumables() {
+	return total_consumables;
+}
+public void setTotal_consumables(List<Consumable> total_consumables) {
+	this.total_consumables = total_consumables;
+}
+private List<Consumable> consumable_details;
+private List<Consumable> total_consumables;
+
+}

@@ -1,0 +1,73 @@
+package com.jwt.model;
+
+import java.util.List;
+
+public class ShipmentListForm {
+	private String shipment_date;
+	private String comment;
+	private String related_shipments;
+	public String getRelated_shipments() {
+		return related_shipments;
+	}
+	public void setRelated_shipments(String related_shipments) {
+		this.related_shipments = related_shipments;
+	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	public String getShipment_date() {
+		return shipment_date;
+	}
+	public void setShipment_date(String shipment_date) {
+		this.shipment_date = shipment_date;
+	}
+	public String getShipment_Type() {
+		return shipment_Type;
+	}
+	public void setShipment_Type(String shipment_Type) {
+		this.shipment_Type = shipment_Type;
+	}
+	public String getShipment_Status() {
+		return shipment_Status;
+	}
+	public void setShipment_Status(String shipment_Status) {
+		this.shipment_Status = shipment_Status;
+	}
+	public String getDriver_Name() {
+		return driver_Name;
+	}
+	public void setDriver_Name(String driver_Name) {
+		this.driver_Name = driver_Name;
+	}
+	
+	private String shipment_Type;
+	private String shipment_Status;
+	private String driver_Name;
+	private List<ShipmentProduct> ship_details;
+	public List<ShipmentProduct> getShip_details() {
+		return ship_details;
+	}
+	public void setShip_details(List<ShipmentProduct> ship_details) {
+		this.ship_details = ship_details;
+	}
+private String closure_comment;
+	public String getClosure_comment() {
+	return closure_comment;
+}
+public void setClosure_comment(String closure_comment) {
+	this.closure_comment = closure_comment;
+}
+
+	private int shipment_id;
+
+	public int getShipment_id() {
+		return shipment_id;
+	}
+	public void setShipment_id(int shipment_id) {
+		this.shipment_id = shipment_id;
+	}
+	
+}

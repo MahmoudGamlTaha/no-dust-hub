@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <title> NODUST</title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+       <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+   
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+ 
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+ <!--    <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" /> -->
+ <!--   <link href="resources/assetsnodust/css/style_arabic.css" rel="stylesheet" lang="ar"/>  --> 
+ <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+   
+   <style >
+   
+  @media (min-width:1500px) and (max-width:3000px){
+  .item.list-group-item img {width: 17% !important;  }
+  }
+
+ 
+  
+  
+.item.list-group-item
+{
+    float: none;
+    width: 100%;
+    background-color: #fff;
+    margin-bottom: 10px;
+    margin-left: 0;
+}
+
+.item.list-group-item img
+{
+    float: left;
+    width: 20%; 
+    margin-right: 10px;
+}
+.item.list-group-item:after
+{
+    clear: both;
+}
+
+
+#grid .row-fluid .span3 { width: 21.9% !important]}
+   
+   
+   </style>
+</head>
+
+<body class="fixed-top">
+
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="Dashboardli"/>
+	 </jsp:include>
+      
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			
+                  <ul id="links"class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                       <li>
+                           <a href="#"><spring:message code="Inventory.productList.PageTitle"/><span class="divider">&nbsp;</span>
+                       </li>
+                       <li><a href="#"></a><span class="divider-last">&nbsp;</span></li>
+                  </ul>
+                
+				  
+				   
+               </div>
+            </div>
+       
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                     
+                        <div class="widget-title">
+                           <h4><spring:message code="Inventory.productList.PageTitle"/></h4>
+                            <div class="btn-group pull-right" style="margin-top: 2px; margin-right: 10px;">
+	                            <a href="#" id="grid" class="btn btn-default btn-sm"><span class="icon-th"></span> <spring:message code="GridButton"/></a>
+	                             <a href="#" id="list" class="btn btn-default btn-sm"><span class="icon-list"> </span><spring:message code="ListButton"/></a>
+                           </div>
+                        </div>
+                        
+						<div class="widget-body" style="text-align: left;">
+						
+                           
+                            
+                          
+    
+    <div id="products" class="row-fluid list-group">
+
+<sec:authorize access="hasAuthority('WareHouses.View')">
+                            <div class="control-group">
+                              <label class="span2 control-label black " style="float: left; text-align: center;"><spring:message code="warehousename"/></label>
+
+                              <div class="controls">
+                              <div class="input-group mb-5 ">
+                              
+							  <select id="warehouseSelect" onchange="clearDiv()" class= "span10 js-example-basic-multiple" style="margin-top: -5px;">
+								 <c:forEach items="${wareHouses}" var="warehouse">
+								        <option value="${warehouse.id}"<c:if test="${currentWareHouse eq warehouse.id}">selected="selected"</c:if> >${warehouse.facility_name}</option>
+								     </c:forEach>
+								  
+							  </select >
+                           
+                           </div>
+                              </div>
+ </div>
+ </sec:authorize>
+
+      <div id="bigDiv" class="span12" style="margin-left: -20px" >
+      
+      <c:forEach items="${productLst}" var="product" >
+        <div class="item  span3" style="margin-bottom: 15px; margin-left: 22px;">
+            <div class="thumbnail">
+                <div class="caption"> 
+                  <h4 class="  group inner list-group-item-heading" style="font-weight: bold;" > ${product.product_name}</h4>
+                  <c:if test="${financail==false}">
+                       <p class=" group inner list-group-item-text" style="margin-bottom: 4px;">
+                       <span style="font-weight: bold;"> <spring:message code="ProductType_"/> </span> <span> ${product.p_type}</span>
+                    </p>
+                    </c:if>
+                    <p class=" group inner list-group-item-text" style="margin-bottom: 4px;">
+                       <span style="font-weight: bold;"> <spring:message code="ProductID_"/> </span> <span> ${product.product_id}</span>
+                    </p>
+                    
+                    <!--  <p class=" group inner list-group-item-text" style="margin-bottom: 4px;">
+                      <span style="font-weight: bold;"> Name  : </span> <span> 11111</span>
+                    </p> -->
+                    <c:if test="${financail==false}">
+                     <p class=" group inner list-group-item-text" style="margin-bottom: 4px;">
+                       <span style="font-weight: bold;"> <spring:message code="Treatment_"/> </span> <span> ${product.treatment}</span>
+                    </p>
+                    </c:if>
+                     <p class=" group inner list-group-item-text" style="margin-bottom: 4px;">
+                       <span style="font-weight: bold;"> <spring:message code="Quantity_"/></span> <span> ${product.quantity}</span>
+                    </p>
+                 
+                </div>
+            </div>
+        </div>
+       
+   </c:forEach>
+        </div>
+        
+    </div>
+</div>
+           
+                 
+                       
+						
+						   </div>
+						 
+                        </div>
+                     </div>
+                
+               </div>
+            
+           
+            </div>
+          
+         </div>
+    </div>
+
+
+   <div id="footer">
+       &copy; <spring:message code="CopyRights"/>
+   
+   </div>
+   <!-- END FOOTER -->
+  
+  <!-- BEGIN JAVASCRIPTS -->		
+   
+ 
+ 
+ <!-- Open & close MENU -->
+  
+   <script>
+   
+  
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      	
+      	
+      	$(".sidebar-togggler").hide();
+		$(".sidebar-toggler").show();
+      	
+    	$("#translatetoarabic").hide();
+    	
+    	$("#translatetoarabic").click(function(){
+    		$("link[href*='arabic']").remove(); 
+    		$("#translatetoarabic").hide();
+    		$("#translatetoenglish").show();
+    	});
+    	
+    	$("#translatetoenglish").click(function(){
+        	
+    	 	$(".sidebar-toggler").hide();
+    		$(".sidebar-togggler").show();
+    		
+        		<!-- $("link[href*='style']").attr("href" , "css/" + $(this.val()+".css"));  -->
+        		$('head').append('<link rel="stylesheet" href="resources/assetsnodust/css/style_arabic.css" type="text/css" />');
+        		$("#translatetoarabic").show();
+        		$("#translatetoenglish").hide();
+        	});
+    	
+      });
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+    	$('#products .item').addClass('list-group-item');
+        $('#list').click(function(event){event.preventDefault();$('#products .item').addClass('list-group-item');});
+        $('#grid').click(function(event){event.preventDefault();$('#products .item').removeClass('list-group-item');$('#products .item').addClass('grid-group-item');});
+    });
+  
+    </script>
+
+<script type="text/javascript">
+function  clearDiv() {
+	
+	   $('#bigDiv').html("");
+	   var e = document.getElementById("warehouseSelect");
+	   var wareHouseId = e.options[e.selectedIndex].value;
+		var xhttp = new XMLHttpRequest();
+    	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+    		var response= this.responseText;
+    		var products=JSON.parse(response);
+    		console.log(products);
+    		
+    			 loadData(products);
+    			
+    	 }
+    	 }
+    	 xhttp.open("POST","loadWarehouseProducts", true);
+    	 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    	 xhttp.send(JSON.stringify(wareHouseId));
+    	
+}
+function loadData(products) {
+	var allProdusts = "";
+	if(products.length >1)
+	{
+		for(var i =0 ; i<products.length ; i++)
+			{
+			var x = ' <div class="item  span3" style="margin-bottom: 15px; margin-left: 22px;"> \n'+
+	        '<div class="thumbnail"> \n'+
+	        '<div class="caption"> \n'+
+	        '<h4 class="  group inner list-group-item-heading" style="font-weight: bold;" >'+ products[i].product_name+'</h4> \n'+
+	        ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+	        '  <span style="font-weight: bold;"><spring:message code="ProductType_"/></span> <span>'+products[i].p_type+'</span> \n'+
+	        ' </p> \n'+
+       ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+         '  <span style="font-weight: bold;"><spring:message code="ProductID_"/></span> <span> '+products[i].product_id+'</span> \n'+
+       ' </p> \n'+
+        
+       ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+       '  <span style="font-weight: bold;"><spring:message code="Treatment_"/></span> <span>'+products[i].treatment+'</span> \n'+
+       ' </p> \n'+
+     
+       ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+       '  <span style="font-weight: bold;"> <spring:message code="Quantity_"/></span> <span> '+products[i].quantity+'</span> \n'+
+       ' </p> \n'+
+     
+        '</div> \n'+
+        '</div>  \n'+
+        '</div>  \n';
+			allProdusts+= x;
+			}
+		 $('#bigDiv').html(allProdusts);
+		 $('#products .item').addClass('list-group-item');
+	}
+	else{
+		if(products[0].state == null)
+		{
+			var x = ' <div class="item  span3" style="margin-bottom: 15px; margin-left: 22px;"> \n'+
+	        '<div class="thumbnail"> \n'+
+	        '<div class="caption"> \n'+
+	        '<h4 class="  group inner list-group-item-heading" style="font-weight: bold;" >'+ products[0].product_name+'</h4> \n'+
+		
+       ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+         '  <span style="font-weight: bold;"><spring:message code="ProductID_"/></span> <span> '+products[0].product_id+'</span> \n'+
+       ' </p> \n'+
+        
+       ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+       '  <span style="font-weight: bold;"><spring:message code="Treatment_"/></span> <span>'+products[0].treatment+'</span> \n'+
+       ' </p> \n'+
+     
+       ' <p class=" group inner list-group-item-text" style="margin-bottom: 4px;"> \n'+
+       '  <span style="font-weight: bold;"> <spring:message code="Quantity_"/></span> <span> '+products[0].quantity+'</span> \n'+
+       ' </p> \n'+
+     
+        '</div> \n'+
+        '</div>  \n'+
+        '</div>  \n';
+			 $('#bigDiv').html(x);
+		}
+		else if(products[0].state =="no session")
+			{
+			location.reload();
+			}
+	}
+	
+}
+</script>
+    
+</body>
+
+</html>

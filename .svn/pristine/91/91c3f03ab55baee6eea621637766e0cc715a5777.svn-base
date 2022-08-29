@@ -1,0 +1,73 @@
+package com.jwt.model;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+public class Order {
+	int id;
+	String order_type;
+	int order_source_id;
+	String order_status;
+	String logged_user;
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm")
+	Date order_time;
+	String approved_by;
+	String from_type;
+	String to_type;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getOrder_type() {
+		return order_type;
+	}
+	public void setOrder_type(String order_type) {
+		this.order_type = order_type;
+	}
+	public int getOrder_source_id() {
+		return order_source_id;
+	}
+	public void setOrder_source_id(int order_source_id) {
+		this.order_source_id = order_source_id;
+	}
+	public String getOrder_status() {
+		return order_status;
+	}
+	public void setOrder_status(String order_status) {
+		this.order_status = order_status;
+	}
+	public String getLogged_user() {
+		return logged_user;
+	}
+	public void setLogged_user(String logged_user) {
+		this.logged_user = logged_user;
+	}
+	public Date getOrder_time() {
+		return order_time;
+	}
+	public void setOrder_time(Date order_time) {
+		this.order_time = order_time;
+	}
+	public String getApproved_by() {
+		return approved_by;
+	}
+	public void setApproved_by(String approved_by) {
+		this.approved_by = approved_by;
+	}
+	public String getFrom_type() {
+		return from_type;
+	}
+	public void setFrom_type(String from_type) {
+		this.from_type = from_type;
+	}
+	public String getTo_type() {
+		return to_type;
+	}
+	public void setTo_type(String to_type) {
+		this.to_type = to_type;
+	}
+	
+	
+}

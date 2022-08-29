@@ -1,0 +1,45 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.ViewDirtyShipmentDAO;
+import com.jwt.model.DirtyProduct;
+import com.jwt.model.DirtyShipment;
+import com.jwt.model.DirtyShipmentData;
+@Service
+@Transactional
+public class ViewDirtyShipmentServiceImpl implements ViewDirtyShipmentService {
+
+	@Autowired
+	private ViewDirtyShipmentDAO dirtyDAO;
+	
+	@Override
+	public List<DirtyShipment> getAllDirtyShipments(int id) {
+		return dirtyDAO.getAllDirtyShipments(id);
+	}
+
+	@Override
+	public List<DirtyShipmentData> getShipmentData(String shipment_id) {
+		return dirtyDAO.getShipmentData(shipment_id);
+	}
+
+	@Override
+	public List<DirtyProduct> getDirtyShipmentProduct(String Shipment_id) {
+		 return dirtyDAO.getDirtyShipmentProduct(Shipment_id);
+	}
+
+	@Override
+	public String appproveDirtyShipment(String ids, String ids2,int shipment_id, String useName) {
+		return dirtyDAO.appproveDirtyShipment(ids, ids2,shipment_id, useName);
+	}
+
+	@Override
+	public String checkStateOfShipment(int id) {
+		return dirtyDAO.checkStateOfShipment(id);
+	}
+
+}

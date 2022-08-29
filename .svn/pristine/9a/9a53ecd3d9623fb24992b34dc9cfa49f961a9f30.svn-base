@@ -1,0 +1,187 @@
+draftTicket.Notes = Notes
+draftTicket.Landline = Landline
+draftTicket.ACCOUNT_NUMBER = Account Number
+draftTicket.AREA_CODE = Area Code
+draftTicket.CONTACT_NUMBER = Contact Number
+draftTicket.NAME = Name
+draftTicket.TICKET_CASE = Ticket Case
+draftTicket.TICKET_CHANNEL = Ticket Channel
+draftTicket.TICKET_CLASSIFICATION = Ticket Classification
+draftTicket.TICKET_DIRECTION = Ticket Direction
+draftTicket.TICKET_FAMILY = Ticket Family
+
+creationTicket.NewTicket= New Ticket
+creationTicket.TicketDetail= Ticket Detail
+creationTicket.Creator=Creator *
+creationTicket.CustomerDetails=Customer Details
+creationTicket.CustomerSegmentation=Customer Segmentation *
+creationTicket.selectCustomerSeg=Select Customer Segmentation
+creationTicket.Name=Name *
+creationTicket.AccountNumber=Account Number *
+creationTicket.AreaCodeLandline=Area Code | Landline *
+creationTicket.AreaCode=Area Code
+creationTicket.Landline=Landline
+creationTicket.MobileNumber=Mobile Number *
+creationTicket.TicketTreeStructure=Ticket Tree Structure
+creationTicket.Direction=Direction *
+creatonTicket.SelectDirection=Select Direction
+creationTicket.Channel=Channel *
+creationTicket.SelectChannel=Select Channel
+creationTicket.Family=Family *
+creationTicket.SelectFamily=Select Family
+creationTicket.Category=Category *
+creationTicket.SelectCategory=Select Category
+creationTicket.ProblemType=Problem Type *
+creationTicket.SelectProblemType=select Problem Type
+creationTicket.NoteDetails=Note Details
+creationTicket.Note=Note
+creationTicket.back=Back
+creationTicket.Next=Next
+
+
+validation.require=This is a required field
+validation.InvalidAccountNo=Invalid Account No.
+validation.InvalidLandline=Invalid Landline
+validation.InvalidMobileNo=Invalid Mobile No.
+
+
+Queue.MyTicket=My Ticket
+Queue.unassignTicket=Un-assign ticket
+Queue.AllTicket=All ticket
+Ticket.Pull=Pull Ticket
+Ticket.TTSCode=TTS Code
+Ticket.State=Ticket State
+Ticket.Landline=Ticket Landline
+Ticket.ContactNo=Contact No.
+Ticket.RemainingSLA=Remaining SLA
+Ticket.CreationSLA=Creation SLA
+Ticket.ResolutionSLA=Resolution SLA
+Ticket.ClosureSLA=Closure SLA
+
+Ticket.Direction=Direction
+Ticket.Platform=Platform
+Ticket.Family=Family
+Ticket.Category=Category
+Ticket.ProblemType=Problem Type
+Ticket.CreationTime=Creation Time
+Ticket.ResolutionTime=Resolution Time
+Ticket.ClosureTime=Closure Time
+Ticket.ClosedTime=Closed Time
+Ticket.ArchiveTime=Archive Time
+
+
+Ticket.Creator=Creator
+Ticket.CreationTeam=Creation Team
+Ticket.ClosureTeam=Closure Team
+Ticket.ResolutionTeam=Resolution Team
+
+Ticket.OwnerTeam=Owner Team
+Ticket.OwnerUser=Owner User
+Ticket.LastUser=Last User
+
+Ticket.EndSLAStatus=End SLA Status
+
+
+
+
+
+
+Search.TtsCode=TTS Code
+Search.AreaCode=Area Code
+Search.Landline=Landline
+Search.MoreComponents=More Components
+Search.Status=Status
+Search.Direction=Direction
+Search.Channel=Channel
+Search.Family=Family
+Search.Category=Category
+Search.ProblemType=Problem Type
+Search.LastOwner=Last Owner
+Search.CreationDuration=Creation Duration
+Search.AccountNo=Account No.
+Search.DomainName=Domain Name
+Search.EmailAddress=Email Address
+Search.Search=Search
+Search.Reset=Reset
+
+
+
+
+TicketQueue.Draft=DRAFT
+TicketQueue.Open=OPEN
+
+
+View=View
+DefineProblemType=Define Problem Type
+CustomerDetailsPanel=Customer Details
+TypeComment=Leave Comment
+NewAttachment=New Attachment
+AttachmentName=Attachment Name:
+Browse=Browse for file ...  
+Tickets=Tickets
+SmartUpdate=Smart Update
+ShowSmartScripts=Show Smart Scripts
+SubmitTicket=Submit Ticket
+Save=Save
+Pull=Pull
+FreezeTicket=Freeze Ticket
+TicketDetails=Ticket Details
+TiketDetails.TTSCode=TTS Code :
+TiketDetails.TicketId=Ticket ID :
+TiketDetails.TicketStatus=Ticket Status :
+TiketDetails.TicketState=Ticket State :
+TiketDetails.ExitCode=Exit Code :
+TiketDetails.ExitReason=Exit Reason :
+TiketDetails.Creator=Creator  :
+TiketDetails.CreationDate=Creation Date :
+TiketDetails.Customer=Customer
+TiketDetails.Name=Name  :
+TiketDetails.AccountNumber= Account Number :
+TiketDetails.CustomerSeg=Customer Segmentation :
+TiketDetails.ContactNo= Contact Number :
+TiketDetails.AreaLandline=Area Code | Landline :
+TiketDetails.ProblemType=Problem Type
+TiketDetails.Direction=Direction  :
+TiketDetails.Channel= Channel  :
+TiketDetails.Family=Family  :
+TiketDetails.Category= Category :
+TiketDetails.ProblemType=Problem Type  :
+TiketDetails.Notes= Notes :
+TiketDetails.Teams=Teams
+TiketDetails.CurrentTeam=Current Team :
+TiketDetails.CurrentSubTeam=Current SubTeam :
+TiketDetails.CreationTeam=Creation Team :
+TiketDetails.ReaolutionTeam=Resolution Team :
+TiketDetails.ClosureTeam=Closure Team :
+TiketDetails.LastAgent=Last Agent :
+TiketDetails.SLA=SLA 
+TiketDetails.EndToEndSLA=End To End SLA :
+TiketDetails.CreationSLA=Creation SLA :
+TiketDetails.ResolutionSLA=Resolution SLA :
+TiketDetails.ClosureSLA=Closure SLA :
+TiketDetails.EndToEndStaus=End To End SLA Status :
+TiketDetails.CreationStatus=Creation SLA Status :
+TiketDetails.SubmitTicket=Submit Ticket 
+TiketDetails.ExitCodeS=Exit Code *
+TiketDetails.ExitReasonS= Exit Reason *
+TiketDetails.Unassign=Un-assign  
+TiketDetails.Submit=  Submit
+TiketDetails.FreezeTicket=Freeze Ticket
+TicketSmartScripts=Ticket SmartScripts
+TiketDetails.UpdateSmartScripts= Update Ticket SmartScripts
+FreezeDate=Freeze Date * 
+FailFreezeDate=Fail to Freeze
+FailEmptyFreezeDate=you must enter Freeze Date greater than sysdate
+
+TiketDetails.CommentTab=Comments 
+TiketDetails.AttachmentTab=Attachment
+TiketDetails.AuditTab=Audit
+TiketDetails.HistoryTab=History
+NewComment=New Comment
+ATTACHMENTNAME=Attachment Name
+Action=Action
+FieldName= Field Name  
+OriginalValue=Original Value
+NewValue=New Value
+Agent=Agent
+OwnerSubTeam=Owner Sub-Team 

@@ -1,0 +1,152 @@
+package com.jwt.dao;
+
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.ActualCounts;
+import com.jwt.model.DirtyShipmentData;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.Products;
+import com.jwt.model.Treatment;
+
+
+@Repository
+public class StockManagmentDAOImpl implements StockManagmentDAO {
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryProduct> getAllProducts(int facility_id) {
+		List<InventoryProduct>products=sessionFactory.getCurrentSession().createSQLQuery("SELECT facilty_info.facility_id,CAST( facilty_info.total_stock_quantity AS varchar)AS quantity, products_.product_name ,trt.\"TRE_NAME\" AS treatment ,facilty_info.product_id \r\n" + 
+				"	FROM facility_product_info facilty_info , facilities facility  ,products products_ , \"TREATMENT_TYPES\" trt \r\n" + 
+				"	where facilty_info.facility_id = facility.id AND trt.\"TRE_ID\" = products_.treatment_id AND facilty_info.product_id = products_.product_sku\r\n" + 
+				"	AND facilty_info.facility_id = "+facility_id+"AND products_.product_category =1 And products_.type =1 ").setResultTransformer(Transformers.aliasToBean(InventoryProduct.class)).list();
+				return products;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String submitConvetProducts(int facility_id, String products, String username) {
+
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_convert_product");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products_data", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_products_data").bindValue(products);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(username);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		//System.out.println("function response "+ result);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyShipmentData> getConvertRequests(int facility_id) {
+		List<DirtyShipmentData>shipments=sessionFactory.getCurrentSession().createSQLQuery("select ship.id AS shipment_id , ship.shipment_expected_delivery_date AS shipment_date, log.logged_user\r\n" + 
+				"from shippments ship  , shipments_logs log\r\n" + 
+				"where shipment_type_id=6 and last_status='18' and ship.id = log.shipment_id and ship.shippment_destination_id = '"+ facility_id+"' ORDER By ship.id").setResultTransformer(Transformers.aliasToBean(DirtyShipmentData.class)).list();
+				return shipments;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryProduct> getConvertReqProducts(int convert_id) {
+		List<InventoryProduct>products=sessionFactory.getCurrentSession().createSQLQuery("select  pro.product_name , treatment.\"TRE_NAME\" as treatment , CAST(details.quantity_shipped AS VARCHAR)as quantity,details.comment \r\n" + 
+				"from shipments_details details , products pro , \"TREATMENT_TYPES\" treatment\r\n" + 
+				"where details.product_id = pro.product_sku  and treatment.\"TRE_ID\" = pro.treatment_id\r\n" + 
+				"and details.shipment_id= "+convert_id).setResultTransformer(Transformers.aliasToBean(InventoryProduct.class)).list();
+				return products;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DirtyShipmentData getConvertReqWith(int id) {
+		List<DirtyShipmentData>shipments=sessionFactory.getCurrentSession().createSQLQuery("select ship.id AS shipment_id , ship.shipment_expected_delivery_date AS shipment_date, log.logged_user\r\n" + 
+				"from shippments ship  , shipments_logs log\r\n" + 
+				"where shipment_type_id=6 and last_status='18' and ship.id = log.shipment_id and ship.id="+id).setResultTransformer(Transformers.aliasToBean(DirtyShipmentData.class)).list();
+				if(shipments.size()>0)
+		          return shipments.get(0);
+				else 
+					return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String approveRejectConvertRequest(long shipment_id, int facility_id, String logged_user,
+			String approval_val) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("approve_convert_product");
+		procedureCall.registerParameter("p_shipment_id", Long.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_approval_val", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(shipment_id);
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_approval_val").bindValue(approval_val);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Products> get_product_list(int type,int fac_id) {
+		// TODO Auto-generated method stub
+		return (List<Products>)sessionFactory.getCurrentSession().createSQLQuery(" select pr.product_sku,pr.treatment_id ,pr.dms_product_id,pr.product_name, tt.\"TRE_NAME\" as treatment_name , fi.total_stock_quantity from facility_product_info fi , products pr,\"TREATMENT_TYPES\" tt where pr.product_sku=fi.product_id and tt.\"TRE_ID\"=pr.treatment_id and  fi.facility_id="+fac_id+"and fi.total_stock_quantity>0  and pr.type="+type).setResultTransformer(Transformers.aliasToBean(Products.class)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_Conversion(int fac_id, String logged_user, String from_type, String to_type,
+			String prod_data) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_product_conversion");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_from_type", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_to_type", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_products", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(fac_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_from_type").bindValue(from_type);
+		procedureCall.getParameterRegistration("p_to_type").bindValue(to_type);
+		procedureCall.getParameterRegistration("p_products").bindValue(prod_data);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+		// TODO Auto-generated method stub
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Treatment> Get_treatment_List() {
+		// TODO Auto-generated method stub
+		return (List<Treatment>)sessionFactory.getCurrentSession().createSQLQuery("select \"TRE_ID\" as treatment_id , \"TRE_NAME\" as treatment_name from \"TREATMENT_TYPES\" where \"TRE_ID\"!=100").setResultTransformer(Transformers.aliasToBean(Treatment.class)).list();
+	}
+
+}

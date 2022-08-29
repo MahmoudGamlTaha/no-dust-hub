@@ -1,0 +1,31 @@
+package com.jwt.dao;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.jwt.model.DirtyProductInPackage;
+import com.jwt.model.Facility;
+import com.jwt.model.ProductsType;
+import com.jwt.model.ProgramsData;
+import com.jwt.model.WashingPrograms;
+import com.jwt.model.drivers;
+
+public interface CreateDirtyShipmentDAO {
+
+	public List<DirtyProductInPackage> getProductsList(int facility_id);
+	public List<DirtyProductInPackage> getProductsListNotPack(int facility_id);
+	public List<WashingPrograms> getWashingPrograms(int type);
+	public List<drivers> getAllDrivers();
+	public List<Facility> getAllLundryies();
+	public List<Facility> getExternalLundries();
+	public Facility getAbuRawashData();
+	public String submitDirtyShipment(String driver, String user , String Lundry , String Products);
+	public String submitExternalShipment(String driver, String user , String Lundry , String Products);
+	public String submitInternalLundry(String products, String user, String source , String destination , int facility_id);
+
+	public List<ProductsType> Get_Products_Type_By_Category(int Cat_id);
+	public List<ProductsType> Get_To_Types(BigDecimal from_type);
+	List<ProgramsData> Get_Programs(BigDecimal from,BigDecimal to);
+	public String Submit_Dying_Programs(int from_type,int to_type,int facility_id,String logged_user,String proudcts);
+	
+}

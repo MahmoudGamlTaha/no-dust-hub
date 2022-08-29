@@ -1,0 +1,272 @@
+package com.jwt.model;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="shipment_details_with_products_and_treatments")
+public class ShipmentDetailsData implements Serializable{
+@Id
+	private int shipment_id;
+@Column
+private BigDecimal quantity_shipped;
+@Column
+private BigDecimal dms_planned_quantity;
+@Column
+private BigDecimal sales;
+@Column
+private BigDecimal lost;
+@Column
+private BigDecimal cancelled;
+@Column
+private BigDecimal returned_lost;
+@Column
+private BigDecimal weight;
+@Column(name="out")
+private BigDecimal quantity;
+public BigDecimal getQuantity() {
+	return quantity;
+}
+public void setQuantity(BigDecimal quantity) {
+	this.quantity = quantity;
+}
+@Column
+private BigDecimal manual_new;
+@Column
+private BigDecimal cancel;
+@Column
+private BigDecimal over;
+@Column
+private BigDecimal washing_program_id;
+@Column(name="new")
+private BigDecimal new_quan;
+@Column
+private String product_sku;
+@Id
+private BigDecimal product_id;
+@Column
+private String dirty_product_code;
+@Column
+private String dirty_product_sku;
+@Column
+private BigDecimal selling_price;
+@Column
+private int type;
+@Column
+private String handle_sku_code;
+@Column
+private int treatment_id;
+@Column
+private String product_name;
+@Column
+private String dms_product_id;
+@Column
+private String treatment_name;
+@Column
+private BigDecimal expected_new;
+@Column
+private BigDecimal actual_new;
+@Column
+private BigDecimal manual_cancel;
+@Column
+private BigDecimal expected_reconciliation_qty;
+@Column
+private BigDecimal actual_calculated_qty;
+@Column
+private BigDecimal actual_cancel;
+@Column
+private BigDecimal actual_reconcilied_quantity;
+
+public BigDecimal getActual_reconcilied_quantity() {
+	return actual_reconcilied_quantity;
+}
+public void setActual_reconcilied_quantity(BigDecimal actual_reconcilied_quantity) {
+	this.actual_reconcilied_quantity = actual_reconcilied_quantity;
+}
+public int getShipment_id() {
+	return shipment_id;
+}
+public void setShipment_id(int shipment_id) {
+	this.shipment_id = shipment_id;
+}
+public BigDecimal getQuantity_shipped() {
+	return quantity_shipped;
+}
+public void setQuantity_shipped(BigDecimal quantity_shipped) {
+	this.quantity_shipped = quantity_shipped;
+}
+public BigDecimal getDms_planned_quantity() {
+	return dms_planned_quantity;
+}
+public void setDms_planned_quantity(BigDecimal dms_planned_quantity) {
+	this.dms_planned_quantity = dms_planned_quantity;
+}
+public BigDecimal getSales() {
+	return sales;
+}
+public void setSales(BigDecimal sales) {
+	this.sales = sales;
+}
+public BigDecimal getLost() {
+	return lost;
+}
+public void setLost(BigDecimal lost) {
+	this.lost = lost;
+}
+public BigDecimal getCancelled() {
+	return cancelled;
+}
+public void setCancelled(BigDecimal cancelled) {
+	this.cancelled = cancelled;
+}
+public BigDecimal getReturned_lost() {
+	return returned_lost;
+}
+public void setReturned_lost(BigDecimal returned_lost) {
+	this.returned_lost = returned_lost;
+}
+public BigDecimal getWeight() {
+	return weight;
+}
+public void setWeight(BigDecimal weight) {
+	this.weight = weight;
+}
+
+public BigDecimal getManual_new() {
+	return manual_new;
+}
+public void setManual_new(BigDecimal manual_new) {
+	this.manual_new = manual_new;
+}
+public BigDecimal getCancel() {
+	return cancel;
+}
+public void setCancel(BigDecimal cancel) {
+	this.cancel = cancel;
+}
+public BigDecimal getOver() {
+	return over;
+}
+public void setOver(BigDecimal over) {
+	this.over = over;
+}
+public BigDecimal getWashing_program_id() {
+	return washing_program_id;
+}
+public void setWashing_program_id(BigDecimal washing_program_id) {
+	this.washing_program_id = washing_program_id;
+}
+public BigDecimal getNew_quan() {
+	return new_quan;
+}
+public void setNew_quan(BigDecimal new_quan) {
+	this.new_quan = new_quan;
+}
+public String getProduct_sku() {
+	return product_sku;
+}
+public void setProduct_sku(String product_sku) {
+	this.product_sku = product_sku;
+}
+public BigDecimal getProduct_id() {
+	return product_id;
+}
+public void setProduct_id(BigDecimal product_id) {
+	this.product_id = product_id;
+}
+public String getDirty_product_code() {
+	return dirty_product_code;
+}
+public void setDirty_product_code(String dirty_product_code) {
+	this.dirty_product_code = dirty_product_code;
+}
+public String getDirty_product_sku() {
+	return dirty_product_sku;
+}
+public void setDirty_product_sku(String dirty_product_sku) {
+	this.dirty_product_sku = dirty_product_sku;
+}
+public BigDecimal getSelling_price() {
+	return selling_price;
+}
+public void setSelling_price(BigDecimal selling_price) {
+	this.selling_price = selling_price;
+}
+public int getType() {
+	return type;
+}
+public void setType(int type) {
+	this.type = type;
+}
+public String getHandle_sku_code() {
+	return handle_sku_code;
+}
+public void setHandle_sku_code(String handle_sku_code) {
+	this.handle_sku_code = handle_sku_code;
+}
+public int getTreatment_id() {
+	return treatment_id;
+}
+public void setTreatment_id(int treatment_id) {
+	this.treatment_id = treatment_id;
+}
+public String getProduct_name() {
+	return product_name;
+}
+public void setProduct_name(String product_name) {
+	this.product_name = product_name;
+}
+public String getDms_product_id() {
+	return dms_product_id;
+}
+public void setDms_product_id(String dms_product_id) {
+	this.dms_product_id = dms_product_id;
+}
+public String getTreatment_name() {
+	return treatment_name;
+}
+public void setTreatment_name(String treatment_name) {
+	this.treatment_name = treatment_name;
+}
+public BigDecimal getExpected_new() {
+	return expected_new;
+}
+public void setExpected_new(BigDecimal expected_new) {
+	this.expected_new = expected_new;
+}
+public BigDecimal getActual_new() {
+	return actual_new;
+}
+public void setActual_new(BigDecimal actual_new) {
+	this.actual_new = actual_new;
+}
+public BigDecimal getManual_cancel() {
+	return manual_cancel;
+}
+public void setManual_cancel(BigDecimal manual_cancel) {
+	this.manual_cancel = manual_cancel;
+}
+public BigDecimal getExpected_reconciliation_qty() {
+	return expected_reconciliation_qty;
+}
+public void setExpected_reconciliation_qty(BigDecimal expected_reconciliation_qty) {
+	this.expected_reconciliation_qty = expected_reconciliation_qty;
+}
+public BigDecimal getActual_calculated_qty() {
+	return actual_calculated_qty;
+}
+public void setActual_calculated_qty(BigDecimal actual_calculated_qty) {
+	this.actual_calculated_qty = actual_calculated_qty;
+}
+public BigDecimal getActual_cancel() {
+	return actual_cancel;
+}
+public void setActual_cancel(BigDecimal actual_cancel) {
+	this.actual_cancel = actual_cancel;
+}
+}

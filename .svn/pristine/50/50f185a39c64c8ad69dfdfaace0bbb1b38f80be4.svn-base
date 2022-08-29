@@ -1,0 +1,69 @@
+package com.jwt.model;
+public class OrderDetail {
+
+	int order_id;
+	int quantity_requested;
+	String machine_no;
+	String product_id;
+	String comment;
+	String washing_program;
+	String to_treatment;
+	
+	public String getTo_treatment() {
+		return to_treatment;
+	}
+	public void setTo_treatment(String to_treatment) {
+		this.to_treatment = to_treatment;
+	}
+	public String getWashing_program() {
+		return washing_program;
+	}
+	public void setWashing_program(String washing_program) {
+		this.washing_program = washing_program;
+	}
+	String order_time;
+	String to_product_id;
+	public int getOrder_id() {
+		return order_id;
+	}
+	public void setOrder_id(int order_id) {
+		this.order_id = order_id;
+	}
+	public int getQuantity_requested() {
+		return quantity_requested;
+	}
+	public void setQuantity_requested(int quantity_requested) {
+		this.quantity_requested = quantity_requested;
+	}
+	public String getMachine_no() {
+		return machine_no;
+	}
+	public void setMachine_no(String machine_no) {
+		this.machine_no = machine_no;
+	}
+	public String getProduct_id() {
+		return product_id;
+	}
+	public void setProduct_id(String product_id) {
+		this.product_id = product_id;
+	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	public String getOrder_time() {
+		return order_time;
+	}
+	public void setOrder_time(String order_time) {
+		this.order_time = order_time;
+	}
+	public String getTo_product_id() {
+		return to_product_id;
+	}
+	public void setTo_product_id(String to_product_id) {
+		this.to_product_id = to_product_id;
+	}
+	
+}

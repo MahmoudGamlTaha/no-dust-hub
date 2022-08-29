@@ -1,0 +1,160 @@
+package com.jwt.dao;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.Operation;
+import com.jwt.model.Shipment;
+import com.jwt.model.ShipmentLog;
+
+@Repository
+public class CashInOutDAOImpl implements CashInOutDAO {
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String submitCashInOut(String financialAcc, String user, double amount, String driver_userName) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_releasing_cash");
+		procedureCall.registerParameter("p_financial_account", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_amount_money_released", Double.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_driver_user_name", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_financial_account").bindValue(financialAcc);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(user);
+		procedureCall.getParameterRegistration("p_amount_money_released").bindValue(amount);
+		procedureCall.getParameterRegistration("p_driver_user_name").bindValue(driver_userName);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<FinancialAccount> Get_Financial_Accounts(int fac_id) {
+		// TODO Auto-generated method stub
+		return (List<FinancialAccount>)sessionFactory.getCurrentSession().createQuery("from FinancialAccount where facility_id="+fac_id).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String transferInternalCash(int facility_id, String logged_user, String source_account,
+			String destination_account, double amount, String comment) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_internal_cash_transfer");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_source_account", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_destination_account", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_amount", Double.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_comment", String.class, ParameterMode.IN);
+
+		 
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_source_account").bindValue(source_account);
+		procedureCall.getParameterRegistration("p_destination_account").bindValue(destination_account);
+		procedureCall.getParameterRegistration("p_amount").bindValue(amount);
+		procedureCall.getParameterRegistration("p_comment").bindValue(comment);
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Submit_External_Cash(int facility_id, String logged_user, String account_sku, Date req_date,
+			Date transfer_date, double amount, String bank_name, String bank_account_no, String attachment) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("submit_external_cash_transfer");
+		procedureCall.registerParameter("p_facility_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_user", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_account_sku", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_request_date", Date.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_transfer_date", Date.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_amount", Double.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_bank_name", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_bank_account_no", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_attachment", String.class, ParameterMode.IN);
+
+		procedureCall.getParameterRegistration("p_facility_id").bindValue(facility_id);
+		procedureCall.getParameterRegistration("p_logged_user").bindValue(logged_user);
+		procedureCall.getParameterRegistration("p_account_sku").bindValue(account_sku);
+		procedureCall.getParameterRegistration("p_request_date").bindValue(req_date);
+		procedureCall.getParameterRegistration("p_transfer_date").bindValue(transfer_date);
+		procedureCall.getParameterRegistration("p_amount").bindValue(amount);
+		procedureCall.getParameterRegistration("p_bank_name").bindValue(bank_name);
+		procedureCall.getParameterRegistration("p_bank_account_no").bindValue(bank_account_no);
+		procedureCall.getParameterRegistration("p_attachment").bindValue(attachment);
+
+
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Shipment> Get_Cash_Transfer_Shipments(int facility_id) {
+		// TODO Auto-generated method stub
+		String souurce_id=String.valueOf(facility_id);
+		return (List<Shipment>) sessionFactory.getCurrentSession().createQuery("from Shipment where shipment_type_id=8 and shippment_souce_id='"+souurce_id+"'").list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Update_attachment(int shipment_id, String bank_attachment) {
+		// TODO Auto-generated method stub
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("save_bank_attachment");
+		procedureCall.registerParameter("p_shipment_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_bank_attachment", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(shipment_id);
+		procedureCall.getParameterRegistration("p_bank_attachment").bindValue(bank_attachment);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Get_Agent_Name(int shipment_id) {
+		// TODO Auto-generated method stub
+		List<ShipmentLog> sh_log=(List<ShipmentLog>)sessionFactory.getCurrentSession().createQuery("from ShipmentLog where shipment_id="+shipment_id).list();
+		String agent_name=sh_log.get(0).getLogged_user();
+		return agent_name;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String Get_Account(int shipment_id) {
+		// TODO Auto-generated method stub
+		List<String> lst=(List<String>) sessionFactory.getCurrentSession().createSQLQuery("select product_id from operations where transaction_id="+shipment_id).list();
+		return lst.get(0);
+	}
+
+}

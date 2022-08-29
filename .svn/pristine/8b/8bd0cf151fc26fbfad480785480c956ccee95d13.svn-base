@@ -1,0 +1,292 @@
+package com.jwt.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.jboss.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.jwt.model.DashBoardData;
+import com.jwt.model.Driver;
+import com.jwt.model.Facility;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.Shipment;
+import com.jwt.model.ShipmentListForm;
+import com.jwt.model.User;
+import com.jwt.model.drivers;
+import com.jwt.service.ReceivingProductsSerciveImpl;
+import com.jwt.service.ReceivingProductsService;
+//import com.jwt.model.UserTeam;
+//import com.jwt.service.UserTeamService;
+import com.jwt.service.ReleasingProductsService;
+import com.jwt.service.StockManagmentService;
+import com.jwt.service.UserService;
+@Controller
+public class LoginController {
+	private static final Logger logger = Logger
+			.getLogger(LoginController.class);
+	
+	@Autowired
+	private ReleasingProductsService shipmentService;
+	
+	//@Autowired
+	///private UserRoleService userRoleService;
+//	@Autowired
+//	private UserTeamService userTeamService;
+	
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private ReceivingProductsService rec_serivce;
+	@Autowired
+	private StockManagmentService stock_service;
+	private HttpSession session;
+	@RequestMapping(value = "/")
+	public ModelAndView login(ModelAndView model) throws IOException {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+
+		    /* The user is logged in :) */
+			model.addObject("authenticated", "true");
+			}
+		
+		model.setViewName("Login");
+		return model;
+	}
+	@RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
+	//@ResponseStatus(value=HttpStatus.OK)
+	public ModelAndView login(HttpServletRequest request,@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "error2", required = false) String error2,
+			@RequestParam(value = "logout", required = false) String logout) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ModelAndView model = new ModelAndView();
+
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			model.addObject("authenticated", "true");
+		}
+		System.out.println("error is "+error);
+		if (error != null) {
+			model.addObject("error", "Invalid username or password!");
+		}
+		if (error2 != null)
+		{
+			model.addObject("error", "Another User is loggined");
+
+		}
+
+		if (logout != null) {
+			model.addObject("msg", "You've been logged out successfully.");
+			
+		}
+		model.setViewName("Login");
+
+		return model;
+
+	}
+	
+	@RequestMapping(value = "/logout")
+	public ModelAndView logout(ModelAndView model) throws IOException {
+		//Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		//UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		//User u= userService.getUser( userDetail.getUsername());
+		
+		model.setViewName("Login");
+		return model;
+	}
+	@RequestMapping(value = "/DashboardNoDust")
+	public ModelAndView DashboardNoDust(HttpServletRequest request,ModelAndView model) throws IOException {
+		DashBoardData dash_board_data=new DashBoardData();
+		model.setViewName("DashboardNoDust");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		int dispatch_count=0;
+		int reconciliation_count=0;
+		double Expected_Cash=0;
+		List<InventoryProduct> lst_products=new ArrayList<InventoryProduct>();
+		System.out.println("cred : "+auth.getCredentials());
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+		String user="";
+		///////
+		String windowName = userDetail.getUsername() + new Date().getTime();
+        HttpSession session = request.getSession();
+        session.setAttribute("windowName", windowName);
+        session.setAttribute("windowNameToSet", windowName);
+        ////////////////
+		user=userDetail.getUsername();
+		System.out.println("user : "+user);
+		System.out.println("auth :"+userDetail.getAuthorities());
+	//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+		User u=userService.getUser(user);
+		System.out.println("user State :"+u.getActive());
+	    u.setActive(1);
+	    userService.updateUser(u);
+		 //UserSession u=new UserSession();
+		   // u.setListRoles(listRoles);
+		   // HttpServletRequest request=null;
+		   // HttpSession session=null;
+		   // session.setAttribute("Role",listRoles.get(0));
+		   // httpSession.setAttribute("Role",listRoles.get(0));
+		  
+		    request.getSession().setAttribute("active", u.getActive());
+		    request.getSession().setAttribute("user",u);
+		    Facility fac=new Facility();
+		    fac=rec_serivce.Get_Facility_Info(u.getOrg_unit_id());
+		    request.getSession().setAttribute("fac", fac.getFacility_name());
+		    request.getSession().setAttribute("fullname", u.getDisplay_name());
+		    dispatch_count=stock_service.Get_Dispatch_Count(u.getOrg_unit_id());
+		    reconciliation_count=stock_service.Get_Reconciliation_Count(u.getOrg_unit_id());
+			lst_products=stock_service.Get_Clean_Dirty_Products(u.getOrg_unit_id());
+
+		    Expected_Cash=stock_service.Get_Expected_Cash();
+		    dash_board_data=stock_service.Get_data(u.getOrg_unit_id());
+		    String teams="";
+//		    for(int i = 0 ; i<listTeam.size() ; i++) {
+//		    	System.out.println("Team : "+listTeam.get(i).getTEAM_NAME());
+//		    	teams += listTeam.get(i).getTEAM_NAME();
+//		        if (i != listTeam.size() - 1) {
+//		        	teams += ",";
+//		        } else {
+//		            break;
+//		        }
+//	    	
+//	    	//authority.add(new SimpleGrantedAuthority(listRoles.get(i).getROLE()));
+//	    	 //authority.add(new SimpleGrantedAuthority(listRoles.get(i).getROLE()));
+//	        }
+	//	 System.out.println("teams : "+teams);
+	//	 request.getSession().setAttribute("role",teams);
+		}
+		model.addObject("Dispatch_Cash", dispatch_count);
+		model.addObject("reconciliation",reconciliation_count);
+		model.addObject("expected_cash", Expected_Cash);
+		model.addObject("lst_products", lst_products);
+		return model;
+	}
+	
+
+
+//	@RequestMapping(value = "/Reporting")
+//	public ModelAndView Reporting(ModelAndView model) throws IOException {
+//		model.addObject("srcValue", "http://192.168.0.8:8080/ReportPortal/report.html?Module=8&lang=en");
+//		model.setViewName("Reporting");
+//		return model;
+//	}	
+//	
+//	@RequestMapping(value = "/Activate")
+//	public ModelAndView Activate_User(HttpServletRequest request,ModelAndView model) throws IOException {
+//		//model.addObject("srcValue", "http://192.168.0.8:8080/ReportPortal/report.html?Module=8&lang=en");
+//
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		System.out.println("cred : "+auth.getCredentials());
+//		if (!(auth instanceof AnonymousAuthenticationToken)) {
+//			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+//			//User u= userService.getUser( userDetail.getUsername());
+//			User u= (User) request.getSession().getAttribute("user");
+//			u.setActive(1);
+//			u = userService.updateUser(u);
+//			
+//		}
+//		request.getSession().setAttribute("active", 1);
+//		//model.setViewName("Dashboard");
+//		return new ModelAndView("redirect:/Dashboard");
+//	}	
+//	@RequestMapping(value = "/Deactivate")
+//	public ModelAndView Deactivate_User(HttpServletRequest request,ModelAndView model) throws IOException {
+//		//model.addObject("srcValue", "http://192.168.0.8:8080/ReportPortal/report.html?Module=8&lang=en");
+//
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		//System.out.println("cred : "+auth.getCredentials());
+//		if (!(auth instanceof AnonymousAuthenticationToken)) {
+//			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+//			//User u= userService.getUser( userDetail.getUsername());
+//			User u= (User) request.getSession().getAttribute("user");
+//			u.setActive(0);
+//			u = userService.updateUser(u);
+//			request.getSession().setAttribute("active", 0);
+//		
+//		}
+//		
+//		//model.setViewName("Dashboard");
+//		return new ModelAndView("redirect:/Dashboard");
+//	}	
+//	@RequestMapping(value = "/ETL")
+//	public ModelAndView ETL(ModelAndView model) throws IOException {
+//		//model.addObject("srcValue", "http://192.168.0.8:8080/ReportPortal/report.html?Module=8&lang=en");
+//		model.setViewName("ETL");
+//		return model;
+//	}	
+	
+	@RequestMapping(value = "/403", method = RequestMethod.GET)
+	public ModelAndView accesssDenied() {
+		
+		ModelAndView model = new ModelAndView();
+		
+		//check if user is login
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+			model.addObject("username", userDetail.getUsername());
+		}
+		
+		model.setViewName("403");
+		return model;
+
+	}
+	
+	
+	@RequestMapping(value = "/reports")
+	public ModelAndView reports(ModelAndView model) throws IOException {
+		
+		model.setViewName("reports");
+		return model;
+	}
+
+	@RequestMapping(value="/TimeOut", method = RequestMethod.GET)
+    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+            //logger.info("logout ok");
+        }
+        return "redirect:/login";
+    }
+	
+	@RequestMapping(value = "/checkAuth", method = RequestMethod.POST,consumes="application/json")
+	public ResponseEntity<String> checkAuth()throws ServletException, IOException {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+
+		    	return new ResponseEntity<String>("Authenitacted",HttpStatus.OK);		
+				}
+    	else
+			{
+				return new ResponseEntity<String>("notAuthenitacted",HttpStatus.OK);	
+			}
+	}
+	
+}

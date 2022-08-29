@@ -1,0 +1,43 @@
+package com.jwt.dao;
+
+import java.util.List;
+
+import com.jwt.model.DailyShipments;
+import com.jwt.model.DashBoardData;
+import com.jwt.model.DirtyShipmentData;
+import com.jwt.model.ExpectedProductsIN;
+import com.jwt.model.ExpectedProductsOut;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.NewProduct;
+import com.jwt.model.ProductComponentDetails;
+import com.jwt.model.ProductRawMaterial;
+import com.jwt.model.Products;
+import com.jwt.model.ProductsType;
+import com.jwt.model.Treatment;
+
+public interface StockManagmentDAO {
+
+	public List<InventoryProduct> getAllProducts(int facility_id);
+	public String submitConvetProducts(int facility_id, String products , String username);
+	public List<DirtyShipmentData> getConvertRequests(int facility_id);
+	public List<InventoryProduct> getConvertReqProducts(int convert_id);
+	public DirtyShipmentData getConvertReqWith(int id);
+	public String approveRejectConvertRequest(long shipment_id , int facility_id, String logged_user, String approval_val );
+	public List<Products>get_product_list(int type,int fac_id);
+	public String Submit_Conversion(int fac_id,String logged_user,String from_type,String to_type,String prod_data);
+	public List<Treatment>Get_treatment_List();
+	public List<NewProduct> Get_New_Product_List();
+	public String Submit_Create_New_Product(String products, String logged_user, int facility);
+	public List<ProductComponentDetails>Get_Component_Details(String product_sku, int fac);
+	public List<ProductRawMaterial> Get_Raw_Materials(int order_id);
+	public List<ProductsType>lst_shipment_type();
+	public int Get_Dispatch_Count(int facility);
+	public int Get_Reconciliation_Count(int facility);
+	public double Get_Expected_Cash();
+	public DashBoardData Get_data(int facility);
+	public List<InventoryProduct>Get_Clean_Dirty_Products(int facility);
+	public List<ExpectedProductsOut>Get_Expected_Out(int facility);
+	public List<DailyShipments>Get_Daily_Shipments_Data(int facility_id);
+	public List<ExpectedProductsIN>Get_Expcted_IN(int facility_id);
+	
+}

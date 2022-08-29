@@ -1,0 +1,68 @@
+package com.jwt.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="sc_users")
+public class UserData {
+	@Column
+private String user_name;
+	@Column
+private String display_name;
+@Id
+private int user_id;
+@Column
+private int org_unit_id;
+@Column
+private String user_password;
+@Column
+private int enabled;
+@Column
+private int active;
+public String getUser_name() {
+	return user_name;
+}
+public void setUser_name(String user_name) {
+	this.user_name = user_name;
+}
+public String getDisplay_name() {
+	return display_name;
+}
+public void setDisplay_name(String display_name) {
+	this.display_name = display_name;
+}
+public int getUser_id() {
+	return user_id;
+}
+public void setUser_id(int user_id) {
+	this.user_id = user_id;
+}
+public int getOrg_unit_id() {
+	return org_unit_id;
+}
+public void setOrg_unit_id(int org_unit_id) {
+	this.org_unit_id = org_unit_id;
+}
+public String getUser_password() {
+	return user_password;
+}
+public void setUser_password(String user_password) {
+	this.user_password = user_password;
+}
+public int getEnabled() {
+	return enabled;
+}
+public void setEnabled(int enabled) {
+	this.enabled = enabled;
+}
+public int getActive() {
+	return active;
+}
+public void setActive(int active) {
+	this.active = active;
+}
+
+}

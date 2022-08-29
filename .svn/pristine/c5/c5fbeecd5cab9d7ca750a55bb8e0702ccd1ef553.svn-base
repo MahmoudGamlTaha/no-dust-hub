@@ -1,0 +1,60 @@
+package com.jwt.model;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+public class InventoryCheck {
+	private int id;
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date check_date ;
+	private String logged_user;
+	private int facility_id;
+	private String last_status_id;
+	private String warehouse_manager;
+	private String approveVa;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public Date getCheck_date() {
+		return check_date;
+	}
+	public void setCheck_date(Date check_date) {
+		this.check_date = check_date;
+	}
+	public String getLogged_user() {
+		return logged_user;
+	}
+	public void setLogged_user(String logged_user) {
+		this.logged_user = logged_user;
+	}
+	public int getFacility_id() {
+		return facility_id;
+	}
+	public void setFacility_id(int facility_id) {
+		this.facility_id = facility_id;
+	}
+	public String getWarehouse_manager() {
+		return warehouse_manager;
+	}
+	public void setWarehouse_manager(String warehouse_manager) {
+		this.warehouse_manager = warehouse_manager;
+	}
+	public String getApproveVa() {
+		return approveVa;
+	}
+	public void setApproveVa(String approveVa) {
+		this.approveVa = approveVa;
+	}
+	public String getLast_status_id() {
+		return last_status_id;
+	}
+	public void setLast_status_id(String last_status_id) {
+		this.last_status_id = last_status_id;
+	}
+	
+
+}

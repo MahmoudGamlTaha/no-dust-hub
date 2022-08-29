@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+          <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+   <meta charset="utf-8" />
+   <title> <spring:message code="NODUST"/></title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+   
+ <!--    <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" /> -->
+ <!--   <link href="resources/assetsnodust/css/style_arabic.css" rel="stylesheet" lang="ar"/>  --> 
+   
+</head>
+
+<body class="fixed-top">
+
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="Dashboardli"/>
+	 </jsp:include>
+      
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    
+	<!-- BEGIN PAGE -->
+
+
+		<jsp:include page="ContentNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+	    </jsp:include>	
+	
+	
+    </div>
+
+ 
+ 
+   <div id="footer">
+       &copy; <spring:message code="CopyRights"/>
+   
+   </div>
+   <!-- END FOOTER -->
+  
+  <!-- BEGIN JAVASCRIPTS -->		
+   <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+ 
+ 
+ <!-- Open & close MENU -->
+  
+   <script type="text/javascript">
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      	
+      	
+      	$(".sidebar-togggler").hide();
+		$(".sidebar-toggler").show();
+      	
+    	$("#translatetoarabic").hide();
+    	
+    	$("#translatetoarabic").click(function(){
+    		$("link[href*='arabic']").remove(); 
+    		$("#translatetoarabic").hide();
+    		$("#translatetoenglish").show();
+    	});
+    	
+    	$("#translatetoenglish").click(function(){
+        	
+    	 	$(".sidebar-toggler").hide();
+    		$(".sidebar-togggler").show();
+    		
+        		<!-- $("link[href*='style']").attr("href" , "css/" + $(this.val()+".css"));  -->
+        		$('head').append('<link rel="stylesheet" href="resources/assetsnodust/css/style_arabic.css" type="text/css" />');
+        		$("#translatetoarabic").show();
+        		$("#translatetoenglish").hide();
+        	});
+    	
+      });
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

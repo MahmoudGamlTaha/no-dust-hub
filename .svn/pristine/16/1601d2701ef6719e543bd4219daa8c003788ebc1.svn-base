@@ -1,0 +1,14 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import com.jwt.model.Facility;
+import com.jwt.model.Products;
+import com.jwt.model.drivers;
+
+public interface CleanShipmentService {
+	public List<drivers>Get_driver_List();
+	public List<Facility> Get_detsination_facility(int fac_id);
+	public List<Products> Get_Clean_Packs(int facility_id);
+	public String Submit_Send_clean_Shipment(int fac_id, int dest_fac, String driver_id, String products,String logged_user);
+}

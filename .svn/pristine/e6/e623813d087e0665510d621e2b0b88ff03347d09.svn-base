@@ -1,0 +1,25 @@
+package com.jwt.service;
+
+import java.util.List;
+
+import com.jwt.model.DirtyProductInPackage;
+import com.jwt.model.Facility;
+import com.jwt.model.WashingPrograms;
+import com.jwt.model.drivers;
+
+public interface CreateDirtyShipmentService {
+
+	public List<DirtyProductInPackage> getProductsList(int facility_id);
+	public List<DirtyProductInPackage> getProductsListNotPack(int facility_id);
+	public List<WashingPrograms> getWashingPrograms();
+	public List<drivers> getAllDrivers();
+	public List<Facility> getAllLundryies();
+	public List<Facility> getExternalLundries();
+	public Facility getAbuRawashData();
+	public String submitDirtyShipment(String driver, String user , String Lundry , String Products);
+	public String submitExternalShipment(String driver, String user , String Lundry , String Products);
+
+	public String submitInternalLundry(String products, String user, String source , String destination , int facility_id);
+
+
+}

@@ -1,0 +1,296 @@
+package com.jwt.controller;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.gson.Gson;
+import com.jwt.model.CashOnCoverForm;
+import com.jwt.model.Facility;
+import com.jwt.model.InventoryFormData;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.User;
+import com.jwt.service.ReleasingProductsService;
+import com.jwt.service.StockProductListService;
+import com.jwt.service.UserService;
+import com.jwt.model.InventoryCheck;
+@Controller
+public class InventoryCheckController {
+	
+	@Autowired
+	private StockProductListService stockService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private ReleasingProductsService shipmentService;
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    binder.setAutoGrowCollectionLimit(768);
+	}
+	@RequestMapping(value = "/InventoryCheck")
+	public ModelAndView InventoryCheck(ModelAndView model , HttpServletRequest request) throws IOException {
+        HttpSession session = request.getSession();
+
+		System.out.println("Session_Attribute :"+session.getAttribute("fac_id"));
+		System.out.println("Facility_Name :"+session.getAttribute("fac"));
+		User u = new User();
+		Facility facility = new Facility();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		    u=userService.getUser(userDetail.getUsername());
+		  //  System.out.println("unit"+u.getOrg_unit_id());
+		   facility = shipmentService.getFacilityById(Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))));
+		}
+	
+		InventoryFormData data = new InventoryFormData();
+	
+			List<InventoryProduct> products = stockService.getProductOfFacility(Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))));
+			data.setWarehouse(String.valueOf(session.getAttribute("fac")));
+			for(int i =0; i< products.size();i++)
+			{
+				products.get(i).setState("false");
+			}
+			data.setProducts(products);
+			model.addObject("data", data);
+			
+			System.out.println("products"+ products.size());
+		model.setViewName("InventoryCheck");
+		return model;
+	}
+
+	
+	@RequestMapping(value = "/CreateInventoryCheck")
+	public ModelAndView CreateInventoryCheck(@ModelAttribute("data")InventoryFormData data,ModelAndView model, HttpServletRequest request) throws IOException {
+		User u = new User();
+		Facility facility = new Facility();
+        HttpSession session = request.getSession();
+
+        String last_warehouse=data.getWarehouse();
+        String New_warehouse=String.valueOf(session.getAttribute("fac"));
+        System.out.println("previous"+last_warehouse);
+        System.out.println("New"+New_warehouse);
+        
+      
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		    u=userService.getUser(userDetail.getUsername());
+		 //   System.out.println("unit"+ data.getProducts().size());
+		   facility = shipmentService.getFacilityById(Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))));
+		}
+	for (int i = data.getProducts().size()-1; i >=0 ; i--) {
+		if((data.getProducts().get(i).getState().equals("false"))||(data.getProducts().get(i).equals(null)))
+		{
+			data.getProducts().remove(i);
+		}
+		//System.out.println(data.getProducts().get(i).getState());
+	}
+	DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    Date date = new Date();
+    data.setDate(dateFormat.format(date));
+    data.setAgent(u.getDisplay_name()+','+u.getUser_name());
+    
+    data.setWarehouse(facility.getFacility_name());
+	System.out.println("Size:"+data.getProducts().get(0).getType_name());
+	model.addObject("selectedData", data);
+		model.setViewName("CreateInventoryCheck");
+		
+		  if(!last_warehouse.equals(New_warehouse))
+	        {
+	        	return new ModelAndView("redirect:/DashboardNoDust");
+	        }
+		  return model;
+	}
+	
+	
+	
+	@RequestMapping(value = "/submitInventoryCheck", method = RequestMethod.POST,consumes ="application/json")
+	public ResponseEntity<String> submitCoverDetails(@RequestBody InventoryFormData inventoryForm , HttpServletRequest request)throws ServletException, IOException {
+	
+		Gson gson = new Gson();
+		String json = gson.toJson(inventoryForm.getProducts());
+        HttpSession session = request.getSession();
+		  
+			System.out.println("json : "+json);
+		   User u = new User();
+
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				System.out.println(userDetail);
+			String user="";
+			user=userDetail.getUsername();
+		//	System.out.println("user : "+user);
+		//	System.out.println("auth :"+userDetail.getAuthorities());
+		//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+		    u=userService.getUser(user);
+
+			}
+			String submited = new String();
+			if(u.getUSER_NAME() != null)
+			{
+				submited=stockService.submitInventoryCheck(u.getUser_name(), json , Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))),inventoryForm.getComment() );	
+
+			}
+			else {
+				return new ResponseEntity<String>("no session", HttpStatus.OK);
+			}
+			System.out.println("submited : "+submited);
+			if(submited.equals("true"))
+			{
+				return new ResponseEntity<String>("success", HttpStatus.OK);
+
+			}
+			else {
+				return new ResponseEntity<String>("not success", HttpStatus.OK);
+
+			}
+	}
+	
+	
+	
+		@RequestMapping(value="/MyInventoryCheck")
+		public ModelAndView MyInventoryCheck(ModelAndView model,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException 
+		{
+			 User u = new User();
+		        HttpSession session = request.getSession();
+
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				if (!(auth instanceof AnonymousAuthenticationToken)) {
+					UserDetails userDetail = (UserDetails) auth.getPrincipal();
+					System.out.println(userDetail);
+				String user="";
+				user=userDetail.getUsername();
+			//	System.out.println("user : "+user);
+			//	System.out.println("auth :"+userDetail.getAuthorities());
+			//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+			    u=userService.getUser(user);
+
+				}
+			List<InventoryCheck> checks = stockService.getInventoryCheckOfFacility(Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))));
+			//System.out.println("checks num "+checks.get(0).getLogged_user());
+			ModelAndView newMod=new ModelAndView();
+			newMod.addObject("checks", checks);
+			newMod.setViewName("MyInventoryCheck");
+			return newMod;
+		}
+	
+
+		@RequestMapping(value="/InventoryCheckDetails")
+		public ModelAndView AprroveInventoryCheck(ModelAndView model,@RequestParam(value = "CheckID", required = true) int checkID ,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException 
+		{
+			 User u = new User();
+		        HttpSession session = request.getSession();
+
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				if (!(auth instanceof AnonymousAuthenticationToken)) {
+					UserDetails userDetail = (UserDetails) auth.getPrincipal();
+					System.out.println(userDetail);
+				String user="";
+				user=userDetail.getUsername();
+			//	System.out.println("user : "+user);
+			//	System.out.println("auth :"+userDetail.getAuthorities());
+			//	List<UserTeam> listTeam = userTeamService.getAllUserTeam(user);
+			    u=userService.getUser(user);
+
+				}
+				Facility facility =shipmentService.getFacilityById(Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))));
+			InventoryCheck check = stockService.getInventoryCheckDataByID(checkID);
+			int check_fac=check.getFacility_id();
+			int new_fac=Integer.parseInt(String.valueOf(session.getAttribute("fac_id")));
+			if(check_fac!=new_fac)
+			{
+				return new ModelAndView("redirect:/DashboardNoDust");
+			}
+			ModelAndView newMod=new ModelAndView();
+			if (check != null) {
+			List<InventoryProduct>products = stockService.getInventoryProductsByCheckID(checkID);
+			//System.out.println("id "+check.getFacility_id()+ " manager "+check.getWarehouse_manager() );
+			String check_lost="";
+			for(int i=0;i<products.size();i++)
+			{
+				if(Integer.parseInt(products.get(i).getActual_quentity()) < Integer.parseInt(products.get(i).getSystem_quantity()))
+				{
+					check_lost="Lost";
+				}
+			}
+			if(check.getFacility_id() == Integer.parseInt(String.valueOf(session.getAttribute("fac_id"))))
+			{
+			newMod.addObject("check", check);
+			newMod.addObject("warhouse", facility.getFacility_name());
+			newMod.addObject("products", products);
+			newMod.addObject("check_lost", check_lost);
+			}
+			}
+			newMod.setViewName("AprroveInventoryCheck");
+			return newMod;
+		}
+	
+		//approveRejectInventoryCheck
+		@RequestMapping(value = "/approveRejectInventoryCheck", method = RequestMethod.POST,consumes ="application/json")
+		public ResponseEntity<String> approveRejectInventoryCheck(@RequestBody InventoryCheck inventoryCheck , HttpServletRequest request)throws ServletException, IOException {
+	        HttpSession session = request.getSession();
+
+		//	Gson gson = new Gson();
+		//	String json = gson.toJson(inventoryForm.getProducts());
+			//System.out.println(inventoryCheck.getId() +" ++++ " +inventoryCheck.getApproveVa() );
+				//System.out.println("json : "+json);
+			   User u = new User();
+
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				if (!(auth instanceof AnonymousAuthenticationToken)) {
+					UserDetails userDetail = (UserDetails) auth.getPrincipal();
+					System.out.println(userDetail);
+				String user="";
+				user=userDetail.getUsername();
+			    u=userService.getUser(user);
+
+				}
+				String submited = new String();
+				if(u.getUSER_NAME() != null)
+				{
+					submited=stockService.approveRejectInvenoryCheck(inventoryCheck.getId(),inventoryCheck.getApproveVa(), u.getUSER_NAME());	
+
+				}
+				else {
+					return new ResponseEntity<String>("no session", HttpStatus.OK);
+				}
+				System.out.println("submited : "+submited);
+				if(submited.equals("true"))
+				{
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+
+				}
+				else {
+					return new ResponseEntity<String>("not success", HttpStatus.OK);
+
+				}
+		}
+}

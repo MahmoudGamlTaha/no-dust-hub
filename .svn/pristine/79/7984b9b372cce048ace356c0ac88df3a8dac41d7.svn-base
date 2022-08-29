@@ -1,0 +1,7 @@
+package com.jwt.model;
+
+public class CleanProduct {
+	private String product_id;
+	private int received_quantity;
+
+}

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+       <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+   
+   <title> <spring:message code="ViewCashTransfer"/></title>
+   <link href="img/no.jpeg" rel="icon" />
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+     <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+      <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+      
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+     <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+    
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+ <style type="text/css">
+ 	   #logoprint{visibility:hidden;}
+ 
+ </style>
+   <style type="text/css" media="print">
+
+
+  @page { size:A4 portrait; }
+  
+  @media print {
+  #attach_div{
+  display:none;
+  }
+    #logoprint{visibility:visible;}
+  
+  #nav_div{
+  display:none;
+  }
+  #printBtn {
+    display: none;
+  }
+
+  #links{
+  display: none
+  }
+ #nav_bar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+ }
+
+</style>
+</head>
+
+<body class="fixed-top">
+<div id="nav_div">
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="Dashboardli"/>
+	 </jsp:include>
+      </div>
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+	 
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    
+	<!-- BEGIN PAGE -->
+
+
+	<div id="main-content">
+	
+         <div class="container-fluid">
+         
+            <div class="row-fluid">
+               <div  id="links"  class="span12">
+                  
+                
+			
+                  <ul class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                         
+                    <li><a href="ViewCashTransferDetails?shipment_id=${cash_form.shipment_id}"> <spring:message code="ViewCashTransfer"/></a><span class="divider-last">&nbsp;</span></li> 
+                  </ul>
+          
+               </div>
+            </div>
+       
+	   
+          
+            <div id="page">
+               <div class="row-fluid">
+                  <div class="span12">
+                  
+                     <div class="widget">
+                        <div class="widget-title">
+                           <h4> <spring:message code="ViewCashTransfer"/></h4>
+                        </div>
+                        
+			
+						 
+				 
+						 <div class="widget-body" style="text-align: left;" >
+						
+						<table width="100%" dir="ltr">
+<tr>
+<td>
+<form:form modelAttribute="cash_form" id="f_cash">
+<div class="row-fluid " >
+                              
+                             
+                            
+                              <div class="span12" style="margin-left: 0;">
+								 <div class="control-group span6">
+		                              <label class="control-label  span4" > <spring:message code="warehousename"/></label>
+		                              
+		                              <div class="controls">
+		                              
+		                               <strong>${cash_form.warehouse_name}</strong>
+		                              </div>
+		                         </div>
+		                         
+		                         
+		                          <div class="control-group span6">
+		                          
+		                              <label class="control-label  span4" > <spring:message code="Agentname"/></label>
+		                              
+		                              <div class="controls">
+		                              
+		                               <strong>${cash_form.agent_name }</strong>
+		                              </div>
+		                         </div>
+		                         
+		                         
+                               </div>
+                                
+                                <div class="span12" style="margin-left: 0;">
+                                
+								 <div class="control-group span6">
+		                              <label class="control-label  span4" > <spring:message code="RequestDate"/></label>
+		                              
+		                              <div class="controls">
+		                              
+		                               <strong>${cash_form.request_date}</strong>
+		                              </div>
+		                         </div>
+		                         
+		                          <div class="control-group span6">
+		                              <label class="control-label  span4" > <spring:message code="TransferDate"/></label>
+		                              
+		                              <div class="controls">
+		                                <div class="input-group mb-3 " style="margin-top: -5px;">
+										<strong>${cash_form.t_date}</strong>
+		                                </div>
+		                              </div>
+		                         </div>
+		                       
+		                        
+		                         
+                               </div>
+                               
+                                
+                           <div class="span12" style="margin-left: 0;">
+                           
+								 <div class="control-group span6">
+		                              <label class="control-label  span4 " ><spring:message code="CashOnCover.CashAccount"/></label>
+		                              
+		                              <div class="controls">
+		                               <img src="resources/assetsnodust/img/logored.png" alt="logo NODUST" style=" width: 25%;  float: right; margin-right:35%;   margin-top: -300px ; " id="logoprint">
+
+		                                <div class="input-group mb-3 " style="margin-top: -5px;">
+										  <strong>${cash_form.account_sku}</strong>
+										
+		                                </div>
+		                              </div>
+		                         </div>
+		                         
+		                          <div class="control-group span6">
+		                              <label class="control-label  span4 " ><spring:message code="CashAmount"/></label>
+		                              
+		                              <div class="controls">
+		                                <div class="input-group mb-3 " style="margin-top: -5px;">
+                                        <strong>${cash_form.amount}</strong>		                                </div>
+		                              </div>
+		                         </div>
+                               </div>
+                              
+                             
+                                    
+                           <div class="span12" style="margin-left: 0;">
+								 <div class="control-group span6">
+		                              <label class="control-label  span4 " ><spring:message code="BankName"/></label>
+		                              
+		                              <div class="controls">
+		                                <div class="input-group mb-3 " style="margin-top: -5px;">
+                                        <strong>${cash_form.bank_name}</strong>		                                </div>
+		                              </div>
+		                         </div>
+		                         
+		                          <div class="control-group span6">
+		                              <label class="control-label  span4 " ><spring:message code="BankAccountNumber"/></label>
+		                              
+		                              <div class="controls">
+		                                <div class="input-group mb-3 " style="margin-top: -5px;">
+                                        <strong>${cash_form.bank_account_no}</strong>		                                </div>
+		                                </div>
+		                              </div>
+		                         </div>
+                               </div>
+                              <div></div>
+                                         
+                           <div id = "attach_div" class="span12" style="margin-left: 0;">
+								 <div class="control-group span6">
+		                              <label class="control-label  span4 " > <spring:message code="Attachment"/></label>
+		                      
+                                      
+                                         <form class="form-horizontal" method="get" action="${cash_form.attachment}">
+										    <div class="form-group">
+										        <div class="col-sm-offset-2 col-sm-10">
+										            <label class="file-upload btn btn-warning">
+										            
+                                          <a href="${cash_form.attachment}" download="Transfer_attachment" target="_new">Transfer Attachment</a>	
+						            </label>
+										        </div>
+										    </div>
+									  </form>
+
+
+		                             
+
+		                         </div>
+		                         </div>
+                        
+                           
+                             
+</form:form>
+
+</td>
+</tr>
+</table>
+						
+						
+                            
+                           <br> 
+                            
+				
+                      
+                       
+                       <div class="row-fluid  ">
+                            
+                            
+                             <button type="button"  id="printBtn"  class="btn btn-primary pull-right" onclick="javascript:window.print();"><i class="icon-print  icon-white" style="margin-right: 4px;"></i><spring:message code="Print"/></button>   
+       
+                            </div>
+                            
+                             
+                          <div class="clearfix"></div>
+                   
+						 </div>
+						 
+						 
+						 
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            
+           
+            </div>
+          
+         </div>
+   
+	
+    </div>
+
+ 
+ 
+   <div id="footer">
+       &copy; 2019  Copyright MTS.
+   
+   </div>
+   <!-- END FOOTER -->
+  
+  <!-- BEGIN JAVASCRIPTS -->		
+   <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+   
+ <script type="text/javascript">
+ 
+ function submit_form() {
+	
+}
+ </script>
+ 
+ <!-- Open & close MENU -->
+  
+   <script>
+      jQuery(document).ready(function() {			
+      	// initiate layout and plugins
+      	App.init();
+      	
+      	/*
+      	$(".sidebar-togggler").hide();
+		$(".sidebar-toggler").show();
+      	
+    	$("#translatetoarabic").hide();
+    	
+    	$("#translatetoarabic").click(function(){
+    		$("link[href*='arabic']").remove(); 
+    		$("#translatetoarabic").hide();
+    		$("#translatetoenglish").show();
+    	});
+    	
+    	$("#translatetoenglish").click(function(){
+        	
+    	 	$(".sidebar-toggler").hide();
+    		$(".sidebar-togggler").show();
+    		
+        		<!-- $("link[href*='style']").attr("href" , "css/" + $(this.val()+".css"));  -->
+        		$('head').append('<link rel="stylesheet" href="resources/assetsnodust/css/style_arabic.css" type="text/css" />');
+        		$("#translatetoarabic").show();
+        		$("#translatetoenglish").hide();
+        	});*/
+    	
+      });
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+</body>
+<!-- END BODY -->
+</html>

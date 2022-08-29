@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+
+ <html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+         <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+   
+   <title> <spring:message code="ValidateReconciliation"/></title> 
+   <link href="img/no.jpeg" rel="icon" />
+   
+   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+   <meta content="" name="description" />
+   <meta content="" name="author" />
+ 
+  <link href="resources/assetsnodust/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/bootstrap/font-awesome/css/font-awesome.css" rel="stylesheet" />  
+   <link href="resources/assetsnodust/css/style.css" rel="stylesheet" />
+   <link href="resources/assetsnodust/css/style_red.css" rel="stylesheet" />
+   <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+   <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+   
+       <link rel="stylesheet" href="resources/css/jquery-confirm.min.css"/>
+   
+     <script src="resources/assetsnodust/bootstrap/js/jquery-1.8.3.min.js"></script>
+          <script type="text/javascript" src="resources/js/jquery-confirm.min.js"></script>
+     
+   <script src="resources/assetsnodust/bootstrap/js/bootstrap.min.js"></script>
+	 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+	   <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+	   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+	 <style type="text/css">
+	 #logoprint{visibility:hidden;}
+	 #date_time_now{visibility:hidden;}
+	 #nodust_misr{visibility:hidden;}
+	 </style>
+<style type="text/css" media="print">
+
+
+  @page { size:A4 ; }
+  
+  @media print {
+  #date_time_now{visibility:visible;}
+	 #nodust_misr{visibility:visible;}
+   #logoprint{visibility:visible;}
+  #title_page
+  {
+  display:none;
+  }
+  #print_btn {
+    display: none;
+  }
+  #submit_btn {
+    display: none;
+  }
+  #back_btn
+  {
+  display:none;
+  }
+  #cancel_btn
+  {
+   display: none;
+  }
+  #links{
+  display: none
+  }
+ #nav_bar{
+  display: none
+ }
+ #sidemenu{
+ display: none
+ }
+ #links{display:none;}
+ }
+
+</style>
+<style type="text/css" >
+.pass
+{
+background-color:green;
+}
+.fail
+{
+background-color:red;
+}
+.errorblock {
+         color: #000;
+         background-color: #ffEEEE;
+         border: 3px solid #ff0000;
+         padding: 8px;
+         margin: 16px;
+      }
+.rotate {
+    -moz-transition: all .5s linear;
+    -webkit-transition: all .5s linear;
+    transition: all .5s linear;
+}
+.rotate.down {
+    -moz-transform:rotate(90deg);
+    -webkit-transform:rotate(90deg);
+    transform:rotate(90deg);
+}
+.popup-overlay {
+visibility:hidden;
+}
+
+.popup-content {
+visibility:hidden;
+}
+.fail{
+background-color:rgb(255,0,0);
+}
+.pass
+{
+background-color:rgb(0,128,0);
+
+}
+.validation_Rec{
+    width:100%;
+    height:100%;
+    background-color:rgb(0,0,0,0.7);
+    top:0;
+    display:none;
+    justify-content: center;
+    align-items: center;
+    position:absolute;
+}
+.val_data{
+width:300px;
+height:300px;
+    background-color:white;
+    
+
+}
+</style>
+</head>
+
+<body class="fixed-top">
+<div id="nav_bar">
+	<jsp:include page="NavBarNoDust.jsp">
+	         <jsp:param name="param1" value="Dashboardli"/>
+	 </jsp:include>
+   </div>
+    
+   
+   <!-- BEGIN CONTAINER -->	
+   <div id="container" class="row-fluid">
+
+	  <div id="sidemenu">
+		<jsp:include page="SideNaveNoDust.jsp">
+		         <jsp:param name="param1" value="Dashboardli"/>
+		 </jsp:include>	
+    </div>
+	<!-- BEGIN PAGE -->
+
+
+		<div id="main-content">
+	
+         <div class="container-fluid">
+            <div class="row-fluid">
+               <div class="span12">
+                  
+                
+			<div id="links">
+                  <ul class=" breadcrumb mtop5 pull-left">
+                       <li>
+                           <a href="DashboardNoDust"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
+                       </li>
+                       <li>
+                           <a href="ReceivingProduct"> <spring:message code="ProductReconciliation.ReceivingProducts"/></a> <span class="divider">&nbsp; &nbsp;</span>
+                       </li> 
+                       <li>
+                           <a id="back_link" href=""> <spring:message code="ProductReconciliation.ProductReconciliation"/></a> <span class="divider">&nbsp; &nbsp;</span>
+                       </li> 
+                       
+                          <li><a href="ReconciliationValidate?driver_id=${Rec_data.driver_id}"> <spring:message code="ValidateReconciliation"/></a><span class="divider-last">&nbsp;</span></li>
+                  
+                  </ul>
+      	  </div>
+				   
+               </div>
+            </div>
+             <div>
+                               
+	   
+           <form:form id="validationForm" class="form-horizontal"  modelAttribute="Rec_data" name="Recon_form"  >
+         <form:hidden path="rec_date"/>
+                              <form:hidden path="warehouse_name"/>
+                              <form:hidden path="agent_name"/>
+                              <form:hidden path="driver_name"/>
+                              <form:hidden path="driver_id"/>
+                              <form:hidden path="ship_id"/>
+                              		                 <img src="resources/assetsnodust/img/logored.png" alt="logo NODUST" style=" width: 25%;  float: right; margin-right:5%;   margin-top: -20px ; " id="logoprint">
+                              
+            <div id="page" >
+               <div class="row-fluid">
+                  <div class="span12">
+                 
+                     <div class="widget">
+                     
+                        <div id="title_page" class="widget-title">
+                           <h4> <spring:message code="ValidateReconciliation"/></h4>
+                           
+                        </div>
+                        
+                        <div class="widget-body">
+                        <div class="space10"></div>
+                         <div class="widget-title">
+                           <h4> <spring:message code="ShipemntsData_Page_Title"/></h4>
+                           
+                        </div>
+                        <div class="row-fluid invoice-list" style="border:outset;">
+                              
+                             <div class="row-fluid">
+                             <div class="space10"></div>
+                                <div style="float:left;width:40%;">
+                                   <strong style="margin-left:10px;"> <spring:message code="warehousename" /></strong>
+                                      ${Rec_data.warehouse_name } 	
+                                </div>
+                                 <div style="float:left;width:30%;">
+                                    <strong><spring:message code="Agentname" /> </strong>
+                                     ${Rec_data.agent_name} 
+                                </div>
+                                 <div style="float:left;width:30%;">
+                                   <strong><spring:message code="Date" /></strong>	
+                                     ${date} 
+                                </div>
+                            
+                                
+                              <div class="space10"></div>
+                               
+                                
+                                 <div style="float:left;width:40%;">
+                                  <strong style="margin-left:10px;">  <spring:message code="Drivername" /> </strong>
+                                 ${Rec_data.driver_name} 
+                                </div>
+                            
+                              <div style="float:left;">
+                                   <strong> <spring:message code="areaName" /> </strong>
+                                 ${Rec_data.area_name} 
+                                </div>
+                                <div class="space10"></div>
+                               </div>
+                              
+                                <div>
+                            
+                              
+                               </div>
+                            </div>
+				<div class="space20"></div>
+                     
+                     <div class="tabbable tabbable-custom">
+                                    
+                                
+							<table id="example" class="table valid_data table-striped table-bordered   table-advance  table-responsive " style="width:80%;margin:auto;">
+						      <thead>
+						       <tr>
+						     <th><spring:message code="ProductName"/></th>
+						   <th> <spring:message code="ActualCalculated"/> </th>
+						    <th> <spring:message code="ActualClean"/> </th>
+						    <th> <spring:message code="ActualDirty"/> </th>
+						     <th><spring:message code="passFail"/></th>
+							  <th><spring:message code="Lost"/></th>
+								
+							</tr>
+							</thead>
+							  <tbody>
+							    <c:forEach items="${Rec_data.validation_data}" var="Data" varStatus="status">
+								   <tr>
+								   <form:hidden path="validation_data[${status.index}].product_name"/>
+								   <form:hidden path="validation_data[${status.index}].actual_calculated"/>
+								    <form:hidden path="validation_data[${status.index}].actual_clean"/>
+								    <form:hidden path="validation_data[${status.index}].actual_dirty"/>
+								    <form:hidden path="validation_data[${status.index}].pass_fail"/>
+								    <form:hidden path="validation_data[${status.index}].lost"/>
+								   <td>${Data.product_name}</td>
+								   <td>${Data.actual_calculated}</td>
+								   <td>${Data.actual_clean}</td>
+								   <td>${Data.actual_dirty}</td>
+								   <td class="pass_fail">${Data.pass_fail}</td>
+								  <td>${Data.lost}</td>
+								   </tr>
+								  </c:forEach>
+							  </tbody>
+                               
+                    
+                              
+						 
+						      
+                             </table>
+                             
+                             <div class="space20"></div>
+                             <button type="button" class="btn btn-success pull-right  green mright5" onclick="Submit_Form()" id="submit_btn"><i class="icon-save icon-white"></i> <spring:message code="Submit"/></button>
+        
+                         <button type="button" class="btn btn-success pull-right  green mright5" onclick="Back_Recon()" id="back_btn"><i class="icon-save icon-white"></i> <spring:message code="Back"/></button>
+      
+                                 <button type="button" class="btn btn-primary pull-right" id="print_btn" onclick="print_data();" disabled style="margin-right:5px;"><i class="icon-print icon-white"></i> <spring:message code="Print"/></button>
+                    <br><br>
+                    <div  class="row-fluid  " > 
+                            <strong id="nodust_misr" style="text-align:left; margin-left:25px;"><spring:message code="MisrNoDust"/></strong>
+                       
+                        <strong id="date_time_now" style="text-align: center; margin-left:200px;"> </strong>
+                        </div>
+                             
+        </div>
+        </div>
+        </div>
+                      
+               </div>
+              </div>
+              </div>
+                               </form:form>
+                              
+                             	     <div class="space20"></div> 
+						 <div class="clearfix" ></div>
+						 
+                         </div>
+                                     
+                                    </div>
+                                 </div>
+                                 
+                        
+						  
+						    
+						  </div>
+            
+  
+
+ 
+ 
+   <div id="footer">
+       &copy; <spring:message code="CopyRights"/>
+   
+   </div>
+    
+</body>
+
+ <!-- Open & close MENU -->
+  
+   <script>
+      jQuery(document).ready(function() {			
+      	App.init();
+      });
+   
+     
+   </script>
+
+<script>
+
+$("#back_link").on("click", function()
+	    {
+	    Back_Recon();
+	    });
+	    
+$("#back_link").on("contextmenu", function(event)
+	    {
+	event.preventDefault();
+	    });
+	   
+function Back_Recon()
+{
+	document.getElementById("submit_btn").disabled=true;
+	document.getElementById("back_btn").disabled=true;
+	var driver_id='${Rec_data.driver_id}';
+	var rec_form=
+		{
+			 "agent_name":'${Rec_data.agent_name}',
+			 "driver_id":'${Rec_data.driver_id}',
+			 "ship_id":'${Rec_data.ship_id}'
+		};
+	console.log(rec_form);
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		
+
+		if (this.readyState == 4 && this.status == 200) {
+		var resp=this.responseText;
+		console.log(resp);
+		if(resp=="alreadysubmitted")
+			{
+			swal("<spring:message code="ShipmentList.Error.Title"/>","<spring:message code="reconciliationalreadysubmitted"/>","error");
+			 /*$.alert({
+		         title: "Reconciliation Not Submited Successfully",
+				    content:"Reconciliation Already Submitted",
+		         }); */
+			 document.getElementById("submit_btn").disabled=true;
+			 document.getElementById("back_btn").disabled=true;
+				document.getElementById("print_btn").disabled=false;
+			}
+		if(resp=="done_back")
+			{
+			window.location.replace("ProductReconcilaitionData?driver_id="+driver_id);
+			}
+		}
+	}
+	xhttp.open("POST","BackToRecon", true);
+	 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	 xhttp.send(JSON.stringify(rec_form));
+	
+}
+function Submit_Form()
+{
+	
+	document.getElementById("submit_btn").disabled=true;
+	document.getElementById("back_btn").disabled=true;
+	document.getElementById("print_btn").disabled=false;
+	
+	 var rec_form = {
+			 "agent_name":'${Rec_data.agent_name}',
+			 "driver_id":'${Rec_data.driver_id}',
+			 "ship_id":'${Rec_data.ship_id}'
+	 };
+	 console.log(rec_form);
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		
+
+		if (this.readyState == 4 && this.status == 200) {
+		var resp=this.responseText;
+		console.log(resp);
+		
+
+if(resp=="notDone")
+ {
+	
+	swal("<spring:message code="ShipmentList.Error.content"/>","<spring:message code="Releasingproduct.CoverList.details.FailedSubmit.content"/>","error");
+	 /* $.alert({
+          title: "<spring:message code="ShipmentList.Error.content"/>",
+		    content:"<spring:message code="Releasingproduct.CoverList.details.FailedSubmit.content"/>",
+          }); */
+	 
+		document.getElementById("submit_btn").disabled=false;
+		document.getElementById("back_btn").disabled=false;
+		document.getElementById("print_btn").disabled=true;
+	  
+ }
+ if(resp=="already_submit")
+	 {
+	 swal("<spring:message code="ShipmentList.Error.content"/>","<spring:message code="Reconciliation_AlreadySubmited"/>","error");
+	 /*$.alert({
+         title: "<spring:message code="ShipmentList.Error.content"/>",
+		    content:"<spring:message code="Reconciliation_AlreadySubmited"/>",
+         }); */
+	 document.getElementById("submit_btn").disabled=true;
+	 document.getElementById("back_btn").disabled=true;
+		document.getElementById("print_btn").disabled=false;
+	 }
+if(resp=="SubmitedSucessfully")
+	{
+	swal("<spring:message code="ShipmentList.Success.Title"/>","<spring:message code="ShipmentList.Success.content"/> ","success");
+	 /*$.alert({
+         title: "<spring:message code="ShipmentList.Success.Title"/>",
+		    content:"<spring:message code="ShipmentList.Success.content"/> ",
+         }); */
+	
+		document.getElementById("submit_btn").disabled=true;
+		document.getElementById("back_btn").disabled=true;
+		document.getElementById("print_btn").disabled=false;
+	}
+	}
+	}
+	xhttp.open("POST","ValidateReconciliationdata", true);
+	 xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	 xhttp.send(JSON.stringify(rec_form));
+}
+</script>
+<script type="text/javascript">
+$(function() {
+  $("#example td").each(function() {
+    if ($(this).text() == 'Lost') {
+    	$(this).css('color', '#b51b1b');
+    	$(this).css('font-weight','bold');
+    }
+    if ($(this).text() == 'Over') {
+    	 $(this).css('color', '#b51b1b');
+    	 $(this).css('font-weight','bold');
+      }
+    if ($(this).text() == 'Pass') {
+    	 $(this).css('color', '#28a745');
+    	 $(this).css('font-weight','bold');
+      }
+  });
+});
+</script>
+<script>
+   $(document).ready(function(){
+	   var table=document.getElementById("example");
+	   var x='${request_state}';
+	   if(x=="done")
+		   {
+		   document.getElementById("submit_btn").disabled=true;
+		   document.getElementById("back_btn").disabled=true;
+			document.getElementById("print_btn").disabled=false;
+		   }
+	   
+   });
+   </script>
+   <script>
+   function print_data()
+   {
+	   var today = new Date();
+		  var date=today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+		  var hours=today.getHours();
+		  	 if(hours>12)
+		  		 {
+		  		 hours=hours-12;
+		  		 }
+	   var time = hours + ":" + today.getMinutes() + ":" + today.getSeconds();
+	   var dateTime = date+'   '+time;
+	   document.getElementById("date_time_now").innerText=dateTime;
+	   window.print();
+   }
+   </script>
+    <script src="resources/assetsnodust/js/scripts.js"></script>
+
+<!-- END BODY -->
+</html>
+
+
+
+
+
+
+
+

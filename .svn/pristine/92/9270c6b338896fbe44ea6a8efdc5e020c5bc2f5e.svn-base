@@ -1,0 +1,202 @@
+package com.jwt.controller;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.jwt.model.CashTransferForm;
+import com.jwt.model.Facility;
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.Shipment;
+import com.jwt.model.User;
+import com.jwt.model.UserData;
+import com.jwt.service.CashInOutService;
+import com.jwt.service.ReceivingProductsService;
+import com.jwt.service.UserService;
+
+@Controller
+public class CashTransferController {
+	@Autowired
+	UserService userservice;
+	@Autowired
+	ReceivingProductsService rec_service;
+	@Autowired
+	CashInOutService cashservice;
+@RequestMapping(value="/CreateCashTransfer")
+public ModelAndView CreateCashTransfer(ModelAndView model,HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException 
+{
+	String display_name="";
+	String warehouse_name="";
+	User u = new User();
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	UserData user_data=new UserData();
+	Facility fac=new Facility();
+
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		String user_name=userDetail.getUsername();
+		display_name=auth.getName();
+		u=userservice.getUser(user_name);
+		display_name=u.getDisplay_name();
+		fac=rec_service.Get_Facility_Info(u.getOrg_unit_id());
+		warehouse_name=fac.getFacility_name();
+	}
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	LocalDateTime now = LocalDateTime.now();
+	String date_txt=now.toString();
+	String[] arr_date=date_txt.split("T");
+	List<FinancialAccount> financial_accounts=cashservice.Get_Financial_Accounts(u.getOrg_unit_id());
+	System.out.println("Account Length = "+financial_accounts.size());
+	ModelAndView newMod=new ModelAndView();
+	CashTransferForm cash_form=new CashTransferForm();
+	cash_form.setAgent_name(display_name);
+	cash_form.setFinancial_accounts(financial_accounts);
+	//java.util.Date x=new SimpleDateFormat("dd/MM/yyyy").parse(arr_date[0]);
+	cash_form.setRequest_date(arr_date[0]);
+	cash_form.setAgent_name(display_name);
+	cash_form.setWarehouse_name(warehouse_name);
+	newMod.addObject("cash_form", cash_form);
+	newMod.setViewName("CreateCashTransfer");
+	return newMod;
+}
+
+
+@RequestMapping(value="/SubmitExternalCashTransfer",method=RequestMethod.POST,consumes="application/json")
+public ResponseEntity<String> submit_cash_transfer(@RequestBody CashTransferForm cash_form) throws ParseException
+{
+	String display_name="";
+	String warehouse_name="";
+	User u = new User();
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	UserData user_data=new UserData();
+	Facility fac=new Facility();
+
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		String user_name=userDetail.getUsername();
+		display_name=auth.getName();
+		u=userservice.getUser(user_name);
+		display_name=u.getDisplay_name();
+		fac=rec_service.Get_Facility_Info(u.getOrg_unit_id());
+		warehouse_name=fac.getFacility_name();
+	}
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	LocalDateTime now = LocalDateTime.now();
+	Date req_date=new Date(0);
+	//Date x_req=(Date) new SimpleDateFormat("dd/MM/yyyy").parse(cash_form.getRequest_date()); 
+	System.out.println(now);
+	//String out_transfer="Test_Attachment";
+	String out_transfer=cashservice.Submit_External_Cash(u.getOrg_unit_id(), display_name, cash_form.getAccount_sku(), req_date, cash_form.getTransfer_date(), cash_form.getAmount(), cash_form.getBank_name(), cash_form.getBank_account_no(), cash_form.getAttachment());
+	System.out.println(out_transfer);
+	return new ResponseEntity<String>(out_transfer,HttpStatus.OK);
+}
+
+
+
+@RequestMapping(value="/updateAttachment",method=RequestMethod.POST,consumes="application/json")
+public ResponseEntity<String> upload_file(@RequestBody CashTransferForm cash_form)
+{
+	System.out.println(cash_form.getFile_path());
+	System.out.println(cash_form.getShipment_id());
+	String out_update=cashservice.Update_attachment(cash_form.getShipment_id(), cash_form.getFile_path());
+	return new ResponseEntity<String>(out_update,HttpStatus.OK);
+}
+
+@RequestMapping(value="/ViewCashTransferList")
+public ModelAndView get_cash_list() {
+	String display_name="";
+	String warehouse_name="";
+	User u = new User();
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	UserData user_data=new UserData();
+	Facility fac=new Facility();
+
+	if (!(auth instanceof AnonymousAuthenticationToken)) {
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
+		String user_name=userDetail.getUsername();
+		display_name=auth.getName();
+		u=userservice.getUser(user_name);
+		display_name=u.getDisplay_name();
+		fac=rec_service.Get_Facility_Info(u.getOrg_unit_id());
+		warehouse_name=fac.getFacility_name();
+	}
+	List<Shipment> ship_lst=cashservice.Get_Cash_Transfer_Shipments(u.getOrg_unit_id());
+	List<CashTransferForm> cash_lst_data=new ArrayList<CashTransferForm>();
+	for(int x=0;x<ship_lst.size();x++)
+	{
+		
+		CashTransferForm cash_obj=new CashTransferForm();
+		cash_obj.setBank_account_no(ship_lst.get(x).getBank_account_num());
+		cash_obj.setBank_name(ship_lst.get(x).getShippment_destination_id());
+		cash_obj.setShipment_id(ship_lst.get(x).getId());
+		String []req_date=String.valueOf(ship_lst.get(x).getShipment_expected_delivery_date()).split(" ");
+		cash_obj.setRequest_date(req_date[0]);
+		String [] tran_date=String.valueOf(ship_lst.get(x).getShipment_actual_delivery_date()).split(" ");
+		cash_obj.setT_date(tran_date[0]);
+		cash_lst_data.add(cash_obj);
+	}
+	for(int i=0;i<cash_lst_data.size();i++)
+	{
+		System.out.println(cash_lst_data.get(i).getShipment_id());
+	}
+	System.out.println(ship_lst.size());
+	ModelAndView newmod=new ModelAndView();
+	newmod.addObject("cash_lst", cash_lst_data);
+	newmod.setViewName("CashTransferList");
+	return newmod;
+	
+}
+@RequestMapping(value="/ViewCashTransferDetails")
+public ModelAndView get_cash_shipment_data(@RequestParam(value="shipment_id",required=true) int shipment_id)
+{
+	Shipment sh=rec_service.get_ship_data_by_id(shipment_id);
+	String Agent_name=cashservice.Get_Agent_Name(shipment_id);
+	String account_sku=cashservice.Get_Account(shipment_id);
+	CashTransferForm cash_form=new CashTransferForm();
+	cash_form.setAgent_name(Agent_name);
+	cash_form.setAmount(Double.parseDouble(sh.getShipment_actual_money_out()));
+	cash_form.setAttachment(sh.getBank_attachement());
+	System.out.println(sh.getBank_attachement());
+	cash_form.setBank_account_no(sh.getBank_account_num());
+	cash_form.setBank_name(sh.getShippment_destination_id());
+	Facility fac=new Facility();
+	fac=rec_service.Get_Facility_Info(Integer.parseInt(sh.getShippment_souce_id()));
+	cash_form.setAccount_sku(account_sku);
+	cash_form.setWarehouse_name(fac.getFacility_name());
+	String []r_d=String.valueOf(sh.getShipment_expected_delivery_date()).split(" ");
+	cash_form.setRequest_date(r_d[0]);
+	String [] t_d=String.valueOf(sh.getShipment_actual_delivery_date()).split(" ");
+	cash_form.setT_date(t_d[0]);
+	cash_form.setShipment_id(shipment_id);
+	ModelAndView newMod=new ModelAndView();
+	newMod.addObject("cash_form", cash_form);
+	newMod.setViewName("CashTransferDetails");
+	return newMod;
+}
+
+}

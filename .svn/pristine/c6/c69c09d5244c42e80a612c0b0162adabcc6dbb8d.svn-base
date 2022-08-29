@@ -1,0 +1,444 @@
+package com.jwt.dao;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.model.Facility;
+import com.jwt.model.InventoryCheck;
+import com.jwt.model.InventoryDetail;
+import com.jwt.model.InventoryProduct;
+import com.jwt.model.LostRlostReportProducts;
+import com.jwt.model.Operation;
+import com.jwt.model.Order;
+import com.jwt.model.OrderDetail;
+import com.jwt.model.ReportShipment;
+import com.jwt.model.ReportType;
+import com.jwt.model.ShipmentDetailsData;
+import com.jwt.model.ShipmentLog;
+import com.jwt.model.ShipmentStatus;
+import com.jwt.model.ShipmentType;
+import com.jwt.model.WashingPrograms;
+@Repository
+public class ReportDAOImpl implements ReportDAO {
+
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Facility> getALLWarehouses() {
+		return sessionFactory.getCurrentSession().createQuery("from Facility v where v.facility_type_id =1 ORDER BY v.facility_name")
+				.list();
+		}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentType> getShipmentTypes() {
+		return sessionFactory.getCurrentSession().createQuery("from ShipmentType where shipment_type_id in (1,2,5,9)")
+				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReportShipment> getShipmentsOfFacility(int facility_id, int Ship_type) {
+		List<ReportShipment>shipments=sessionFactory.getCurrentSession().createSQLQuery("SELECT * \r\n" + 
+				"From (SELECT CAST(ship.id AS VARCHAR)as shipment_id , ship.shipment_expected_delivery_date as shipment_date,  dr.full_name_en as driver ,log2.logged_user as agent, log.logged_user as manager \r\n" + 
+				"	FROM shippments ship , drivers_data dr , shipments_logs log , shipments_logs log2\r\n" + 
+				"	where  log.log_id=(select max(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and CASE ship.shipment_type_id\r\n" + 
+				"	     WHEN 1 \r\n" + 
+				"		THEN dr.user_name = ship.shippment_destination_id \r\n" + 
+				"		AND ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"		WHEN 2\r\n" + 
+				"		THEN dr.user_name = ship.shippment_souce_id \r\n" + 
+				"		AND ship.shippment_destination_id = '"+facility_id+"'\r\n" + 
+				"		WHEN 5\r\n" + 
+				"		 then dr.user_name = ship.courrier_id\r\n" + 
+				"        	AND ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"		WHEN 9\r\n" + 
+				"		 then dr.user_name = ship.courrier_id\r\n" + 
+				"        	AND ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"		else\r\n" + 
+				"		     null\r\n" + 
+				"		END\r\n" + 
+				"	and log2.log_id=(select min(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and ship.shipment_type_id = "+Ship_type+" \r\n" + 
+				"	UNION\r\n" + 
+				"	\r\n" + 
+				"	SELECT CAST(ship.id AS VARCHAR) as shipment_id, ship.shipment_expected_delivery_date as shipment_date, ship.shippment_souce_id as driver ,log2.logged_user as agent, log.logged_user as manager \r\n" + 
+				"	FROM shippments ship , shipments_logs log , shipments_logs log2\r\n" + 
+				"	where  log.log_id=(select max(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and log2.log_id=(select min(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and ship.shipment_type_id = "+Ship_type+"\r\n" + 
+				"	and ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"	and CAST(ship.id AS VARCHAR) not in (\r\n" + 
+				"	SELECT CAST(ship.id AS VARCHAR)as shipment_id	FROM shippments ship , drivers_data dr , shipments_logs log , shipments_logs log2\r\n" + 
+				"	where  log.log_id=(select max(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and CASE ship.shipment_type_id\r\n" + 
+				"	     WHEN 1 \r\n" + 
+				"		THEN dr.user_name = ship.shippment_destination_id \r\n" + 
+				"		AND ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"		WHEN 2\r\n" + 
+				"		THEN dr.user_name = ship.shippment_souce_id \r\n" + 
+				"		AND ship.shippment_destination_id = '"+facility_id+"'\r\n" + 
+				"		WHEN 5\r\n" + 
+				"		 then dr.user_name = ship.courrier_id\r\n" + 
+				"        	AND ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"		WHEN 9\r\n" + 
+				"		 then dr.user_name = ship.courrier_id\r\n" + 
+				"        	AND ship.shippment_souce_id  = '"+facility_id+"'\r\n" + 
+				"		else\r\n" + 
+				"		     null\r\n" + 
+				"		END\r\n" + 
+				"	and log2.log_id=(select min(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and ship.shipment_type_id = "+Ship_type+" ) ) as foo\r\n" + 
+						"	ORDER BY foo.shipment_id DESC\r\n" ).setResultTransformer(Transformers.aliasToBean(ReportShipment.class)).list();
+		if (!shipments.isEmpty())
+				return shipments;
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ReportShipment getShipmentByID(int ship_id) {
+		List<ReportShipment>shipments=sessionFactory.getCurrentSession().createSQLQuery("select\r\n" + 
+				"  foo.shipment_id,\r\n" + 
+				"  foo.shipment_date,\r\n" + 
+				"  foo.shipment_type_id,\r\n" + 
+				"  foo.driver,\r\n" + 
+				"  foo.destination_type,\r\n" + 
+				"  foo.source_type,\r\n" + 
+				"  user1.display_name as agent,\r\n" + 
+				"  user2.display_name as manager,\r\n" +
+				"   source_.name as source,\r\n" + 
+				"				  source_2.name as destination\r\n"+
+				"from (SELECT CAST(ship.id AS VARCHAR)as shipment_id , ship.shipment_expected_delivery_date as shipment_date, ship.shipment_type_id, dr.full_name_en as driver ,log2.logged_user as agent, log.logged_user as manager , ship.shipment_destination_type_id as destination_type , shipment_source_type_id as source_type,ship.shippment_destination_id,ship.shippment_souce_id\r\n" + 
+				"	FROM shippments ship , drivers_data dr , shipments_logs log , shipments_logs log2\r\n" + 
+				"	where  log.log_id=(select max(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and CASE ship.shipment_type_id\r\n" + 
+				"	     WHEN 1 \r\n" + 
+				"		THEN dr.user_name = ship.shippment_destination_id \r\n" + 
+				"		WHEN 2\r\n" + 
+				"		THEN dr.user_name = ship.shippment_souce_id \r\n" + 
+				"		WHEN 5\r\n" + 
+				"		 then dr.user_name = ship.courrier_id\r\n" + 
+				"        when 9    then dr.user_name = ship.courrier_id\r\n"+
+				"		else\r\n" + 
+				"		null\r\n" + 
+				"		END\r\n" + 
+				"	and log2.log_id=(select min(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and ship.id = "+ship_id+" )as foo\r\n" + 
+						"		LEFT JOIN sc_users user1 \r\n" + 
+						"		ON user1.user_name =foo.agent\r\n" + 
+						"		LEFT JOIN sc_users user2 \r\n" + 
+						"		ON user2.user_name = foo.manager\r\n"
+						+ "     LEFT JOIN \"v_source_&_destination_of_shipment\" source_\r\n" + 
+						"								ON source_.id = foo.shippment_souce_id\r\n" + 
+						"								LEFT JOIN \"v_source_&_destination_of_shipment\" source_2\r\n" + 
+						"								ON source_2.id = foo.shippment_destination_id" ).setResultTransformer(Transformers.aliasToBean(ReportShipment.class)).list();
+		if (!shipments.isEmpty())
+				return shipments.get(0);
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Operation> getAllOperationShipID(int ship_id) {
+		List<Operation>operations =sessionFactory.getCurrentSession().createSQLQuery("SELECT operation.transaction_movement_type as transaction ,  COALESCE(CAST(operation.product_quantity AS INTEGER) ,0) AS quantity, pro.product_name ,operation.product_id as product_id, proType.type , COALESCE(trt.\"TRE_NAME\",'')  as treatment    \r\n" + 
+				"												FROM  operations operation \r\n" + 
+				"									  left join\r\n" + 
+				"								        products pro  \r\n" + 
+				"								            on   pro.product_sku = operation.product_id  \r\n" + 
+				"								    left join  \r\n" + 
+				"								        \"TREATMENT_TYPES\" trt  \r\n" + 
+				"								            on  pro.treatment_id  = trt.\"TRE_ID\" \r\n" + 
+				"											left join\r\n" + 
+				"								        products_type proType\r\n" + 
+				"								            on  pro.type = proType.id    \r\n" + 
+				"								where transaction_id ='"+ship_id+"' and transaction_type_id='3' and transaction_movement_type='1' ORDER BY pro.product_name , trt.\"TRE_NAME\", proType.type").setResultTransformer(Transformers.aliasToBean(Operation.class)).list();
+		if (!operations.isEmpty())
+				return operations;
+		else
+			return null ;
+		}
+	
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentLog> getLogsShipment(int ship_id) {
+		List<ShipmentLog> logs= (List<ShipmentLog>)sessionFactory.getCurrentSession().createQuery("from ShipmentLog log where log.shipment_id ="+ship_id +" ORDER BY log.log_id" ).list();
+		return logs;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentStatus> getAllStatus() {
+		return sessionFactory.getCurrentSession().createQuery("from ShipmentStatus")
+				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<LostRlostReportProducts> getLostRlost(int shipment_id) {
+		List<LostRlostReportProducts>LostRLost=sessionFactory.getCurrentSession().createSQLQuery("SELECT shipment_id, coalesce(product_lost_quantity, 0) as product_lost_quantity,coalesce(product_returned_quantity, 0) as product_returned_quantity,t_type, product_id\r\n" + 
+				"	FROM shipments_lost_products\r\n" + 
+				"	where shipment_id = "+shipment_id ).setResultTransformer(Transformers.aliasToBean(LostRlostReportProducts.class)).list();
+		return LostRLost;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReportShipment> getShipmentsByDate(int facility, int ship_type, String from_date, String to_date) {
+		List<ReportShipment>shipments=sessionFactory.getCurrentSession().createSQLQuery("SELECT  foo.shipment_id ,  \r\n" + 
+				"	foo.shipment_date ,\r\n" + 
+				"	foo.driver ,\r\n" + 
+			    "   foo.destination,\r\n" + 
+				"		foo.source,\r\n"+
+			    "      foo.type,\r\n"+
+				"	sc_users1.display_name as agent, \r\n" + 
+				"	sc_users2.display_name as manager , \r\n"
+				+ "status.status_name as status \r\n" + 
+				"From (SELECT CAST(ship.id AS VARCHAR)as shipment_id , to_date(to_char(ship.shipment_expected_delivery_date,'yyyy-mm-dd'),'yyyy-mm-dd')as shipment_date ,  dr.full_name_en as driver ,log2.logged_user as agent, log.logged_user as manager ,  facility2.name as destination , facility1.name  as source,pt.type,ship.last_status\r\n" + 
+				"	FROM shippments ship , drivers_data dr , shipments_logs log , shipments_logs log2 , \"v_source_&_destination_of_shipment\" facility1 , \"v_source_&_destination_of_shipment\" facility2 , products_type pt\r\n" + 
+				"	where  log.log_id=(select max(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"   and ship.shippment_destination_id = facility2.id\r\n" + 
+				"   and ship.shippment_souce_id = facility1.id\r\n"+
+				" and  pt.id= (\r\n" + 
+				"					select\r\n" + 
+				"						pr.type \r\n" + 
+				"					from\r\n" + 
+				"						products pr ,\r\n" + 
+				"						shipments_details sd \r\n" + 
+				"					where\r\n" + 
+				"						pr.product_sku=sd.product_id \r\n" + 
+				"						and sd.shipment_id=ship.id limit 1\r\n" + 
+				"				)   \r\n"+
+				"	and CASE ship.shipment_type_id\r\n" + 
+				"	     WHEN 1 \r\n" + 
+				"		THEN dr.user_name = ship.shippment_destination_id \r\n" + 
+				"		AND ship.shippment_souce_id  = '"+facility+"'\r\n" + 
+				"		WHEN 2\r\n" + 
+				"		THEN dr.user_name = ship.shippment_souce_id \r\n" + 
+				"		AND ship.shippment_destination_id = '"+facility+"'\r\n" + 
+				"		WHEN 5\r\n" + 
+				"		 then dr.user_name = ship.courrier_id\r\n" + 
+				"        	AND (ship.shippment_souce_id  = '"+facility+"' or ship.shippment_destination_id = '"+facility+"')\r\n" + 
+				" 		 WHEN 9 \r\n" + 
+				"		then dr.user_name = ship.courrier_id\r\n" + 
+				"		AND (ship.shippment_souce_id  = '"+facility+"' or ship.shippment_destination_id = '"+facility+"')\r\n"+
+				"		else\r\n" + 
+				"		     null\r\n" + 
+				"		END\r\n" + 
+				"	and log2.log_id=(select min(log_id) from shipments_logs where shipment_id=ship.id)\r\n" + 
+				"	and ship.shipment_type_id = "+ship_type+" \r\n" +
+				" ) as foo\r\n" + 
+				"LEFT JOIN sc_users sc_users1  \r\n" + 
+				"	ON sc_users1.user_name = foo.agent \r\n" + 
+				"	LEFT JOIN sc_users sc_users2\r\n" + 
+				"	ON  sc_users2.user_name=foo.manager \r\n"
+				+ "LEFT JOIN shipment_status status\r\n" + 
+				"	 on CAST(status.status_id AS varchar)= foo.last_status\r\n"+
+				"where shipment_date >= '" +from_date+"' "+
+				"	and shipment_date<= '"+to_date +"' "+
+				"	ORDER BY foo.shipment_id DESC\r\n" ).setResultTransformer(Transformers.aliasToBean(ReportShipment.class)).list();
+		if (!shipments.isEmpty())
+				return shipments;
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Order> getOrdersByFacility(int facility ,String type , String from_date ,String to_date ) {
+		List<Order> orders =sessionFactory.getCurrentSession().createSQLQuery("SELECT foo.id,\r\n" + 
+				"		foo.order_type,\r\n" + 
+				"		foo.order_source_id,\r\n" + 
+				"		foo.order_status,\r\n" + 
+				"		foo.order_time,\r\n" + 
+				"		foo.from_type,\r\n" + 
+				"		foo.to_type,\r\n" + 
+				"		user1.display_name as logged_user,\r\n" + 
+				"		user1.display_name as approved_by"
+				+ " FROM (SELECT orders_.id, order_type , orders_.order_source_id , status.status_name as order_status, orders_.logged_user, to_date(to_char(orders_.order_time,'yyyy-mm-dd'),'yyyy-mm-dd') as order_time, orders_.approved_by,  orders_.from_type,\r\n" + 
+				"	 types.type as to_type \r\n" + 
+				"	FROM orders orders_ , orders_status status , products_type types\r\n" + 
+				"	where status.status_id = orders_.order_status_id and \r\n" + 
+				"	types.id = orders_.to_type \r\n" + 
+				"    and orders_.order_source_id = "+facility +
+				"	and order_type = '"+type+"') AS foo\r\n" + 
+				"   LEFT JOIN sc_users user1 \r\n" + 
+				"		on user1.user_name = foo.logged_user\r\n" + 
+				"		LEFT JOIN sc_users user2\r\n" + 
+				"		on user2.user_name = foo.approved_by \r\n"+
+				"	WHERE order_time >= '"+from_date+"'\r\n" + 
+				"	AND order_time <= '"+to_date+"'\r\n" + 
+				"	ORDER BY id" ).setResultTransformer(Transformers.aliasToBean(Order.class)).list();
+		
+		if (!orders.isEmpty())
+			return orders;
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryCheck> getinventoryChecks(int facility, String from_date, String to_date) {
+		List<InventoryCheck> checks =sessionFactory.getCurrentSession().createSQLQuery("SELECT   foo.id,\r\n" + 
+				"		foo.check_date,\r\n" + 
+				"		foo.last_status_id,\r\n" + 
+				"		foo.facility_id,\r\n" + 
+				"		user1.display_name as logged_user,\r\n" + 
+				"		user2.display_name as warehouse_manager\r\n"+
+			    "    FROM(SELECT check_.id, to_date(to_char(check_date ,'yyyy-mm-dd'),'yyyy-mm-dd') as check_date,  status.transactions_status_name as last_status_id, logged_user_id as logged_user, facility_id, warehouse_manager\r\n" + 
+				"	FROM public.inventory_check check_ , transactions_status status\r\n" + 
+				"	where CAST(last_status_id AS integer)= status.id\r\n" + 
+				"	and facility_id = "+facility+") AS foo\r\n" + 
+				"	LEFT JOIN sc_users user1  \r\n" + 
+				"		on foo.logged_user = user1.user_name\r\n" + 
+				"		LEFT JOIN sc_users user2 \r\n" + 
+				"		on foo.warehouse_manager = user2.user_name\r\n"+
+			    "where check_date >= '"+from_date+"'\r\n" + 
+				"	and check_date <= '"+to_date+"'" ).setResultTransformer(Transformers.aliasToBean(InventoryCheck.class)).list();
+		
+		if (!checks.isEmpty())
+			return checks;
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ShipmentDetailsData> getShipDetails(int ship) {
+		return sessionFactory.getCurrentSession().createQuery("from ShipmentDetailsData v where v.shipment_id ="+ ship+" Order by v.product_name , v.type ,v.treatment_name")
+				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Order getOrderByID(int order_id) {
+		List<Order> orders =sessionFactory.getCurrentSession().createSQLQuery("  select foo.id,\r\n" + 
+				"          foo. order_type,\r\n" + 
+				"		  foo.order_source_id,\r\n" + 
+				"		  foo.order_status,\r\n" + 
+				"		  foo.order_time,\r\n" + 
+				"		  foo.from_type,\r\n" + 
+				"		  foo.to_type,\r\n" + 
+				"		  user1.display_name as logged_user,\r\n" + 
+				"		  user2.display_name as approved_by\r\n" + 
+				"   from (SELECT orders_.id, order_type , orders_.order_source_id , status.status_name as order_status, orders_.logged_user, to_date(to_char(orders_.order_time,'yyyy-mm-dd'),'yyyy-mm-dd') as order_time, orders_.approved_by, orders_.from_type, types2.type as to_type \r\n" + 
+				"	FROM orders orders_ , orders_status status ,products_type types2\r\n" + 
+				"	where status.status_id = orders_.order_status_id and \r\n" + 
+				"	types2.id = orders_.to_type\r\n"+ 
+				"   and orders_.id ="+order_id+") as foo \r\n" + 
+						"		LEFT JOIN sc_users user1 \r\n" + 
+						"		ON user1.user_name =foo.logged_user\r\n" + 
+						"		LEFT JOIN sc_users user2 \r\n" + 
+						"		ON user2.user_name = foo.approved_by").setResultTransformer(Transformers.aliasToBean(Order.class)).list();
+		
+		if (!orders.isEmpty())
+			return orders.get(0);
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OrderDetail> getOrderDetails(int order) {
+		
+		List<OrderDetail> detail =sessionFactory.getCurrentSession().createSQLQuery("select * from(select\r\n" + 
+				"   foo.order_id,\r\n" + 
+				"   foo.quantity_requested,\r\n" + 
+				"   foo.machine_no,\r\n" + 
+				"   foo.washing_program,\r\n" + 
+				"   foo.comment,\r\n" + 
+				"   foo.order_time,\r\n" + 
+				"   product1.product_name as product_id,\r\n" + 
+				"   products2.product_name as to_product_id,\r\n" + 
+				"   treats.\"TRE_NAME\" as to_treatment\r\n" + 
+				" from (SELECT order_id, quantity_requested, machine_no, washing_program, product_id, comment, CAST(order_time AS VARCHAR), to_product_id  \r\n" + 
+				"					FROM orders_details detail \r\n" + 
+				"				WHERE order_id = '"+order+"')as foo\r\n" + 
+				"				LEFT JOIN products product1 \r\n" + 
+				"				ON foo.product_id = product1.product_sku\r\n" + 
+				"				LEFT JOIN products products2 \r\n" + 
+				"				ON foo.to_product_id = products2.product_sku\r\n" + 
+				"				LEFT JOIN \"TREATMENT_TYPES\" treats\r\n" + 
+				"				ON treats.\"TRE_ID\" = products2.treatment_id) as foo2\r\n" + 
+				"				ORDER BY foo2.product_id " ).setResultTransformer(Transformers.aliasToBean(OrderDetail.class)).list();
+		
+		if (!detail.isEmpty())
+			return detail;
+		else 
+			return null;
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<WashingPrograms> getAllWashingPrograms() {
+		return sessionFactory.getCurrentSession().createQuery("from WashingPrograms")
+				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public InventoryCheck getCheckByID(int checkId) {
+		List<InventoryCheck> checks =sessionFactory.getCurrentSession().createSQLQuery("select foo.id,\r\n" + 
+				"      foo.check_date,\r\n" + 
+				"	  foo.last_status_id,\r\n" + 
+				"	  foo.facility_id,\r\n" + 
+				"	  user1.display_name as logged_user,\r\n" + 
+				"	 user2.display_name as warehouse_manager\r\n" + 
+				"  from ( SELECT check_.id, to_date(to_char(check_date ,'yyyy-mm-dd'),'yyyy-mm-dd') as check_date,  status.transactions_status_name as last_status_id, logged_user_id as logged_user, facility_id, warehouse_manager\r\n" + 
+				"	FROM public.inventory_check check_ , transactions_status status\r\n" + 
+				"	where CAST(last_status_id AS integer)= status.id\r\n" + 
+				"	and check_.id = "+ checkId+ ") as foo\r\n" + 
+						"		LEFT JOIN sc_users user1\r\n" + 
+						"		ON user1.user_name = foo.logged_user\r\n" + 
+						"		LEFT JOIN sc_users user2\r\n" + 
+						"		ON user2.user_name = foo.warehouse_manager").setResultTransformer(Transformers.aliasToBean(InventoryCheck.class)).list();
+		
+		if (!checks.isEmpty())
+			return checks.get(0);
+		else 
+			return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InventoryDetail> getInventoryDetails(int checkId) {
+		List<InventoryDetail> details =sessionFactory.getCurrentSession().createSQLQuery("SELECT inventory_check_id, product_actual_quantity_checked, product_system_quantity, product_name, proType.type , lost_quantity, treat.\"TRE_NAME\" as treatment_name\r\n" + 
+				"	FROM inventory_check_details detail , products product , products_type proType ,\"TREATMENT_TYPES\" treat\r\n" + 
+				"	where detail.product_id = product_sku \r\n" + 
+				"	and product.type = proType.id \r\n" + 
+				"	and product.treatment_id = treat.\"TRE_ID\"\r\n" + 
+				"	and inventory_check_id ="+ checkId +" \r\n"+
+				"  ORDER BY product_name , proType.type").setResultTransformer(Transformers.aliasToBean(InventoryDetail.class)).list();
+		
+		if (!details.isEmpty())
+			return details;
+		else 
+			return null;	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReportType> getOrdersTypes() {
+		List<ReportType> details =sessionFactory.getCurrentSession().createSQLQuery("SELECT id, order_type as name\r\n" + 
+				"	FROM orders_types").setResultTransformer(Transformers.aliasToBean(ReportType.class)).list();
+		
+		if (!details.isEmpty())
+			return details;
+		else 
+			return null;
+	}
+
+}

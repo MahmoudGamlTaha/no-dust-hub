@@ -1,0 +1,82 @@
+package com.jwt.dao;
+
+import java.util.List;
+
+import javax.persistence.ParameterMode;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.ResultSetOutput;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.jwt.model.ActualCounts;
+import com.jwt.model.DirtyProduct;
+import com.jwt.model.DirtyProductsForm;
+import com.jwt.model.DirtyShipment;
+import com.jwt.model.DirtyShipmentData;
+
+@Repository
+public class ViewDirtyShipmentDAOImpl implements ViewDirtyShipmentDAO {
+
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyShipment> getAllDirtyShipments(int id) {
+		return sessionFactory.getCurrentSession().createQuery("from DirtyShipment v where v.shippment_destination_id= '"+id+"' ORDER BY v.shipment_id ")
+				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyShipmentData> getShipmentData(String shipment_id) {
+		List<DirtyShipmentData>dirtydata=sessionFactory.getCurrentSession().createSQLQuery("select sh.id AS shipment_id ,  sh.shipment_expected_delivery_date AS shipment_date , driver.user_name , driver.full_name_en , logs.logged_user\r\n" + 
+				", sh.last_status , facility.facility_name, destination.facility_name AS lundry_name\r\n" + 
+				"from shippments sh , drivers_data driver , shipments_logs logs , facilities facility , facilities destination\r\n" + 
+				"where sh.courrier_id = driver.user_name AND logs.shipment_id = sh.id AND sh.id = "+shipment_id+" AND  CAST( sh.shippment_souce_id AS int)= facility.id AND destination.ID = CAST( sh.shippment_destination_id  AS int)").setResultTransformer(Transformers.aliasToBean(DirtyShipmentData.class)).list();
+				return dirtydata;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DirtyProduct> getDirtyShipmentProduct(String Shipment_id) {
+		List<DirtyProduct>dirtydata=sessionFactory.getCurrentSession().createSQLQuery("SELECT CAST(details.quantity_shipped AS int)AS quantity, details.weight,CAST(details.id AS varchar), CAST(details.washing_program_id AS varchar), details.product_sku , details.product_name, washing.washing_program AS washing_program_name\r\n" + 
+				"	FROM shipment_details_with_products_and_treatments details , washing_programs washing\r\n" + 
+				"	where details.shipment_id ="+Shipment_id+" AND washing.id = details.washing_program_id").setResultTransformer(Transformers.aliasToBean(DirtyProduct.class)).list();
+				return dirtydata;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String appproveDirtyShipment(String ids,String ids2, int shipment_id, String useName) {
+		ProcedureCall procedureCall = sessionFactory.getCurrentSession().createStoredProcedureCall("approve_receiving_dirty_shipment");
+		procedureCall.registerParameter("p_ids", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_ids2", String.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_shipment_id", Integer.class, ParameterMode.IN);
+		procedureCall.registerParameter("p_logged_in_user", String.class, ParameterMode.IN);
+		procedureCall.getParameterRegistration("p_ids").bindValue(ids);
+		procedureCall.getParameterRegistration("p_ids2").bindValue(ids2);
+		procedureCall.getParameterRegistration("p_shipment_id").bindValue(shipment_id);
+		procedureCall.getParameterRegistration("p_logged_in_user").bindValue(useName);
+		ProcedureOutputs procedureOutputs = procedureCall.getOutputs();
+		ResultSetOutput resultSetOutput = (ResultSetOutput) procedureOutputs.getCurrent();
+		@SuppressWarnings("rawtypes")
+		List results = resultSetOutput.getResultList();
+		String result = (String)results.get(0);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String checkStateOfShipment(int id) {
+		List<DirtyProductsForm>state=sessionFactory.getCurrentSession().createSQLQuery("SELECT  last_status\r\n" + 
+				"FROM shippments\r\n" + 
+				"where id = "+id).setResultTransformer(Transformers.aliasToBean(DirtyProductsForm.class)).list();
+				return state.get(0).getLast_status();
+	}
+
+}

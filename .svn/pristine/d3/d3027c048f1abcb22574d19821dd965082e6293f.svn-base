@@ -1,0 +1,121 @@
+package com.jwt.model;
+
+import java.util.List;
+
+public class DirtyProductsForm {
+	private String assignDate;
+	private String wareHouseName;
+	private String agentName;
+	private String shipment_id;
+	private List<DirtyProduct> dirty_list;
+	private List<WashingPrograms> washing_list;
+	private List<Facility> lundries_list;
+	private String selectedLundry;
+	private List<DirtyProductInPackage> product_list;
+	private List<drivers> driversList;
+	private String selectedDriver ;
+	private String productsIds;
+	private String productsIds2;
+	private String last_status;
+	private List<String> areas;
+	private String externalFlag ;
+	public List<DirtyProduct> getDirty_list() {
+		return dirty_list;
+	}
+	public void setDirty_list(List<DirtyProduct> dirty_list) {
+		this.dirty_list = dirty_list;
+	}
+	public List<WashingPrograms> getWashing_list() {
+		return washing_list;
+	}
+	public void setWashing_list(List<WashingPrograms> washing_list) {
+		this.washing_list = washing_list;
+	}
+	public List<DirtyProductInPackage> getProduct_list() {
+		return product_list;
+	}
+	public void setProduct_list(List<DirtyProductInPackage> product_list) {
+		this.product_list = product_list;
+	}
+	public String getAssignDate() {
+		return assignDate;
+	}
+	public void setAssignDate(String assignDate) {
+		this.assignDate = assignDate;
+	}
+	public String getWareHouseName() {
+		return wareHouseName;
+	}
+	public void setWareHouseName(String wareHouseName) {
+		this.wareHouseName = wareHouseName;
+	}
+	public String getAgentName() {
+		return agentName;
+	}
+	public void setAgentName(String agentName) {
+		this.agentName = agentName;
+	}
+	public List<drivers> getDriversList() {
+		return driversList;
+	}
+	public void setDriversList(List<drivers> driversList) {
+		this.driversList = driversList;
+	}
+	public String getSelectedDriver() {
+		return selectedDriver;
+	}
+	public void setSelectedDriver(String selectedDriver) {
+		this.selectedDriver = selectedDriver;
+	}
+	public List<Facility> getLundries_list() {
+		return lundries_list;
+	}
+	public void setLundries_list(List<Facility> lundries_list) {
+		this.lundries_list = lundries_list;
+	}
+	public String getSelectedLundry() {
+		return selectedLundry;
+	}
+	public void setSelectedLundry(String selectedLundry) {
+		this.selectedLundry = selectedLundry;
+	}
+
+	public String getShipment_id() {
+		return shipment_id;
+	}
+	public void setShipment_id(String shipment_id) {
+		this.shipment_id = shipment_id;
+	}
+	public String getProductsIds() {
+		return productsIds;
+	}
+	public void setProductsIds(String productsIds) {
+		this.productsIds = productsIds;
+	}
+	public String getLast_status() {
+		return last_status;
+	}
+	public void setLast_status(String last_status) {
+		this.last_status = last_status;
+	}
+	public String getProductsIds2() {
+		return productsIds2;
+	}
+	public void setProductsIds2(String productsIds2) {
+		this.productsIds2 = productsIds2;
+	}
+	public List<String> getAreas() {
+		return areas;
+	}
+	public void setAreas(List<String> areas) {
+		this.areas = areas;
+	}
+	public String getExternalFlag() {
+		return externalFlag;
+	}
+	public void setExternalFlag(String externalFlag) {
+		this.externalFlag = externalFlag;
+	}
+	
+	
+}

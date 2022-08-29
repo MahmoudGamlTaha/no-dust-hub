@@ -1,0 +1,77 @@
+package com.jwt.service;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jwt.dao.CashInOutDAO;
+import com.jwt.dao.CashOnCoverDAO;
+import com.jwt.model.FinancialAccount;
+import com.jwt.model.Shipment;
+
+@Service
+@Transactional
+public class CashInOutServiceImpl implements CashInOutService {
+
+	@Autowired
+	private CashInOutDAO cashInOutDAO ;
+	
+	@Override
+	public String submitCashInOut(String financialAcc, String user, double amount, String driver_userName) {
+		return cashInOutDAO.submitCashInOut(financialAcc, user, amount, driver_userName);
+	}
+
+	@Override
+	public List<FinancialAccount> Get_Financial_Accounts(int fac_id) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.Get_Financial_Accounts(fac_id);
+	}
+
+	@Override
+	public String transferInternalCash(int facility_id, String logged_user, String source_account,
+			String destination_account, double amount, String comment) {
+		return cashInOutDAO.transferInternalCash(facility_id, logged_user, source_account, destination_account, amount, comment);
+	}
+
+	@Override
+	public String Submit_External_Cash(int facility_id, String logged_user, String account_sku, java.util.Date req_date,
+			Date transfer_date, double amount, String bank_name, String bank_account_no, String attachment) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.Submit_External_Cash(facility_id, logged_user, account_sku, req_date, transfer_date, amount, bank_name, bank_account_no, attachment);
+	}
+
+	@Override
+	public List<Shipment> Get_Cash_Transfer_Shipments(int facility_id) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.Get_Cash_Transfer_Shipments(facility_id);
+	}
+
+	@Override
+	public String Update_attachment(int shipment_id, String bank_attachment) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.Update_attachment(shipment_id, bank_attachment);
+	}
+
+	@Override
+	public String Get_Agent_Name(int shipment_id) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.Get_Agent_Name(shipment_id);
+	}
+
+	@Override
+	public String Get_Account(int shipment_id) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.Get_Account(shipment_id);
+	}
+
+	@Override
+	public String get_Account_bby_id(String cash_account_id) {
+		// TODO Auto-generated method stub
+		return cashInOutDAO.get_Account_bby_id(cash_account_id);
+	}
+
+}
